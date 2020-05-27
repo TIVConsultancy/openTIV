@@ -9,12 +9,9 @@ import delete.com.tivconsultancy.opentiv.devgui.main.ImagePath;
 import com.tivconsultancy.opentiv.helpfunctions.strings.StringWorker;
 import com.tivconsultancy.opentiv.highlevel.methods.Method;
 import com.tivconsultancy.opentiv.highlevel.protocols.NameSpaceProtocolResults1D;
-import com.tivconsultancy.opentiv.highlevel.protocols.Prot_ObjectMasking;
 import com.tivconsultancy.opentiv.highlevel.protocols.Protocol;
-import com.tivconsultancy.opentiv.highlevel.protocols.Result1D;
 import com.tivconsultancy.opentiv.math.specials.LookUp;
 import com.tivconsultancy.opentiv.math.specials.NameObject;
-import com.tivconsultancy.tivGUI.MainFrame;
 import com.tivconsultancy.tivGUI.StaticReferences;
 import com.tivconsultancy.tivpiv.protocols.Prot_tivPIV1DPostProc;
 import com.tivconsultancy.tivpiv.protocols.Prot_PIVCalcDisplacement;
@@ -26,7 +23,6 @@ import com.tivconsultancy.tivpiv.protocols.Prot_PIVRead2IMGFiles;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.embed.swing.SwingFXUtils;
 
 /**
  *
@@ -34,7 +30,7 @@ import javafx.embed.swing.SwingFXUtils;
  */
 public class PIVMethod implements Method {
 
-    protected Result1D results1D;
+    
     private File imageFile1 = null;
     private File imageFile2 = null;
 
@@ -42,7 +38,6 @@ public class PIVMethod implements Method {
 
     public PIVMethod() {
         initProtocols();
-        startNewTimeStep();
     }
 
     private void initProtocols() {
@@ -56,19 +51,6 @@ public class PIVMethod implements Method {
         methods.add(new NameObject<>("postproc", new Prot_tivPIV1DPostProc()));
     }
 
-    private void startNewTimeStep() {
-        results1D = new Result1D();
-        for (Protocol pro : getProtocols()) {
-            for (NameSpaceProtocolResults1D e : pro.get1DResultsNames()) {
-                results1D.addResult(e.toString(), Double.NaN);
-            }
-            if (MainFrame.loadGif != null) {
-                pro.setImage(SwingFXUtils.fromFXImage(MainFrame.loadGif, null));
-            }
-
-        }
-    }
-
     @Override
     public List<ImagePath> getInputImages() {
         return new ArrayList<>();
@@ -77,16 +59,6 @@ public class PIVMethod implements Method {
     @Override
     public List<Protocol> getProtocols() {
         return methods.getValues();
-    }
-
-    @Override
-    public void set1DResult(NameSpaceProtocolResults1D e) {
-
-    }
-
-    @Override
-    public Result1D get1DResults() {
-        return results1D;
     }
 
     public void readInFileForView(File f) throws Exception {
@@ -116,8 +88,6 @@ public class PIVMethod implements Method {
 
     @Override
     public void run() throws Exception {
-
-        startNewTimeStep();
         StaticReferences.controller.getViewController(null).update();
 
         try {
@@ -131,7 +101,7 @@ public class PIVMethod implements Method {
             getProtocol("postproc").run();
 
             for (NameSpaceProtocolResults1D e : getProtocol("postproc").get1DResultsNames()) {
-                results1D.setResult(e.toString(), getProtocol("postproc").getOverTimesResult(e));
+                StaticReferences.controller.get1DResults().setResult(e.toString(), getProtocol("postproc").getOverTimesResult(e));
             }
 
         } catch (Exception ex) {
@@ -141,11 +111,7 @@ public class PIVMethod implements Method {
 //                results1D.setResult(e.toString(), p.getOverTimesResult(e));
 //            }
 
-    }
-    
-//    public List<Integer> getIndexInList(){
-//        
-//    }
+    }   
 
     @Override
     public Protocol getProtocol(String ident) {

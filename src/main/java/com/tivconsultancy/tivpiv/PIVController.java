@@ -7,30 +7,24 @@ package com.tivconsultancy.tivpiv;
 
 import com.tivconsultancy.opentiv.helpfunctions.io.Reader;
 import com.tivconsultancy.opentiv.helpfunctions.io.Writer;
-import com.tivconsultancy.opentiv.helpfunctions.settings.SettingObject;
-import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
-import com.tivconsultancy.opentiv.helpfunctions.settings.SettingsCluster;
 import com.tivconsultancy.opentiv.highlevel.methods.Method;
+import com.tivconsultancy.opentiv.highlevel.protocols.NameSpaceProtocolResults1D;
 import com.tivconsultancy.opentiv.highlevel.protocols.Protocol;
+import com.tivconsultancy.opentiv.datamodels.Results1DPlotAble;
+import com.tivconsultancy.tivGUI.MainFrame;
 import com.tivconsultancy.tivGUI.StaticReferences;
 import com.tivconsultancy.tivGUI.controller.BasicController;
 import com.tivconsultancy.tivGUI.startup.Database;
 import com.tivconsultancy.tivGUI.startup.StartUpSubControllerLog;
-import com.tivconsultancy.tivGUI.startup.StartUpSubControllerMenu;
 import com.tivconsultancy.tivGUI.startup.StartUpSubControllerPlots;
 import com.tivconsultancy.tivGUI.startup.StartUpSubControllerViews;
 import com.tivconsultancy.tivpiv.data.DataPIV;
-import com.tivconsultancy.tivpiv.protocols.Prot_PIVInterrAreas;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
+import javafx.embed.swing.SwingFXUtils;
 
 /**
  *
@@ -40,7 +34,7 @@ public class PIVController extends BasicController {
 
     protected File mainFolder;
     protected List<File> ReadInFile;
-    protected DataPIV database1Step;
+    protected DataPIV database1Step;    
 
     public PIVController() {
         currentMethod = new PIVMethod();
@@ -154,7 +148,7 @@ public class PIVController extends BasicController {
      *
      */
     private void initDatabase() {
-        data = new Database();
+        data = new Database<>();        
         database1Step = new DataPIV();
         try {
             data.getIndexedResults().addObjectToRefresh(mainFrame.getPlotArea());
@@ -201,8 +195,9 @@ public class PIVController extends BasicController {
             @Override
             public void run() {
                 try {
+                    startNewTimeStep();
                     getCurrentMethod().run();
-                    data.set1DRes(currentStep, getCurrentMethod().get1DResults());
+                    data.setRes(currentStep, database1Step);
                     subViews.update();
                 } catch (Exception ex) {
                     StaticReferences.getlog().log(Level.SEVERE, "Unable to run : " + ex.getMessage(), ex);
@@ -218,9 +213,10 @@ public class PIVController extends BasicController {
             public void run() {
                 timeline:
                 for (int i = 0; i < 10; i++) {
+                    startNewTimeStep();
                     try {
                         getCurrentMethod().run();
-                        data.set1DRes(i, getCurrentMethod().get1DResults());
+                        data.setRes(i, database1Step);
                         subViews.update();
                     } catch (Exception ex) {
                         StaticReferences.getlog().log(Level.SEVERE, "Unable to run : " + ex.getMessage(), ex);
@@ -261,4 +257,23 @@ public class PIVController extends BasicController {
 //            }
 //        }
 //    }
+
+    @Override
+    public Results1DPlotAble get1DResults() {
+        return database1Step.results1D;
+    }
+
+    @Override
+    public void startNewTimeStep() {
+        database1Step = new DataPIV();
+        for (Protocol pro : getCurrentMethod().getProtocols()) {
+            for (NameSpaceProtocolResults1D e : pro.get1DResultsNames()) {
+                get1DResults().addResult(e.toString(), Double.NaN);
+            }
+            if (MainFrame.loadGif != null) {
+                pro.setImage(SwingFXUtils.fromFXImage(MainFrame.loadGif, null));
+            }
+
+        }
+    }
 }

@@ -24,7 +24,7 @@ import com.tivconsultancy.opentiv.datamodels.Archive;
  */
 public class Storeage {
     
-    Archive dataArchive = new Archive();
+    Archive dataArchive = new Archive();    
     
     
 

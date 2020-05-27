@@ -3,7 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package com.tivconsultancy.tivpiv.data;
 
-import com.tivconsultancy.opentiv.highlevel.protocols.Result1D;
+import com.tivconsultancy.opentiv.datamodels.IndexableResults;
+import com.tivconsultancy.opentiv.datamodels.Result1D;
 import com.tivconsultancy.tivpiv.helpfunctions.InterrGrid;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * @author Thomas Ziegenhein
  */
-public final class DataPIV implements Serializable {        
+public class DataPIV implements IndexableResults, Serializable {        
 
     private static final long serialVersionUID = 7041378570022471115L;
     
@@ -86,7 +87,28 @@ public final class DataPIV implements Serializable {
     public double AutoStretchFactor = 2;
     
     
-    public DataPIV(){        
+    public DataPIV(){     
+        results1D = new Result1D();
+    }
+
+    @Override
+    public Double getRes(String name) {
+        return results1D.getRes(name);
+    }
+
+    @Override
+    public String getName(Double value) {
+        return results1D.getName(value);
+    }
+
+    @Override
+    public boolean setResult(String name, Double d) {
+        return results1D.setResult(name, d);
+    }
+    
+    @Override
+    public void addResult(String name, Double d){
+        results1D.addResult(name, d);
     }
     
 }
