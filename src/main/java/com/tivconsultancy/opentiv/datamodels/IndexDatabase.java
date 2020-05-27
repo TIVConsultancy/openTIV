@@ -28,12 +28,11 @@ import javafx.application.Platform;
  * @author TZ ThomasZiegenhein@TIVConsultancy.com +1 480 494 7254
  * @param <T>
  */
-public class IndexedResults<T extends IndexableResults> {
+public class IndexDatabase<T extends IndexableResults> {
 
-    private LookUp<T> resultsOverTime;
-    private final transient List<Refreshable> ObjectsToCallOnChange = new ArrayList<>();
+    private LookUp<T> resultsOverTime;    
 
-    public IndexedResults() {
+    public IndexDatabase() {
         initDatabase();
     }
 
@@ -41,9 +40,7 @@ public class IndexedResults<T extends IndexableResults> {
         resultsOverTime = new LookUp<>();
     }
 
-    public void addObjectToRefresh(Refreshable ref) {
-        ObjectsToCallOnChange.add(ref);
-    }
+    
 
     private void replaceOrAdd(String name, T res) {
         if (resultsOverTime.get(name) == null) {
@@ -51,7 +48,6 @@ public class IndexedResults<T extends IndexableResults> {
         } else {
             resultsOverTime.set(name, res);
         }
-        refreshObjects();
 
     }
 
@@ -61,7 +57,6 @@ public class IndexedResults<T extends IndexableResults> {
 
     private void add(String name, T res) {
         resultsOverTime.add(new NameObject<>(name, res));
-        refreshObjects();
     }
 
     public void add(int i, T res) {
@@ -101,21 +96,20 @@ public class IndexedResults<T extends IndexableResults> {
     public int getSize() {
         return resultsOverTime.getSize();
     }
-
-    public void refreshObjects() {
-        Platform.runLater(new Runnable() {
-
-            public void run() {
-                for (Refreshable r : ObjectsToCallOnChange) {
-                    try {
-                        r.refresh();
-                    } catch (Exception e) {
-                        TIVLog.tivLogger.log(Level.SEVERE, "Cannot refresh object: " + r.toString(), e);
-                    }                    
-                }
-            }
-        });
-
-    }
+//
+//    public void refreshObjects() {
+//        Platform.runLater(new Runnable() {
+//
+//            public void run() {
+//                for (Refreshable r : ObjectsToCallOnChange) {
+//                    try {
+//                        r.refresh();
+//                    } catch (Exception e) {
+//                        TIVLog.tivLogger.log(Level.SEVERE, "Cannot refresh object: " + r.toString(), e);
+//                    }                    
+//                }
+//            }
+//        });
+//    }
 
 }

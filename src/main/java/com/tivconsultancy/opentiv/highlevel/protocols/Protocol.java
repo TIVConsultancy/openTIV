@@ -19,7 +19,6 @@ import com.tivconsultancy.opentiv.helpfunctions.settings.Hints;
 import com.tivconsultancy.opentiv.helpfunctions.settings.SettingObject;
 import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
 import com.tivconsultancy.opentiv.helpfunctions.settings.SettingsCluster;
-import com.tivconsultancy.opentiv.math.specials.LookUp;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;

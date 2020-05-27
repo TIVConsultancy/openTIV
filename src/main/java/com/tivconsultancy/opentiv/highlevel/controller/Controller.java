@@ -5,7 +5,7 @@
  */
 package com.tivconsultancy.opentiv.highlevel.controller;
 
-import com.tivconsultancy.opentiv.datamodels.IndexedResults;
+import com.tivconsultancy.opentiv.datamodels.IndexDatabase;
 import com.tivconsultancy.opentiv.highlevel.methods.Method;
 import com.tivconsultancy.opentiv.datamodels.Results1DPlotAble;
 import java.io.File;
@@ -21,7 +21,7 @@ public interface Controller {
     public void startNewIndexStep();
     public void setSelectedFile(File f);
     
-    public IndexedResults getOverTimeResults();
+    public IndexDatabase getOverTimeResults();
     public List<String> getHints(String name);
     public List<File> getInputFiles(String name);
     public Method getCurrentMethod();
