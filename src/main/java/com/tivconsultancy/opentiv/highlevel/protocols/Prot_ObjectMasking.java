@@ -38,6 +38,8 @@ public class Prot_ObjectMasking extends Protocol implements Serializable {
     ImageInt masking2;
     ImageInt totMask;
     
+    protected LookUp<BufferedImage> outPutImages;
+    
     private String name = "Masking";
 
     public Prot_ObjectMasking() {
@@ -129,6 +131,13 @@ public class Prot_ObjectMasking extends Protocol implements Serializable {
                                                         new String[]{"Ziegenhein2018"}, this);
         IMGFilter.setDescription("Masks objects in pictures based on edge detecting");
         lsClusters.add(IMGFilter);
+    }
+
+    @Override
+    public void setImage(BufferedImage bi) {
+        for(String s : getIdentForViews()){
+            outPutImages.set(s, bi);
+        } 
     }
 
 }

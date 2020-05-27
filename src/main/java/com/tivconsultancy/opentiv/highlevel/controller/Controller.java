@@ -18,7 +18,7 @@ import java.util.List;
 public interface Controller {               
     
     public void startNewMethod(Method newMethod);
-    public void startNewTimeStep();
+    public void startNewIndexStep();
     public void setSelectedFile(File f);
     
     public IndexedResults getOverTimeResults();

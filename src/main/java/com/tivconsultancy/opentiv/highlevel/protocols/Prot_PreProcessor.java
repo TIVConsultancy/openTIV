@@ -38,6 +38,8 @@ public class Prot_PreProcessor extends Protocol implements Serializable {
     ImageInt preproc;
     private String name = "Image Correction";
     
+    protected LookUp<BufferedImage> outPutImages;
+    
     public Prot_PreProcessor(String name){
         this();
         this.name = name;
@@ -196,6 +198,13 @@ public class Prot_PreProcessor extends Protocol implements Serializable {
         this.loSettings.add(new SettingObject("Curve Correction", "CurveCorrection", false, SettingObject.SettingsType.Boolean));
         this.loSettings.add(new SettingObject("Old Values", "GreyOldValues", "0, 75, 255", SettingObject.SettingsType.String));
         this.loSettings.add(new SettingObject("New Values", "GreyNewValues", "0, 150, 255", SettingObject.SettingsType.String));
+    }
+
+    @Override
+    public void setImage(BufferedImage bi) {
+        for(String s : getIdentForViews()){
+            outPutImages.set(s, bi);
+        } 
     }
 
 

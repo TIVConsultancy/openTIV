@@ -19,7 +19,6 @@ import com.tivconsultancy.opentiv.helpfunctions.settings.Hints;
 import com.tivconsultancy.opentiv.helpfunctions.settings.SettingObject;
 import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
 import com.tivconsultancy.opentiv.helpfunctions.settings.SettingsCluster;
-import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.math.specials.LookUp;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
@@ -33,12 +32,9 @@ import java.util.List;
  */
 public abstract class Protocol extends Settings implements Hints, Serializable {
 
-    private static final long serialVersionUID = -6114709214102901996L;
-
-    protected LookUp<BufferedImage> outPutImages;
-
+    private static final long serialVersionUID = -6114709214102901996L;    
+    
     public Protocol() {
-        outPutImages = new LookUp<>();
     }
 
     public List<SettingObject> getSettings() {
@@ -49,15 +45,9 @@ public abstract class Protocol extends Settings implements Hints, Serializable {
 
     public abstract List<String> getIdentForViews();
 
-    public BufferedImage getView(String identFromViewer) {        
-        return outPutImages.get(identFromViewer);
-    }
+    public abstract BufferedImage getView(String identFromViewer);
     
-    public void setImage(BufferedImage bi){
-        for(String s : getIdentForViews()){
-            outPutImages.set(s, bi);
-        }        
-    }
+    public abstract void setImage(BufferedImage bi);
 
     public abstract Double getOverTimesResult(NameSpaceProtocolResults1D ident);
 

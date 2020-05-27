@@ -40,6 +40,8 @@ public class Prot_ReadIMGFiles extends Protocol implements Serializable {
     File imgFile;
     ImageInt imgRead;
     private String name = "Read In";
+    
+    protected LookUp<BufferedImage> outPutImages;
 
     public Prot_ReadIMGFiles(String name) {
         this();
@@ -143,6 +145,13 @@ public class Prot_ReadIMGFiles extends Protocol implements Serializable {
     @Override
     public Object[] getResults() {
         return new Object[]{imgRead};
+    }
+
+    @Override
+    public void setImage(BufferedImage bi) {
+        for(String s : getIdentForViews()){
+            outPutImages.set(s, bi);
+        } 
     }
 
 }
