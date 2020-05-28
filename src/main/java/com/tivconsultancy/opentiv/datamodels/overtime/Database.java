@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.tivconsultancy.opentiv.datamodels;
+package com.tivconsultancy.opentiv.datamodels.overtime;
 
+import com.tivconsultancy.opentiv.datamodels.Refreshable;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,9 @@ public abstract class Database<T extends IndexableResults> {
     private final transient List<Refreshable> ObjectsToCallOnChange = new ArrayList<>();
     
     public abstract void setRes(int iStep, T res);
+    public abstract void setRes(int iStep, T res, boolean refresh);
     public abstract T getRes(int iStep);
+    public abstract IndexDatabase getIndexedResults();
     
     public void addObjectToRefresh(Refreshable ref) {
         ObjectsToCallOnChange.add(ref);
@@ -46,8 +49,8 @@ public abstract class Database<T extends IndexableResults> {
                     try {
                         r.refresh();
                     } catch (Exception e) {
-                        TIVLog.tivLogger.log(Level.SEVERE, "Cannot refresh object: " + r.toString(), e);
-                    }                    
+                        TIVLog.tivLogger.log(Level.WARNING, "Cannot refresh object: " + r.toString(), e);
+                    }   
                 }
             }
         });

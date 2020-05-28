@@ -4,10 +4,9 @@
  * and open the template in the editor.
  */
 
-package com.tivconsultancy.opentiv.datamodels;
+package com.tivconsultancy.opentiv.datamodels.overtime;
 
-import com.tivconsultancy.opentiv.datamodels.IndexableResults;
-import com.tivconsultancy.opentiv.datamodels.IndexDatabase;
+import com.tivconsultancy.opentiv.datamodels.Archive;
 
 /**
  *
@@ -16,22 +15,37 @@ import com.tivconsultancy.opentiv.datamodels.IndexDatabase;
  */
 public class DatabaseArchive<T extends IndexableResults> extends Database<T>{
     
-    protected IndexDatabase<T> overTime1DResuls;
+//    protected IndexDatabase<T> overTime1DResuls;
+    protected Archive overTimeRes;
     
     public DatabaseArchive(){
-        overTime1DResuls = new IndexDatabase<>();
+        overTimeRes = new Archive();
+//        overTime1DResuls = new IndexDatabase<>();
+    }
+    
+    @Override
+    public void setRes(int iStep, T res, boolean refresh){
+        overTimeRes.put(iStep, res);
+//        overTime1DResuls.replaceOrAdd(iStep, res);
+        if(refresh){
+            refreshObjects();
+        }
+    }
+    
+    @Override
+    public void setRes(int iStep, T res){
+        setRes(iStep, res, false);
+    }
+    
+    @Override
+    public T getRes(int iStep){
+        return (T) overTimeRes.get(iStep);
+//        return overTime1DResuls.get(iStep);
     }
 
-    public IndexDatabase getIndexedResults(){
-        return overTime1DResuls;
-    }
-    
-    public void setRes(int iStep, T res){
-        overTime1DResuls.replaceOrAdd(iStep, res);
-    }
-    
-    public T getRes(int iStep){
-        return overTime1DResuls.get(iStep);
+    @Override
+    public IndexDatabase getIndexedResults() {
+        throw new UnsupportedOperationException("Not supported, use DatabaseRAM instead");
     }
     
 }

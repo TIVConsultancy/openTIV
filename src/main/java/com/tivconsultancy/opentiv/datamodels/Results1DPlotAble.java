@@ -15,14 +15,15 @@
  */
 package com.tivconsultancy.opentiv.datamodels;
 
+import com.tivconsultancy.opentiv.datamodels.overtime.IndexableResults;
 import java.io.Serializable;
 
 /**
  *
  * @author Thomas Ziegenhein
  */
-public interface Results1DPlotAble extends Serializable{
-    public Double getRes(String name);    
+public interface Results1DPlotAble extends IndexableResults, Serializable{
+    public Double getRes(String name);
     public String getName(Double value);
     public boolean setResult(String name, Double d);
     public void addResult(String name, Double d);

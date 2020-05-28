@@ -44,6 +44,9 @@ public class Archive {
     }
 
     public Object get(Object key) {
+        if(data.get(key) == null){
+            return null;
+        }
         ByteBuffer buf = data.get(key).duplicate();
         byte[] bytes = new byte[buf.remaining()];
         buf.get(bytes);

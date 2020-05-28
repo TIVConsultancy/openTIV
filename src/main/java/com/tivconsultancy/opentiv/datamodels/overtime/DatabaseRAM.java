@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.tivconsultancy.opentiv.datamodels;
+package com.tivconsultancy.opentiv.datamodels.overtime;
 
 /**
  *
@@ -23,9 +23,16 @@ public class DatabaseRAM<T extends IndexableResults> extends Database<T> {
         return overTime1DResuls;
     }
     
-    public void setRes(int iStep, T res){
+    @Override
+    public void setRes(int iStep, T res, boolean refresh){
         overTime1DResuls.replaceOrAdd(iStep, res);
-        refreshObjects();
+        if(refresh){
+            refreshObjects();
+        }        
+    }
+    
+    public void setRes(int iStep, T res){
+        setRes(iStep, res, false);
     }
     
     public T getRes(int iStep){

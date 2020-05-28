@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.tivconsultancy.opentiv.datamodels;
+package com.tivconsultancy.opentiv.datamodels.overtime;
 
-import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.specials.LookUp;
 import com.tivconsultancy.opentiv.math.specials.NameObject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import javafx.application.Platform;
 
 /**
  *
@@ -39,9 +34,7 @@ public class IndexDatabase<T extends IndexableResults> {
     private void initDatabase() {
         resultsOverTime = new LookUp<>();
     }
-
     
-
     private void replaceOrAdd(String name, T res) {
         if (resultsOverTime.get(name) == null) {
             resultsOverTime.add(new NameObject<>(name, res));
@@ -78,20 +71,20 @@ public class IndexDatabase<T extends IndexableResults> {
     public int getEntry(int i) {
         return Integer.valueOf(resultsOverTime.get(i).name);
     }
-    
-    public Double getIndexBased(int i, String name) {
-        if(this.getIndexBased(i) == null || this.getIndexBased(i).getRes(name) == null){
-            return 0.0;
-        }
-        return this.getIndexBased(i).getRes(name);
-    }
-
-    public Double get(int i, String name) {
-        if(this.get(i) == null || this.get(i).getRes(name) == null){
-            return 0.0;
-        }
-        return this.get(i).getRes(name);
-    }
+//    
+//    public Double getIndexBased(int i, String name) {
+//        if(this.getIndexBased(i) == null || this.getIndexBased(i).getRes(name) == null){
+//            return 0.0;
+//        }
+//        return this.getIndexBased(i).getRes(name);
+//    }
+//
+//    public Double get(int i, String name) {
+//        if(this.get(i) == null || this.get(i).getRes(name) == null){
+//            return 0.0;
+//        }
+//        return this.get(i).getRes(name);
+//    }
 
     public int getSize() {
         return resultsOverTime.getSize();

@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.tivconsultancy.opentiv.datamodels;
+package com.tivconsultancy.opentiv.datamodels.overtime;
 
+import com.tivconsultancy.opentiv.datamodels.Results1DPlotAble;
 import java.io.Serializable;
 
 /**
  *
  * @author Thomas Ziegenhein
  */
-public interface IndexableResults extends Results1DPlotAble, Serializable{
+public interface IndexableResults extends Serializable{
     
 }
