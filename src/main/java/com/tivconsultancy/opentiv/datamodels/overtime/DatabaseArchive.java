@@ -7,13 +7,15 @@
 package com.tivconsultancy.opentiv.datamodels.overtime;
 
 import com.tivconsultancy.opentiv.datamodels.Archive;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
  * @author TZ ThomasZiegenhein@TIVConsultancy.com +1 480 494 7254
  * @param <T>
  */
-public class DatabaseArchive<T extends IndexableResults> extends Database<T>{
+public class DatabaseArchive<T extends DataBaseEntry> extends Database<T>{
     
 //    protected IndexDatabase<T> overTime1DResuls;
     protected Archive overTimeRes;
@@ -24,28 +26,40 @@ public class DatabaseArchive<T extends IndexableResults> extends Database<T>{
     }
     
     @Override
-    public void setRes(int iStep, T res, boolean refresh){
-        overTimeRes.put(iStep, res);
-//        overTime1DResuls.replaceOrAdd(iStep, res);
+    public void setRes(String ident, T res, boolean refresh){
+        overTimeRes.put(ident, res);
+//        overTime1DResuls.replaceOrAdd(ident, res);
         if(refresh){
             refreshObjects();
         }
     }
     
     @Override
-    public void setRes(int iStep, T res){
-        setRes(iStep, res, false);
+    public void setRes(String ident, T res){
+        setRes(ident, res, false);
     }
     
     @Override
-    public T getRes(int iStep){
-        return (T) overTimeRes.get(iStep);
-//        return overTime1DResuls.get(iStep);
+    public T getRes(String ident){
+        return (T) overTimeRes.get(ident);
+//        return overTime1DResuls.get(ident);
+    }
+    
+    @Override
+    public IndexDatabase getIndexedResults() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public IndexDatabase getIndexedResults() {
-        throw new UnsupportedOperationException("Not supported, use DatabaseRAM instead");
+    public Set<String> getAllKeys() {
+        Set<Object> keysObject = overTimeRes.getAllkeys();
+        Set<String> keysString = new HashSet<>();
+        for(Object o : keysObject){
+            if(o != null){
+                keysString.add(o.toString());
+            }
+        }
+        return keysString;
     }
     
 }

@@ -29,9 +29,15 @@ public class Result1D implements Results1DPlotAble, Serializable {
     private static final long serialVersionUID = 46132151L;
     
     private LookUp<Double> result;
+    private int index = -1;
     
-    public Result1D(){
+    public Result1D(int index){
         result = new LookUp<>();
+        this.index = index;
+    }
+    
+    public void setIndex(int index){
+        this.index = index;
     }
     
     public void addResult(String name, Double d){
@@ -61,6 +67,11 @@ public class Result1D implements Results1DPlotAble, Serializable {
     
     public void remove(String name){
         result.remove(name);
+    }
+
+    @Override
+    public int getIndex() {
+        return index;
     }
     
 }

@@ -17,10 +17,22 @@ package com.tivconsultancy.opentiv.datamodels;
 
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 
@@ -31,16 +43,38 @@ import org.apache.commons.io.FileUtils;
 public class TempOnDisk {
 
     private int intRand = (int) (Math.random() * 10000000);
+    private File baseFolder = null;
 
-    public TempOnDisk(File whereToSave) {        
+    public TempOnDisk(File whereToSave) {
         if (whereToSave == null) {
             try {
                 cleanup();
-                (new File(File.createTempFile("tivcon-temp-file", "tmp").getParent() + File.separator + "tivcon-" + intRand)).mkdir();
+                baseFolder = new File(File.createTempFile("tivcon-temp-file", "tmp").getParent() + File.separator + "tivcon-" + intRand);
+                baseFolder.mkdir();
             } catch (IOException ex) {
                 TIVLog.tivLogger.log(Level.SEVERE, null, ex);
-            }            
+            }
         }
+    }
+
+    public void put(String ident, Serializable object) throws FileNotFoundException, IOException {
+        FileOutputStream fout = new FileOutputStream(new File(baseFolder, ident), true);
+        ObjectOutputStream oos = new ObjectOutputStream(fout);
+        oos.writeObject(object);
+    }
+    
+    public List<String> getAllFileNamesInFolder(){
+        List<String> names = new ArrayList<>();
+        for(File f : baseFolder.listFiles()){
+            names.add(f.getName());
+        }
+        return names;
+    }
+
+    public Serializable get(String ident) throws FileNotFoundException, IOException, ClassNotFoundException {
+        FileInputStream streamIn = new FileInputStream(new File(baseFolder, ident));
+        ObjectInputStream ois = new ObjectInputStream(streamIn);
+        return (Serializable) ois.readObject();
     }
 
     private void cleanup() throws IOException {
@@ -49,13 +83,13 @@ public class TempOnDisk {
         for (File f : parent.listFiles()) {
             if (f.toString().contains("tivcon-")) {
                 FileTime creationTime = (FileTime) Files.readAttributes(f.toPath(), BasicFileAttributes.class).creationTime();
-                if (System.currentTimeMillis() - creationTime.toMillis() > 1.728e+8 ) {
-                    TIVLog.tivLogger.log(Level.INFO,"Temp file cleanup, the following file/folder will be deleted: " + f.getName(), new Throwable());
-                    if(f.isDirectory()){
+                if (System.currentTimeMillis() - creationTime.toMillis() > 1.728e+8) {
+                    TIVLog.tivLogger.log(Level.INFO, "Temp file cleanup, the following file/folder will be deleted: " + f.getName(), new Throwable());
+                    if (f.isDirectory()) {
                         FileUtils.deleteDirectory(f);
-                    }else{
+                    } else {
                         f.delete();
-                    }                   
+                    }
                 }
             }
         }

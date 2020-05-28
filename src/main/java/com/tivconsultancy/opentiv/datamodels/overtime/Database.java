@@ -20,6 +20,7 @@ import com.tivconsultancy.opentiv.datamodels.Refreshable;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import javafx.application.Platform;
 
@@ -28,14 +29,16 @@ import javafx.application.Platform;
  * @author TZ ThomasZiegenhein@TIVConsultancy.com +1 480 494 7254
  * @param <T>
  */
-public abstract class Database<T extends IndexableResults> {
+public abstract class Database<T extends DataBaseEntry> {
 
     private final transient List<Refreshable> ObjectsToCallOnChange = new ArrayList<>();
     
-    public abstract void setRes(int iStep, T res);
-    public abstract void setRes(int iStep, T res, boolean refresh);
-    public abstract T getRes(int iStep);
+    public abstract void setRes(String ident, T res);
+    public abstract void setRes(String ident, T res, boolean refresh);
+    public abstract T getRes(String ident);
+    @Deprecated
     public abstract IndexDatabase getIndexedResults();
+    public abstract Set<String> getAllKeys();
     
     public void addObjectToRefresh(Refreshable ref) {
         ObjectsToCallOnChange.add(ref);

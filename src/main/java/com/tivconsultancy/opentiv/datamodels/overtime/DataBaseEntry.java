@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.tivconsultancy.opentiv.datamodels;
+package com.tivconsultancy.opentiv.datamodels.overtime;
 
+import com.tivconsultancy.opentiv.datamodels.Results1DPlotAble;
 import java.io.Serializable;
-import com.tivconsultancy.opentiv.datamodels.overtime.DataBaseEntry;
 
 /**
  *
  * @author Thomas Ziegenhein
  */
-public interface Results1DPlotAble extends DataBaseEntry, Serializable{
-    public Double getRes(String name);
-    public String getName(Double value);
-    public boolean setResult(String name, Double d);
-    public void addResult(String name, Double d);
-    public int getIndex();
+public interface DataBaseEntry extends Serializable{
+    
 }

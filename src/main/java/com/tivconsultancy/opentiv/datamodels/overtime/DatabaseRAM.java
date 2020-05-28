@@ -6,37 +6,69 @@
 
 package com.tivconsultancy.opentiv.datamodels.overtime;
 
+import com.tivconsultancy.opentiv.math.specials.LookUp;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  *
  * @author TZ ThomasZiegenhein@TIVConsultancy.com +1 480 494 7254
  * @param <T>
  */
-public class DatabaseRAM<T extends IndexableResults> extends Database<T> {
+public class DatabaseRAM<T extends DataBaseEntry> extends Database<T>{
     
-    protected IndexDatabase<T> overTime1DResuls;
+    protected LookUp<T> overTime1DResuls;    
     
     public DatabaseRAM(){
-        overTime1DResuls = new IndexDatabase<>();
-    }
-
-    public IndexDatabase getIndexedResults(){
-        return overTime1DResuls;
+        overTime1DResuls = new LookUp<>();
     }
     
     @Override
-    public void setRes(int iStep, T res, boolean refresh){
-        overTime1DResuls.replaceOrAdd(iStep, res);
+    public void setRes(String ident, T res, boolean refresh){
+        overTime1DResuls.setorAdd(ident, res);
         if(refresh){
             refreshObjects();
-        }        
+        }
     }
     
-    public void setRes(int iStep, T res){
-        setRes(iStep, res, false);
+    public void setRes(String ident, T res){
+        setRes(ident, res, false);
     }
     
-    public T getRes(int iStep){
-        return overTime1DResuls.get(iStep);
+    public T getRes(String ident){
+        return overTime1DResuls.get(ident);
     }
+
+    @Override
+    public IndexDatabase getIndexedResults() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    public Set<String> getAllKeys() {
+        return new LinkedHashSet<>(overTime1DResuls.getNames());
+    }
+
+//    @Override
+//    public T getEntry(int index) {
+//        return overTime1DResuls.get(index).o;
+//    }
+//
+//    @Override
+//    public int getIndex(T o) {
+//        return overTime1DResuls.getIndex(o);
+//    }
+//
+//    @Override
+//    public List<T> getEntries() {
+//        return overTime1DResuls.getValues();
+//    }
+//
+//    @Override
+//    public void setWithIndex(String ident, int index, T o) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
     
 }

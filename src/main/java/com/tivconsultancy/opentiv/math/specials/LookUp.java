@@ -55,6 +55,21 @@ public class LookUp<T> implements Serializable {
         return -1;
     }
     
+    public int getIndex(T input) {
+        if (input == null) {
+            return -1;
+        }
+        for (NameObject no : lo) {
+            if (no == null || no.o == null) {
+                continue;
+            }
+            if (no.o.equals(input)) {
+                return lo.indexOf(no);
+            }
+        }
+        return -1;
+    }
+    
     public NameObject<T> get(int index) {
         return lo.get(index);
     }
@@ -147,6 +162,12 @@ public class LookUp<T> implements Serializable {
         }
         getEntry(name).o = toSet;
         return true;
+    }
+    
+    public void setorAdd(String name ,T toSet){
+        if(!set(name, toSet)){
+            add(new NameObject<>(name, toSet));
+        }
     }
     
     public int getSize(){

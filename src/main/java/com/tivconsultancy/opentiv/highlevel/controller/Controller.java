@@ -9,6 +9,7 @@ import com.tivconsultancy.opentiv.datamodels.overtime.IndexDatabase;
 import com.tivconsultancy.opentiv.highlevel.methods.Method;
 import com.tivconsultancy.opentiv.datamodels.Results1DPlotAble;
 import com.tivconsultancy.opentiv.datamodels.overtime.Database;
+import com.tivconsultancy.opentiv.datamodels.overtime.DatabaseWithIndex;
 import java.io.File;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public interface Controller {
     public void setSelectedFile(File f);
     
     public Database getPlotAbleOverTimeResults();
+    public Database getDataBase();
     public List<String> getHints(String name);
     public List<File> getInputFiles(String name);
     public Method getCurrentMethod();

@@ -23,7 +23,7 @@ import com.tivconsultancy.opentiv.math.specials.NameObject;
  * @author TZ ThomasZiegenhein@TIVConsultancy.com +1 480 494 7254
  * @param <T>
  */
-public class IndexDatabase<T extends IndexableResults> {
+public class IndexDatabase<T extends DataBaseEntry> {
 
     private LookUp<T> resultsOverTime;    
 

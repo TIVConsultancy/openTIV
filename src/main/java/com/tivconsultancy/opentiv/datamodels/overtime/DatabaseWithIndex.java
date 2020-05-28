@@ -15,13 +15,16 @@
  */
 package com.tivconsultancy.opentiv.datamodels.overtime;
 
-import com.tivconsultancy.opentiv.datamodels.Results1DPlotAble;
-import java.io.Serializable;
+import java.util.List;
 
 /**
  *
  * @author Thomas Ziegenhein
+ * @param <T>
  */
-public interface IndexableResults extends Serializable{
-    
+public abstract class DatabaseWithIndex<T extends DataBaseEntry> extends Database<T>{
+    public abstract int getIndex(T o);
+    public abstract void setWithIndex(String ident, int index, T o);
+    public abstract T getEntry(int index);
+    public abstract List<T> getEntries();
 }

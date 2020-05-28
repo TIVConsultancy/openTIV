@@ -24,7 +24,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 /**
  *
@@ -92,6 +96,14 @@ public class Archive {
             }
         }
         return null;
+    }
+    
+    public int getSize(){
+        return data.size();
+    }
+    
+    public Set<Object> getAllkeys(){
+        return data.keySet();
     }
 
 }
