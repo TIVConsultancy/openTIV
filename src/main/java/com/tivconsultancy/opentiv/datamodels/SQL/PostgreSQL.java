@@ -18,24 +18,43 @@ package com.tivconsultancy.opentiv.datamodels.SQL;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.dbutils.DbUtils;
 
 /**
  *
  * @author TZ ThomasZiegenhein@TIVConsultancy.com +1 480 494 7254
  */
-public class PostgreSQL {
+public class PostgreSQL implements SQLDatabase {
 
-    private final String url = "jdbc:postgresql://localhost/test1";
-    private final String user = "thomasz";
-    private final String password = "default";
+    private String url = "jdbc:postgresql://localhost/localpiv";
+    private String user = "adminpiv";
+    private String password = "default";
+
+    public PostgreSQL() {
+
+    }
+
+    public PostgreSQL(String url, String user, String password) {
+        this.url = url;
+        this.user = user;
+        this.password = password;
+    }
 
     /**
      * Connect to the PostgreSQL database
+     *
      * @return a Connection object
      */
     public Connection connect() {
+
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
@@ -44,6 +63,61 @@ public class PostgreSQL {
         }
 
         return conn;
+    }
+
+    public List<String> getColumnEntries(String schemaName, String tableName, String columnName) {
+        String sqlSelect = "SELECT " + columnName + " from " + schemaName + "." + tableName;
+        List<String> lsOut = new ArrayList<>();
+        try (Connection conn = this.connect();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlSelect);) {
+
+            while (rs.next()) {
+                lsOut.add(rs.getString(columnName));
+            }
+
+        } catch (SQLException ex) {
+            TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query: " + sqlSelect, ex);
+        }
+
+        return lsOut;
+    }
+
+    public int addColumnValue(String sqlStatement) {
+
+        try (Connection conn = this.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sqlStatement,
+                                                                Statement.RETURN_GENERATED_KEYS)) {
+
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows;
+
+        } catch (SQLException ex) {
+            TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query: " + sqlStatement, ex);
+        }
+        return -1;
+    }
+
+    @Override
+    public String getStatus() {
+        try (Connection conn = this.connect()) {
+            if (conn == null) {
+            return "cannot establish connection";
+        } else {
+            try {
+                return conn.getCatalog() + "," + conn.getSchema();
+            } catch (SQLException ex) {
+                TIVLog.tivLogger.log(Level.SEVERE, "Connection to SQL Database has errors", ex);
+                return "error";
+            }
+        }
+            
+        } catch (SQLException ex) {
+            TIVLog.tivLogger.log(Level.SEVERE, "Cannot check status", ex);
+        }
+        
+        return null;
+        
     }
 
 }

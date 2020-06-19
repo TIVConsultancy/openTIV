@@ -20,6 +20,7 @@ import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader.getGrayScal
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer.castToByteprimitive;
 import com.tivconsultancy.opentiv.math.interfaces.SideCondition;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
+import com.tivconsultancy.opentiv.math.sets.Set1D;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -677,6 +678,10 @@ public class ImageInt extends ImageBoolean implements Serializable {
         return lo;
     }
 
+    public ImageInt getsubY(Set1D yInterval) {
+        return getsubY((int) yInterval.dLeftBorder, (int) yInterval.dRightBorder);
+    }
+    
     public ImageInt getsubY(int iMin, int iMax) {
 
         int iMinIndex = 0;
@@ -706,6 +711,10 @@ public class ImageInt extends ImageBoolean implements Serializable {
         return iSum;
     }
 
+    public ImageInt getsubX(Set1D xInterval) {
+        return getsubX((int) xInterval.dLeftBorder, (int) xInterval.dRightBorder);
+    }
+    
     public ImageInt getsubX(int iMin, int iMax) {
 
         int iMinIndex = 0;

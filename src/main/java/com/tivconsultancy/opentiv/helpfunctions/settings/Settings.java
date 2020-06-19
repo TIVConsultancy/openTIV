@@ -146,6 +146,22 @@ public abstract class Settings implements Serializable{
     public List<SettingsCluster> getClusters() {
         return lsClusters;
     }
+    
+    public void removeSettings(String sSettingName){
+        List<SettingObject> loRemove = new ArrayList<>();
+        for (SettingObject oS : loSettings) {
+            if (oS == null) {
+                continue;
+            }
+            Object o = oS.getValue(sSettingName);
+            if (o != null) {
+                loRemove.add(oS);
+            }
+        }
+        
+        loSettings.removeAll(loRemove);
+        
+    }
 
     // Unique identifier
     public abstract String getType();
