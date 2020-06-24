@@ -25,7 +25,9 @@ import java.util.List;
 public interface SQLDatabase {
     public Connection connect();
     public List<String> getColumnEntries(String schemaName, String tableName, String columnName);
-    public int addColumnValue(String sqlStatement);
+    public int performStatement(String sqlStatement);
+    public void performStatements(List<String> sqlStatements);
+    public List<String> getcolumValues(String sqlSelect, String columnName);
     public String getStatus();
             
 }

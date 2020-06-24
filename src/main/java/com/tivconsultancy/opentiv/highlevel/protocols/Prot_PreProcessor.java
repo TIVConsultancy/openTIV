@@ -81,7 +81,14 @@ public class Prot_PreProcessor extends Protocol implements Serializable {
     @Override
     public void run(Object... input) throws UnableToRunException {
         if (input != null && input.length != 0 && input[0] != null && input[0] instanceof ImageInt) {
-            preproc.setImage((OpenTIV_PreProc.performPreProc(this, (ImageInt) input[0])).getBuffImage());
+            try {
+                preproc.setImage(OpenTIV_PreProc.performTransformation(this, (ImageInt) input[0]).getBuffImage());
+                preproc.setImage((OpenTIV_PreProc.performPreProc(this, preproc.clone())).getBuffImage());
+            } catch (Exception ex) {                
+                preproc.setImage((OpenTIV_PreProc.performPreProc(this, (ImageInt) input[0])).getBuffImage());
+                throw new UnableToRunException("Cannot transform image: ", ex);
+            }
+            
         }else{
             throw new UnableToRunException("Wrong input", new Exception());
         }
@@ -101,6 +108,13 @@ public class Prot_PreProcessor extends Protocol implements Serializable {
 
     public void buildClusters() {
 
+        SettingsCluster CutImage = new SettingsCluster("Cut Image",
+                                                       new String[]{"BcutyTop", "cutyTop", "BcutyBottom",
+                                                           "cutyBottom", "BcutxLeft", "cutxLeft", "BcutxRight",
+                                                           "cutxRight"}, this);
+        CutImage.setDescription("Cut image");
+        lsClusters.add(CutImage);
+        
         lsClusters.add(FactorySettingsCluster.getStandardCluster("Curve Correction",
                                                                  new String[]{
                                                                      "CurveCorrection",
@@ -171,6 +185,16 @@ public class Prot_PreProcessor extends Protocol implements Serializable {
          Feature(n+1) values
          ....
          */
+        
+        this.loSettings.add(new SettingObject("Cut Top", "BcutyTop", false, SettingObject.SettingsType.Boolean));
+        this.loSettings.add(new SettingObject("Value", "cutyTop", 0, SettingObject.SettingsType.Integer));
+        this.loSettings.add(new SettingObject("Cut Bottom", "BcutyBottom", true, SettingObject.SettingsType.Boolean));
+        this.loSettings.add(new SettingObject("Value","cutyBottom", 600, SettingObject.SettingsType.Integer));
+        this.loSettings.add(new SettingObject("Cut Left", "BcutxLeft", false, SettingObject.SettingsType.Boolean));
+        this.loSettings.add(new SettingObject("Value","cutxLeft", 0, SettingObject.SettingsType.Integer));
+        this.loSettings.add(new SettingObject("Cut Right", "BcutxRight", false, SettingObject.SettingsType.Boolean));
+        this.loSettings.add(new SettingObject("Value","cutxRight", 10, SettingObject.SettingsType.Integer));
+        
         this.loSettings.add(new SettingObject("Use Noise Reduction", "NRSimple1", false, SettingObject.SettingsType.Boolean));
         this.loSettings.add(new SettingObject("Threshold", "NRSimple1Threshold", 50, SettingObject.SettingsType.Integer));
         this.loSettings.add(new SettingObject("Algorithm", "NRType", "Simple1", SettingObject.SettingsType.String));

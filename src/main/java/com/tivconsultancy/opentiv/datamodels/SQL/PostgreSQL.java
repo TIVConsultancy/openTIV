@@ -83,7 +83,7 @@ public class PostgreSQL implements SQLDatabase {
         return lsOut;
     }
 
-    public int addColumnValue(String sqlStatement) {
+    public int performStatement(String sqlStatement) {
 
         try (Connection conn = this.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sqlStatement,
@@ -102,22 +102,57 @@ public class PostgreSQL implements SQLDatabase {
     public String getStatus() {
         try (Connection conn = this.connect()) {
             if (conn == null) {
-            return "cannot establish connection";
-        } else {
-            try {
-                return conn.getCatalog() + "," + conn.getSchema();
-            } catch (SQLException ex) {
-                TIVLog.tivLogger.log(Level.SEVERE, "Connection to SQL Database has errors", ex);
-                return "error";
+                return "cannot establish connection";
+            } else {
+                try {
+                    return conn.getCatalog() + "," + conn.getSchema();
+                } catch (SQLException ex) {
+                    TIVLog.tivLogger.log(Level.SEVERE, "Connection to SQL database has errors", ex);
+                    return "error";
+                }
             }
-        }
-            
+
         } catch (SQLException ex) {
             TIVLog.tivLogger.log(Level.SEVERE, "Cannot check status", ex);
         }
-        
+
         return null;
-        
+
+    }
+
+    @Override
+    public List<String> getcolumValues(String sqlSelect, String columnName) {
+        List<String> lsOut = new ArrayList<>();
+        try (Connection conn = this.connect();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlSelect);) {
+
+            while (rs.next()) {
+                lsOut.add(rs.getString(columnName));
+            }
+
+        } catch (SQLException ex) {
+            TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query: " + sqlSelect, ex);
+        }
+
+        return lsOut;
+    }
+
+    @Override
+    public void performStatements(List<String> sqlStatements) {
+        try (Connection conn = this.connect();) {
+
+            for (String sqlStatement : sqlStatements) {
+                try (PreparedStatement pstmt = conn.prepareStatement(sqlStatement,
+                                                                     Statement.RETURN_GENERATED_KEYS)) {
+                    pstmt.executeUpdate();
+                } catch (Exception e) {
+                }
+            }
+
+        } catch (SQLException ex) {
+            TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query list", ex);
+        }
     }
 
 }

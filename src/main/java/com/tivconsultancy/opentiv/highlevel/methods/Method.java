@@ -35,4 +35,5 @@ public interface Method {
     public void readInFileForView(File f) throws Exception;
     public void setFiles(File[] f);
     public void run() throws Exception;
+    public void runParts(String ident) throws Exception;
 }

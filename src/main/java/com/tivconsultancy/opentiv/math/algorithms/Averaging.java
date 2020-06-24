@@ -25,14 +25,23 @@ import java.util.List;
  * @author Thomas Ziegenhein
  */
 public class Averaging {
-    
-    public static double getMeanAverage(List<?> lo, Value<Object> oValue){
-        if(lo.isEmpty()) return Double.NaN;
-        double dIntegrate = 0.0;
-        for(Object o : lo){
-            dIntegrate = dIntegrate + oValue.getValue(o);
+
+    public static double getMeanAverage(List<?> lo, Value<Object> oValue) {
+        if (lo.isEmpty()) {
+            return Double.NaN;
         }
-        return dIntegrate/(1.0*lo.size());
+        double dIntegrate = 0.0;
+        if (oValue != null) {
+            for (Object o : lo) {
+                dIntegrate = dIntegrate + oValue.getValue(o);
+            }
+        }else{
+            for (Object o : lo) {
+                dIntegrate = dIntegrate + Double.valueOf(o.toString());
+            }
+        }
+
+        return dIntegrate / (1.0 * lo.size());
     }
 
     public static List<OrderedPair> LinearSmooth(List<OrderedPair> lop, String sType) {
@@ -54,15 +63,15 @@ public class Averaging {
         throw new UnsupportedOperationException("not yet implemented for type: " + sType);
 
     }
-    
-    public static Double linear(List<? extends Number> lo){
+
+    public static Double linear(List<? extends Number> lo) {
         double dSum = 0.0;
         double dWeight = 0.0;
-        for(Number o : lo){
+        for (Number o : lo) {
             dSum = dSum + o.doubleValue();
             dWeight = dWeight + 1.0;
         }
-        return dSum/dWeight;
-    }        
+        return dSum / dWeight;
+    }
 
 }
