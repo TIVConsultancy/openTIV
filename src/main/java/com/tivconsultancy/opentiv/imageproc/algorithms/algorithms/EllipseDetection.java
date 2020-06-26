@@ -285,7 +285,7 @@ public class EllipseDetection {
                 System.out.println("Find Contours: " + (int) (dTimer2 / dTimer1 * 100) + " %");
                 System.out.println("Find Ellipses: " + (int) (dTimer3 / dTimer1 * 100) + " %");
                 System.out.println("Find Best Fit: " + (int) (dTimer4 / dTimer1 * 100) + " %");
-                System.out.println("Find cloe CPX: " + (int) (dTimer5 / dTimer1 * 100) + " %");
+                System.out.println("Find close CPX: " + (int) (dTimer5 / dTimer1 * 100) + " %");
                 System.out.println("Ratio: " + dTimer1 / dTimer2);
                 System.out.println("--------------------------");
             }

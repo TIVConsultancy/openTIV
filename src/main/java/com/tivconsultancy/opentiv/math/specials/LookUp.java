@@ -123,6 +123,14 @@ public class LookUp<T> implements Serializable {
         lo.add(o);
     }
     
+    public void add(NameObject<T> o, int index) {
+        if(index < lo.size()){
+            lo.add(index, o);
+        }else{
+            add(o);
+        }        
+    }
+    
     public boolean addDuplFree(NameObject<T> o) {
         if(LookUp.this.get(o.name) == null){
             lo.add(o);

@@ -16,10 +16,7 @@
 package com.tivconsultancy.opentiv.highlevel.methods;
 
 import delete.com.tivconsultancy.opentiv.devgui.main.ImagePath;
-import com.tivconsultancy.opentiv.highlevel.protocols.NameSpaceProtocolResults1D;
 import com.tivconsultancy.opentiv.highlevel.protocols.Protocol;
-import com.tivconsultancy.opentiv.datamodels.Result1D;
-import com.tivconsultancy.opentiv.math.specials.LookUp;
 import java.io.File;
 import java.util.List;
 

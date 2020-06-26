@@ -16,8 +16,10 @@
 package com.tivconsultancy.opentiv.edgedetector;
 
 
+import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
 import com.tivconsultancy.opentiv.helpfunctions.statistics.Basics;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.BasicIMGOper;
+import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.EdgeDetections;
 import static com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.EdgeDetections.getEdgesTechnobis;
 import static com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.EdgeDetections.getThinEdge;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.EllipseDetection;
@@ -30,6 +32,7 @@ import com.tivconsultancy.opentiv.imageproc.contours.ContourSplitting;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.shapes.Circle;
+import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.exceptions.EmptySetException;
 import java.io.File;
 import java.io.IOException;
@@ -51,8 +54,8 @@ public class OpenTIV_Edges {
         // TODO code application logic here
     }
 
-    public static ImageInt performEdgeDetecting(SettingsEdges oSettings, ImageInt Input) {
-        Logger log = setupLogger(oSettings);
+    public static ImageInt performEdgeDetecting(Settings oSettings, ImageInt Input) {
+//        Logger log = setupLogger(oSettings);
         ImageInt oNew = null;
 
 //        Stopwatch.addTimmer("EdgeDetecting");
@@ -66,20 +69,21 @@ public class OpenTIV_Edges {
             }
 
         } catch (Exception e) {
-            log.severe("------------------------------");
-            log.severe("Masking not succesfull");
-            log.severe("------------------------------");
-            log.severe(e.getLocalizedMessage());
-            log.severe(e.getMessage());
+            TIVLog.tivLogger.severe("------------------------------");
+            TIVLog.tivLogger.severe("Edge Detection not succesfull");
+            TIVLog.tivLogger.severe("------------------------------");
+            TIVLog.tivLogger.severe(e.getLocalizedMessage());
+            TIVLog.tivLogger.severe(e.getMessage());
+            TIVLog.tivLogger.severe(e.toString());
         }
 
         return oNew;
     }
 
-    public static ImageInt performEdgeOperations(SettingsEdges oSettings, ImageInt oEdgesInput, ImageInt SourceImage) {
+    public static ImageInt performEdgeOperations(Settings oSettings, ImageInt oEdgesInput, ImageInt SourceImage) {
                         
         
-        Logger log = setupLogger(oSettings);
+//        Logger log = setupLogger(oSettings);
 //        Stopwatch.addTimmer("EgdeOperations");
         ImageGrid oEdges = new ImageGrid(oEdgesInput.iaPixels);
         oEdges = Ziegenhein_2018.thinoutEdges(oEdges);
@@ -151,6 +155,9 @@ public class OpenTIV_Edges {
                 if ((boolean) oSettings.getSettingsValue("RemoveWeakEdges")) {
                     allContours = RemoveWeakEdges(allContours, Integer.valueOf(oSettings.getSettingsValue("ThresWeakEdges").toString()), SourceImage);
                 }
+                if ((boolean) oSettings.getSettingsValue("SortOutSmallEdges")) {
+                    allContours = sortoutSmallEdges(allContours, (Integer) oSettings.getSettingsValue("MinSize"));
+                }
             }
 
             oEdges.resetMarkers();
@@ -158,11 +165,11 @@ public class OpenTIV_Edges {
             CPX.setOnGrid(oEdges, allContours, 255);
 
         } catch (Exception e) {
-            log.severe("------------------------------");
-            log.severe("Edge Detection or Edge Operation not succesfull");
-            log.severe("------------------------------");
-            log.severe(e.getLocalizedMessage().toString());
-            log.severe(e.getMessage().toString());
+            TIVLog.tivLogger.severe("------------------------------");
+            TIVLog.tivLogger.severe("Edge Detection or Edge Operation not succesfull");
+            TIVLog.tivLogger.severe("------------------------------");
+            TIVLog.tivLogger.severe(e.getLocalizedMessage().toString());
+            TIVLog.tivLogger.severe(e.getMessage().toString());
         }
 
 //        try {
@@ -172,8 +179,7 @@ public class OpenTIV_Edges {
         return new ImageInt(oEdges.getMatrix());
     }
 
-    public static returnCotnainer_EllipseFit performShapeFitting(SettingsEdges oSettings, ImageInt oInput) {
-        Logger log = setupLogger(oSettings);
+    public static returnCotnainer_EllipseFit performShapeFitting(Settings oSettings, ImageInt oInput) {
         ImageGrid oEdges = new ImageGrid(oInput.iaPixels);
         ImageInt oBlackBoard = new ImageInt(oInput.iaPixels);
         List<Circle> loFit = new ArrayList<>();
@@ -182,13 +188,12 @@ public class OpenTIV_Edges {
             for (Circle o : loFit) {
                 oBlackBoard.setPoints(o.lmeCircle, 127);
             }
-
         } catch (Exception e) {
-            log.severe("------------------------------");
-            log.severe("Shape Fitting not succesfull");
-            log.severe("------------------------------");
-            log.severe(e.getLocalizedMessage().toString());
-            log.severe(e.getMessage().toString());
+            TIVLog.tivLogger.severe("------------------------------");
+            TIVLog.tivLogger.severe("Shape Fitting not succesfull");
+            TIVLog.tivLogger.severe("------------------------------");
+            TIVLog.tivLogger.severe(e.getLocalizedMessage().toString());
+            TIVLog.tivLogger.severe(e.getMessage().toString());
         }
         return new returnCotnainer_EllipseFit(loFit, oBlackBoard);
     }
@@ -201,11 +206,12 @@ public class OpenTIV_Edges {
         return BasicOperations.getAllContours(oEdges);
     }
 
-    public static ImageInt getOuterEdges_1(ImageInt oInput, SettingsEdges oSettings) throws IOException, EmptySetException {
-        return getEdges(oInput, (SettingsEdges) oSettings.getSettingsValue("OuterEdgesThreshold"));
+    public static ImageInt getOuterEdges_1(ImageInt oInput, Settings oSettings) throws IOException, EmptySetException {
+        return EdgeDetections.getEdges(oInput, (Integer) oSettings.getSettingsValue("OuterEdgesThreshold"));
+//        return getEdges(oInput, oSettings);
     }
     
-    public static ImageInt getTechnobisEdges(ImageInt oInput, SettingsEdges oSettings) throws IOException, EmptySetException {
+    public static ImageInt getTechnobisEdges(ImageInt oInput, Settings oSettings) throws IOException, EmptySetException {
         return getEdgesTechnobis(oInput, (Integer) oSettings.getSettingsValue("OuterEdgesThreshold"));
     }
     
@@ -219,7 +225,7 @@ public class OpenTIV_Edges {
         return o;
     }
 
-    public static ImageInt getEdges(ImageInt oInput, SettingsEdges oSettings) throws IOException, EmptySetException {
+    public static ImageInt getEdges(ImageInt oInput, Settings oSettings) throws IOException, EmptySetException {
         int EdgeThreshold = (Integer) oSettings.getSettingsValue("SimpleEdgesThreshold");
         oInput.iaPixels = NoiseReduction.Gau(oInput.iaPixels);
         oInput.iaPixels = getThinEdge(oInput.iaPixels, Boolean.FALSE, null, null, 0);

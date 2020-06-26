@@ -104,7 +104,7 @@ public class EdgeDetections {
         Morphology.setNotMarkedPoints(o, 0);
         Morphology.setmarkedPoints(o, 255);
         o = Ziegenhein_2018.thinoutEdges(o);
-        IMG_Writer.PaintGreyPNG(o, new File("E:\\Work\\openTIV\\SharpBoundaryTracking\\0p5slpmin\\ContourDetection\\Debug\\Edges_After.png"));
+//        IMG_Writer.PaintGreyPNG(o, new File("E:\\Work\\openTIV\\SharpBoundaryTracking\\0p5slpmin\\ContourDetection\\Debug\\Edges_After.png"));
         return o;
     }        
     

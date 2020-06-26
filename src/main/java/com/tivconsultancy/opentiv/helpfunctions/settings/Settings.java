@@ -102,7 +102,7 @@ public abstract class Settings implements Serializable{
         Object o;
         for (SettingObject oS : loSettings) {
             o = oS.getValue(oSettig.sName);
-            if (o != null) {
+            if (o != null && oSettig.sValue != null) {
                 oS.setValue(oSettig.sValue.toString());
                 return;
             }
@@ -132,7 +132,12 @@ public abstract class Settings implements Serializable{
     }
 
     public SettingObject getSettings(String[] sa) {
-        SettingObject o = new SettingObject(sa[0], sa[1].replaceAll("\\s+",""), null, (SettingObject.SettingsType) SettingObject.getSettingsType(sa[3]));
+        SettingObject o;
+        if(sa[0].equals("null")){
+            o = new SettingObject(sa[1].replaceAll("\\s+",""), null, (SettingObject.SettingsType) SettingObject.getSettingsType(sa[3]));
+        }else{
+            o = new SettingObject(sa[0], sa[1].replaceAll("\\s+",""), null, (SettingObject.SettingsType) SettingObject.getSettingsType(sa[3]));
+        }        
         o.setValue(sa[2].replaceAll("\\s+",""));
         return o;
     }
