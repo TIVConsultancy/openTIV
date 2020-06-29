@@ -27,6 +27,7 @@ import com.tivconsultancy.opentiv.postproc.vector.PaintVectors;
 import static com.tivconsultancy.opentiv.postproc.vector.SVG.paintVectors;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Ziegenhein_2018;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Ziegenhein_2018.CNCP;
+import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.shapes.Line2;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.grids.RecOrtho2D;
@@ -40,9 +41,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -158,7 +161,7 @@ public class BoundTrackZiegenhein_2018 {
 //            Writer.PaintGreyPNG(oHelp, new File(sPWD + java.io.File.separator + sDebugFolder + java.io.File.separator + "Frame1Curv1.png"));
 
 //            VelocityVec oVec = Nearest.getNearestForComplexObjectsParallel(oContoursToTrack, loSort, 2, new Set2D(new Set1D(-20, 20), new Set1D(-20, 20)), (SideCondition2) (Object pParameter1, Object pParameter2) -> ((CPXTr) pParameter1).getDistance((CPXTr) pParameter2) < 40);
-                    VelocityVec oVec = getNearestForCPXTr(oContoursToTrack, loSort, 1, new Set2D(new Set1D(-20, 20), new Set1D(-20, -5)), oSettings, (SideCondition2) (Object pParameter1, Object pParameter2) -> ((CPXTr) pParameter1).getDistance((CPXTr) pParameter2) < 40);
+                    VelocityVec oVec = getNearestForCPXTr(oContoursToTrack, loSort, 1, new Set2D(new Set1D(-20, 20), new Set1D(-20, -5)), 600, 600, (SideCondition2) (Object pParameter1, Object pParameter2) -> ((CPXTr) pParameter1).getDistance((CPXTr) pParameter2) < 40);
                     if (oVec == null) {
                         continue;
                     }
@@ -222,18 +225,22 @@ public class BoundTrackZiegenhein_2018 {
 //        Writer.PaintGreyPNG(oHelp, new File(sPWD + java.io.File.separator + sDebugFolder + java.io.File.separator + "Frame1Curv1.png"));        
     }
 
-    public static void runBoundTrack(Settings oSettings, ImageGrid oEdges1, ImageGrid oEdges2) throws EmptySetException {
+    public static ReturnContainerBoundaryTracking runBoundTrack(Settings oSettings, ImageGrid oEdges1, ImageGrid oEdges2) throws EmptySetException {
         List<CPXTr> loFrame1 = getTrackableCNCP(oEdges1, oSettings);
         if (loFrame1.isEmpty()) {
-            return;
+            return null;
         }
-        List<CPXTr> loFrame2 = getCNCP(oEdges2, oSettings);
+        List<CPXTr> loFrame2 = getCNCP(oEdges2);
         loFrame1 = getvalidCPXListFirst(loFrame1);
         loFrame2 = getvalidCPXListSecond(loFrame2);
-        loFrame1 = getvalidCPXListFirst(loFrame1);
-        loFrame2 = getvalidCPXListSecond(loFrame2);
+        
+        int searchYPlus = -1*Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYPlus").toString());
+        int searchYMinus = -1*Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYMinus").toString());
+        
+        int searchXPlus = Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusXPlus").toString());
+        int searchXMinus = Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusXMinus").toString());
 
-        List<VelocityVec> oVelocityVectors = new ArrayList<>();
+        Map<CPXTr, VelocityVec> oVelocityVectors = new HashMap<>();
         for (CPXTr oContoursToTrack : loFrame1) {
 
             Collection<CPXTr> lo = Sorting.getEntriesWithSameCharacteristic(oContoursToTrack, loFrame2, 1.0, (Sorting.Characteristic2<CPXTr>) (CPXTr pParameter, CPXTr pParameter2) -> {
@@ -246,8 +253,8 @@ public class BoundTrackZiegenhein_2018 {
             List<CPXTr> loSort = new ArrayList<>();
             loSort.addAll(lo);
 
-            setHelpFunction(oSettings);
-            VelocityVec oVec = getNearestForCPXTr(oContoursToTrack, loSort, 1, new Set2D(new Set1D(-20, 20), new Set1D(-20, -5)), oSettings, (SideCondition2) (Object pParameter1, Object pParameter2) -> ((CPXTr) pParameter1).getDistance((CPXTr) pParameter2) < 40);
+            setHelpFunction(oEdges1.iLength, oEdges1.jLength);
+            VelocityVec oVec = getNearestForCPXTr(oContoursToTrack, loSort, 1, new Set2D(new Set1D(searchXMinus, searchXPlus), new Set1D(searchYPlus, searchYMinus)), oEdges1.iLength, oEdges1.jLength, (SideCondition2) (Object pParameter1, Object pParameter2) -> ((CPXTr) pParameter1).getDistance((CPXTr) pParameter2) < 40);
             if (oVec == null) {
                 continue;
             }
@@ -255,13 +262,20 @@ public class BoundTrackZiegenhein_2018 {
             VelocityVec oVecSubPix = (VelocityVec) oVec.add(opSubPixDist);
             oVecSubPix.VelocityObject1 = oVec.VelocityObject1;
             oVecSubPix.VelocityObject2 = oVec.VelocityObject2;
-            oVelocityVectors.add(oVecSubPix);
+            oVelocityVectors.put(oContoursToTrack, oVecSubPix);
+        }
+
+        setHelpFunction(oEdges1.iLength, oEdges1.jLength);
+        for (CPXTr o : loFrame1) {
+            oHelp.setPoint(o.lo, 255);
         }
         
-        setHelpFunction(oSettings);
-                for (CPXTr o : loFrame1) {
-                    oHelp.setPoint(o.lo, 255);
-                }
+        ImageInt secContours = new ImageInt(oEdges2.iLength, oEdges2.jLength, 0);
+        for(CPXTr c : loFrame2){
+            secContours.setPointsIMGP(c.lo, 255);
+        }
+
+        return new ReturnContainerBoundaryTracking(oVelocityVectors, new ImageInt(oHelp.getMatrix()), secContours);
 
     }
 
@@ -553,7 +567,7 @@ public class BoundTrackZiegenhein_2018 {
         return loReturn;
     }
 
-    public static List<CPXTr> getCNCP(ImageGrid oEdges, Settings oSettings) throws EmptySetException {
+    public static List<CPXTr> getCNCP(ImageGrid oEdges) throws EmptySetException {
 
         loClosed.clear();
         loOpen.clear();
@@ -764,12 +778,6 @@ public class BoundTrackZiegenhein_2018 {
         oHelp = new ImageGrid(iLength, jLength);
     }
 
-    public static void setHelpFunction(Settings oSettings) {
-        int iLength = ((int) oSettings.getSettingsValue("cutyBottom")) - ((int) oSettings.getSettingsValue("cutyTop"));
-        int jLength = ((int) oSettings.getSettingsValue("cutxRight")) - ((int) oSettings.getSettingsValue("cutxLeft"));
-        oHelp = new ImageGrid(iLength, jLength);
-    }
-
     public static void setHelpFunction(Settings_BoundTrack oSettings) {
         int iLength = ((int) oSettings.getSettingsValue("cutyBottom")) - ((int) oSettings.getSettingsValue("cutyTop"));
         int jLength = ((int) oSettings.getSettingsValue("cutxRight")) - ((int) oSettings.getSettingsValue("cutxLeft"));
@@ -798,7 +806,7 @@ public class BoundTrackZiegenhein_2018 {
         }
     }
 
-    public static VelocityVec getNearestForCPXTr(CPXTr otRef, List<CPXTr> loSecondFrame, double dStepSize, Set2D oSearchArea, Settings oSettings, SideCondition2 o) {
+    public static VelocityVec getNearestForCPXTr(CPXTr otRef, List<CPXTr> loSecondFrame, double dStepSize, Set2D oSearchArea, int iLength, int jLength, SideCondition2 o) {
 
         List<Nearest.OPwithCont> lopDisplacementAndSum = new ArrayList<>();
 
@@ -824,7 +832,7 @@ public class BoundTrackZiegenhein_2018 {
 
 //        long timeStart = Calendar.getInstance().getTimeInMillis();
 //        double dTimeShift = 0.0;
-        setHelpFunction(oSettings);
+        setHelpFunction(iLength, jLength);
         for (CPXTr oSecondFrame : loSecondFrameInRadius) {
             oHelp.setPoint(oSecondFrame.lo, 127);
         }

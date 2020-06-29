@@ -145,6 +145,7 @@ public class PostgreSQL implements SQLDatabase {
                                                                      Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.executeUpdate();
                 } catch (Exception e) {
+                    throw new SQLException(e);
                 }
             }
 

@@ -42,7 +42,7 @@ public class Averaging {
         }
 
         return dIntegrate / (1.0 * lo.size());
-    }
+    }    
 
     public static List<OrderedPair> LinearSmooth(List<OrderedPair> lop, String sType) {
 

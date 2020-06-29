@@ -15,6 +15,7 @@ import com.tivconsultancy.opentiv.math.sets.Set1D;
 import com.tivconsultancy.opentiv.math.sets.Set2D;
 import com.tivconsultancy.opentiv.math.specials.EnumObject;
 import com.tivconsultancy.opentiv.physics.interfaces.Trackable;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,7 +25,9 @@ import java.util.logging.Logger;
  *
  * @author Thomas Ziegenhein
  */
-public class CPXTr extends CPX implements Trackable {
+public class CPXTr extends CPX implements Trackable, Serializable {
+
+    private static final long serialVersionUID = 1280040523443199146L;
 
     CPXTr oParent = null;
     boolean bTracked = false;

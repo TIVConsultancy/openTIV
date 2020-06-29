@@ -20,7 +20,6 @@ public class OpenTIV_BoundaryTracking {
 
     public static void main(String[] args) throws IOException, EmptySetException {        
         BoundTrackZiegenhein_2018.perform();
-//        Algorithms_BoundTrack.BoundTrackZiegenhein_2018.postproc();
         System.exit(0);
     }
 

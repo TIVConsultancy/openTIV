@@ -36,6 +36,7 @@ import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.exceptions.EmptySetException;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -90,7 +91,7 @@ public class OpenTIV_Edges {
         try {
             List<CPX> allContours = BasicOperations.getAllContours(oEdges);
             List<String> loOrder = (List<String>) oSettings.getSettingsValue("ExecutionOrder");
-            if (!loOrder.isEmpty()) {
+            if (loOrder != null && !loOrder.isEmpty()) {
                 for (String s : loOrder) {
                     if (s.equals("SortOutSmallEdges")) {
                         if ((boolean) oSettings.getSettingsValue("SortOutSmallEdges")) {
@@ -134,28 +135,28 @@ public class OpenTIV_Edges {
                     }
                 }
             } else {
-                if ((boolean) oSettings.getSettingsValue("SortOutSmallEdges")) {
+                if (Boolean.valueOf(String.valueOf(oSettings.getSettingsValue("SortOutSmallEdges")))) {
                     allContours = sortoutSmallEdges(allContours, (Integer) oSettings.getSettingsValue("MinSize"));
                 }
-                if ((boolean) oSettings.getSettingsValue("SortOutLargeEdges")) {
+                if (Boolean.valueOf(String.valueOf(oSettings.getSettingsValue("SortOutLargeEdges")))) {
                     allContours = sortoutLargeEdges(allContours, (Integer) oSettings.getSettingsValue("MaxSize"));
                 }
-                if ((boolean) oSettings.getSettingsValue("CloseOpenContours")) {
+                if (Boolean.valueOf(String.valueOf(oSettings.getSettingsValue("CloseOpenContours")))) {
                     allContours = closeContours(allContours, oEdges.iLength, oEdges.jLength, (Integer) oSettings.getSettingsValue("DistanceCloseContours"));
                 }
-                if ((boolean) oSettings.getSettingsValue("RemoveOpenContours")) {
+                if (Boolean.valueOf(String.valueOf(oSettings.getSettingsValue("RemoveOpenContours")))) {
                     allContours = removeOpenContours(allContours);
                 }
-                if ((boolean) oSettings.getSettingsValue("RemoveClosedContours")) {
+                if (Boolean.valueOf(String.valueOf(oSettings.getSettingsValue("RemoveClosedContours")))) {
                     allContours = removeClosedContours(allContours);
                 }
-                if ((boolean) oSettings.getSettingsValue("SplitByCurv")) {
+                if (Boolean.valueOf(String.valueOf(oSettings.getSettingsValue("SplitByCurv")))) {
                     allContours = splitByCurve(allContours, oEdges, Integer.valueOf(oSettings.getSettingsValue("OrderCurvature").toString()), Double.valueOf(oSettings.getSettingsValue("ThresCurvSplitting").toString()));
                 }
-                if ((boolean) oSettings.getSettingsValue("RemoveWeakEdges")) {
+                if (Boolean.valueOf(String.valueOf( oSettings.getSettingsValue("RemoveWeakEdges")))) {
                     allContours = RemoveWeakEdges(allContours, Integer.valueOf(oSettings.getSettingsValue("ThresWeakEdges").toString()), SourceImage);
                 }
-                if ((boolean) oSettings.getSettingsValue("SortOutSmallEdges")) {
+                if (Boolean.valueOf( String.valueOf(oSettings.getSettingsValue("SortOutSmallEdges")))) {
                     allContours = sortoutSmallEdges(allContours, (Integer) oSettings.getSettingsValue("MinSize"));
                 }
             }
@@ -179,7 +180,7 @@ public class OpenTIV_Edges {
         return new ImageInt(oEdges.getMatrix());
     }
 
-    public static returnCotnainer_EllipseFit performShapeFitting(Settings oSettings, ImageInt oInput) {
+    public static ReturnCotnainer_EllipseFit performShapeFitting(Settings oSettings, ImageInt oInput) {
         ImageGrid oEdges = new ImageGrid(oInput.iaPixels);
         ImageInt oBlackBoard = new ImageInt(oInput.iaPixels);
         List<Circle> loFit = new ArrayList<>();
@@ -195,7 +196,7 @@ public class OpenTIV_Edges {
             TIVLog.tivLogger.severe(e.getLocalizedMessage().toString());
             TIVLog.tivLogger.severe(e.getMessage().toString());
         }
-        return new returnCotnainer_EllipseFit(loFit, oBlackBoard);
+        return new ReturnCotnainer_EllipseFit(loFit, oBlackBoard);
     }
 
     public static List<CPX> splitByCurve(List<CPX> loInput, ImageGrid oEdges, int iOrder, Double dThresholdCurv) throws EmptySetException {
@@ -319,12 +320,14 @@ public class OpenTIV_Edges {
         return log;
     }
 
-    public static class returnCotnainer_EllipseFit {
+    public static class ReturnCotnainer_EllipseFit implements Serializable{
+
+        private static final long serialVersionUID = -394283629933680489L;
 
         public List<Circle> loCircles = new ArrayList<>();
         public ImageInt oImage = null;
 
-        public returnCotnainer_EllipseFit(List<Circle> loCircles, ImageInt oImage) {
+        public ReturnCotnainer_EllipseFit(List<Circle> loCircles, ImageInt oImage) {
             this.loCircles = loCircles;
             this.oImage = oImage;
         }

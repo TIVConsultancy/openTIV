@@ -15,6 +15,7 @@
  */
 package com.tivconsultancy.opentiv.highlevel.methods;
 
+import com.tivconsultancy.opentiv.highlevel.protocols.Prot_SystemSettings;
 import delete.com.tivconsultancy.opentiv.devgui.main.ImagePath;
 import com.tivconsultancy.opentiv.highlevel.protocols.Protocol;
 import java.io.File;
@@ -33,4 +34,6 @@ public interface Method {
     public void setFiles(File[] f);
     public void run() throws Exception;
     public void runParts(String ident) throws Exception;
+    
+    public Prot_SystemSettings getSystemSetting(String ident);
 }
