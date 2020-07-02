@@ -16,6 +16,9 @@
 package com.tivconsultancy.opentiv.datamodels.SQL;
 
 import com.tivconsultancy.opentiv.logging.TIVLog;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -25,6 +28,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -44,6 +49,10 @@ public class PostgreSQL implements SQLDatabase {
         this.url = url;
         this.user = user;
         this.password = password;
+    }
+    
+    public String getUser(){
+        return user;
     }
 
     /**
@@ -77,7 +86,23 @@ public class PostgreSQL implements SQLDatabase {
         } catch (SQLException ex) {
             TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query: " + sqlSelect, ex);
         }
+        return lsOut;
+    }
+    
+    public List<String> getColumnEntries(String schemaName, String tableName, String columnName, String sideCondition) {
+        String sqlSelect = "SELECT " + columnName + " from " + schemaName + "." + tableName + " " +sideCondition;
+        List<String> lsOut = new ArrayList<>();
+        try (Connection conn = this.connect();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlSelect);) {
 
+            while (rs.next()) {
+                lsOut.add(rs.getString(columnName));
+            }
+
+        } catch (SQLException ex) {
+            TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query: " + sqlSelect, ex);
+        }
         return lsOut;
     }
 
@@ -152,6 +177,22 @@ public class PostgreSQL implements SQLDatabase {
         } catch (SQLException ex) {
             TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query list", ex);
         }
+    }
+    
+    public InputStream getBinaryStream(String sqlStatement) throws SQLException {
+        BufferedImage img = null;
+        try (Connection conn = this.connect();PreparedStatement pstmt = conn.prepareStatement(sqlStatement); ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                try (InputStream is = rs.getBinaryStream(1)) {
+                    return is;
+                } catch (IOException ex) {
+                    TIVLog.tivLogger.log(Level.INFO, "Cannot execute read from bitestream, try netx ...", ex);
+                }
+            }
+        } catch (Exception e) {
+            TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query: " +sqlStatement, e);
+        }
+        return null;
     }
 
 }

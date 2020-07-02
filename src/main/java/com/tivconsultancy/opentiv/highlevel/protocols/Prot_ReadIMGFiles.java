@@ -15,13 +15,11 @@
  */
 package com.tivconsultancy.opentiv.highlevel.protocols;
 
-import com.tivconsultancy.opentiv.helpfunctions.settings.SettingObject;
 import com.tivconsultancy.opentiv.helpfunctions.settings.SettingsCluster;
 import com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.math.specials.LookUp;
 import com.tivconsultancy.opentiv.math.specials.NameObject;
-import com.tivconsultancy.opentiv.preprocessor.OpenTIV_PreProc;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -37,9 +35,9 @@ public class Prot_ReadIMGFiles extends Protocol implements Serializable {
 
     private static final long serialVersionUID = -1394639842255399516L;
 
-    File imgFile;
-    ImageInt imgRead;
-    private String name = "Read In";
+    protected File imgFile;
+    protected ImageInt imgRead;
+    protected String name = "Read In";
     
     protected LookUp<BufferedImage> outPutImages;
 
@@ -57,7 +55,7 @@ public class Prot_ReadIMGFiles extends Protocol implements Serializable {
     }
 
 
-    private ImageInt readImage() throws IOException {
+    protected ImageInt readImage() throws IOException {
         imgRead.setImage(IMG_Reader.readImageGrayScale(imgFile));
         return imgRead;
     }
@@ -91,7 +89,7 @@ public class Prot_ReadIMGFiles extends Protocol implements Serializable {
     public void run(Object... input) throws UnableToRunException {
         if (input != null && input.length != 0 && input[0] != null && input[0] instanceof File) {
             imgFile = (File) input[0];
-            try {
+            try {                
                 readImage();                
             } catch (IOException ex) {
                 throw new UnableToRunException("Cannot read imgage: " + imgFile, ex);
@@ -110,12 +108,12 @@ public class Prot_ReadIMGFiles extends Protocol implements Serializable {
 
     @Override
     public void buildClusters() {
-        SettingsCluster CutImage = new SettingsCluster("Cut Image",
-                                                       new String[]{"BcutyTop", "cutyTop", "BcutyBottom",
-                                                           "cutyBottom", "BcutxLeft", "cutxLeft", "BcutxRight",
-                                                           "cutxRight"}, this);
-        CutImage.setDescription("Cut image");
-        lsClusters.add(CutImage);
+//        SettingsCluster CutImage = new SettingsCluster("Cut Image",
+//                                                       new String[]{"BcutyTop", "cutyTop", "BcutyBottom",
+//                                                           "cutyBottom", "BcutxLeft", "cutxLeft", "BcutxRight",
+//                                                           "cutxRight"}, this);
+//        CutImage.setDescription("Cut image");
+//        lsClusters.add(CutImage);
     }
     
     /**
@@ -147,7 +145,7 @@ public class Prot_ReadIMGFiles extends Protocol implements Serializable {
     public void setImage(BufferedImage bi) {
         for(String s : getIdentForViews()){
             outPutImages.set(s, bi);
-        } 
+        }
     }
 
 }

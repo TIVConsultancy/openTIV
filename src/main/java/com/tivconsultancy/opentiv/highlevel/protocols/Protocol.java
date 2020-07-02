@@ -58,6 +58,7 @@ public abstract class Protocol extends Settings implements Hints, Serializable {
         List<SettingObject> ls = new ArrayList<>();
         for (SettingsCluster c : getClusters()) {
             for (SettingObject o : c.getSettings()) {
+                if(o == null) continue;
                 if (o.ident.equals(SettingObject.SettingsType.Boolean)) {
                     ls.add(o);
                     ls.add(new SettingObject(o.getName(), !((Boolean) o.sValue), SettingObject.SettingsType.Boolean));

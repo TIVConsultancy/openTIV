@@ -5,11 +5,9 @@
  */
 package com.tivconsultancy.opentiv.highlevel.controller;
 
-import com.tivconsultancy.opentiv.datamodels.overtime.IndexDatabase;
 import com.tivconsultancy.opentiv.highlevel.methods.Method;
 import com.tivconsultancy.opentiv.datamodels.Results1DPlotAble;
 import com.tivconsultancy.opentiv.datamodels.overtime.Database;
-import com.tivconsultancy.opentiv.datamodels.overtime.DatabaseWithIndex;
 import java.io.File;
 import java.util.List;
 
@@ -26,6 +24,7 @@ public interface Controller {
     public Database getPlotAbleOverTimeResults();
     public Database getDataBase();
     public List<String> getHints(String name);
+    @Deprecated
     public List<File> getInputFiles(String name);
     public Method getCurrentMethod();
     public File getCurrentFileSelected();
@@ -37,8 +36,8 @@ public interface Controller {
     public void loadSession(File f);
     public void startNewSession(File f);
 
-    public void runCurrentStep();
-    public void run();
+    public void runCurrentStep(String ... options);
+    public void run(String ... options);
     
     
 }
