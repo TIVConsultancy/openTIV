@@ -541,6 +541,14 @@ public class EdgeDetections {
         
         return Math.sqrt(Gx*Gx+Gy*Gy);
         
-    }        
+    }
+    
+    public static int[][] getDerivation(int[][] iaGreyInput){
+        int[][] iaAbbrX = ConvolutionParallel(iaGreyInput, MatrixGenerator.getSobelOperator().get(0));
+
+        int[][] iaAbbrY = ConvolutionParallel(iaGreyInput, MatrixGenerator.getSobelOperator().get(1));
+
+        return Matrix.addPythagoras(iaAbbrX, iaAbbrY);
+    }
     
 }

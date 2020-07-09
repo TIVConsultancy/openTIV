@@ -23,6 +23,7 @@ import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImagePoint;
 import com.tivconsultancy.opentiv.imageproc.shapes.Line2;
 import com.tivconsultancy.opentiv.math.interfaces.SideCondition;
+import com.tivconsultancy.opentiv.math.interfaces.SideCondition2;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -178,6 +179,28 @@ public class Morphology implements Serializable{
 //            });
             for (MatrixEntry me : oInput.getNeighborsN4(o.i, o.j)) {
                 if (me != null && !oInput.baMarker[me.i][me.j] && oInput.iaPixels[me.i][me.j] < 127) {
+                    oInput.baMarker[me.i][me.j] = true;
+                    lmHelp.add(me);
+                }
+            }
+        }
+        return loReturn;
+    }
+    
+    public List<MatrixEntry> markFillN8(ImageInt oInput, int i, int j, SideCondition<MatrixEntry> sc) {
+        if (!oInput.isInside(i, j)) {
+            return new ArrayList<>();
+        }
+        List<MatrixEntry> loReturn = new ArrayList<>();
+        lmHelp.clear();
+        lmHelp.add(new MatrixEntry(i, j));
+        oInput.baMarker[i][j] = true;
+        while (!lmHelp.isEmpty()) {
+            MatrixEntry o = lmHelp.get(0);
+            lmHelp.remove(o);
+            loReturn.add(o);
+            for (MatrixEntry me : oInput.getNeighborsN8(o.i, o.j)) {
+                if (me != null && !oInput.baMarker[me.i][me.j] && sc.check(me)) {
                     oInput.baMarker[me.i][me.j] = true;
                     lmHelp.add(me);
                 }

@@ -17,6 +17,7 @@ package com.tivconsultancy.opentiv.imageproc.primitives;
 
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader.getGrayScale;
+import com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer.castToByteprimitive;
 import com.tivconsultancy.opentiv.math.interfaces.SideCondition;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
@@ -26,11 +27,14 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
 /**
@@ -56,12 +60,12 @@ public class ImageInt extends ImageBoolean implements Serializable {
             Arrays.fill(a, iGreyLevel);
         }
     }
-    
+
     public ImageInt(int iLength, int jLength, double randomSeed) {
         super(iLength, jLength);
         iaPixels = new int[iLength][jLength];
-        for (int i = 0; i < iaPixels.length; i++){
-            for(int j = 0; j < iaPixels[0].length; j++){
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
                 iaPixels[i][j] = (int) (Math.random() * 255);
             }
         }
@@ -116,8 +120,8 @@ public class ImageInt extends ImageBoolean implements Serializable {
             }
         }
     }
-    
-    public void setImage(BufferedImage oBuffIMG){
+
+    public void setImage(BufferedImage oBuffIMG) {
         BufferedImage oBufImageGrey = getGrayScale(oBuffIMG);
         int[] iaData = new int[oBufImageGrey.getHeight() * oBufImageGrey.getWidth()];
         iaData = oBufImageGrey.getData().getPixels(0, 0, oBufImageGrey.getWidth(), oBufImageGrey.getHeight(), iaData);
@@ -137,10 +141,10 @@ public class ImageInt extends ImageBoolean implements Serializable {
             }
         }
     }
-    
-    public void setBoolean(boolean [][] ba){
-        for(int i = 0; i < ba.length; i++){
-            for(int j = 0; j < ba[0].length; j++){
+
+    public void setBoolean(boolean[][] ba) {
+        for (int i = 0; i < ba.length; i++) {
+            for (int j = 0; j < ba[0].length; j++) {
                 this.baMarker[i][j] = ba[i][j];
             }
         }
@@ -681,7 +685,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
     public ImageInt getsubY(Set1D yInterval) {
         return getsubY((int) yInterval.dLeftBorder, (int) yInterval.dRightBorder);
     }
-    
+
     public ImageInt getsubY(int iMin, int iMax) {
 
         int iMinIndex = 0;
@@ -714,7 +718,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
     public ImageInt getsubX(Set1D xInterval) {
         return getsubX((int) xInterval.dLeftBorder, (int) xInterval.dRightBorder);
     }
-    
+
     public ImageInt getsubX(int iMin, int iMax) {
 
         int iMinIndex = 0;
@@ -821,12 +825,79 @@ public class ImageInt extends ImageBoolean implements Serializable {
         ImageInt imgReturn = new ImageInt(imgB.baMarker.length, imgB.baMarker[0].length, 0);
         for (int i = 0; i < imgB.baMarker.length; i++) {
             for (int j = 0; j < imgB.baMarker[0].length; j++) {
-                if(imgB.baMarker[i][j]){
+                if (imgB.baMarker[i][j]) {
                     imgReturn.iaPixels[i][j] = 255;
-                }                
+                }
             }
         }
         return imgReturn;
+    }
+
+    public int[][] getGLAM(int dividerGrey) {
+        boolean[][] shape = new boolean[][]{{false, true, false}, {true, true, true}, {false, true, false}};
+        return getGLAM(dividerGrey, shape);
+    }
+
+    public int[][] getGLAM(MatrixEntry me, double dRadius, int dividerGrey, boolean[][] shape) {
+        ImageInt sub = this.getsubArea2(me.i, me.j, 3);
+        return sub.getGLAM(dividerGrey, shape);
+    }
+
+    public int[][] getGLAM(MatrixEntry me, double dRadius, int dividerGrey) {
+        ImageInt sub = this.getsubArea2(me.i, me.j, 3);
+        return sub.getGLAM(dividerGrey);
+    }
+
+    public int[][] getGLAM(int dividerGrey, boolean[][] shape) {
+
+        int shapeSize = (int) (shape.length / 2.0);
+        
+        int[][] reduceMatrix = new int[iaPixels.length][iaPixels[0].length];
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
+                reduceMatrix[i][j] = (int) (iaPixels[i][j] / dividerGrey);
+            }
+        }
+
+//        try {
+//            IMG_Writer.PaintGreyPNG(new ImageInt(reduceMatrix), new File("D:\\Trash\\AT\\Cluster\\reduceIMG.png"));
+//        } catch (IOException ex) {
+//            Logger.getLogger(ImageInt.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        int[][] glam = new int[(int) (255 / dividerGrey) + 1][(int) (255 / dividerGrey) + 1];
+
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
+                int ig = reduceMatrix[i][j];
+                for (int isub = -shapeSize; isub <= shapeSize; isub++) {
+                    for (int jsub = -shapeSize; jsub <= shapeSize; jsub++) {
+                        if (this.isInside(i + isub, j + jsub) && shape[isub+shapeSize][jsub+shapeSize]) {
+                            if(isub == 0 && jsub == 0) continue;
+                            glam[ig][reduceMatrix[i + isub][j + jsub]] = glam[ig][reduceMatrix[i + isub][j + jsub]] + 1;
+                        }
+                    }
+                }
+            }
+        }
+        return glam;
+    }
+
+    public void normalize() {
+        int iMax = 0;
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
+                if (iMax < iaPixels[i][j]) {
+                    iMax = iaPixels[i][j];
+                }
+            }
+        }
+
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
+                iaPixels[i][j] = (int) (iaPixels[i][j]*(255.0/iMax));
+            }
+        }
+
     }
 
 }
