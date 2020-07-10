@@ -17,7 +17,6 @@ package com.tivconsultancy.opentiv.imageproc.primitives;
 
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader.getGrayScale;
-import com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer.castToByteprimitive;
 import com.tivconsultancy.opentiv.math.interfaces.SideCondition;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
@@ -27,14 +26,11 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
 /**
@@ -838,14 +834,19 @@ public class ImageInt extends ImageBoolean implements Serializable {
         return getGLAM(dividerGrey, shape);
     }
 
-    public int[][] getGLAM(MatrixEntry me, double dRadius, int dividerGrey, boolean[][] shape) {
-        ImageInt sub = this.getsubArea2(me.i, me.j, 3);
+    public int[][] getGLAM(MatrixEntry me, int dRadius, int dividerGrey, boolean[][] shape) {
+        ImageInt sub = this.getsubArea2(me.i, me.j, dRadius);
         return sub.getGLAM(dividerGrey, shape);
     }
 
-    public int[][] getGLAM(MatrixEntry me, double dRadius, int dividerGrey) {
-        ImageInt sub = this.getsubArea2(me.i, me.j, 3);
+    public int[][] getGLAM(MatrixEntry me, int dRadius, int dividerGrey) {
+        ImageInt sub = this.getsubArea2(me.i, me.j, dRadius);
         return sub.getGLAM(dividerGrey);
+    }
+    
+    public int[] getGLAM2(MatrixEntry me, int dRadius, int dividerGrey) {
+        ImageInt sub = this.getsubArea2(me.i, me.j, dRadius);
+        return sub.getGLAM2(dividerGrey);
     }
 
     public int[][] getGLAM(int dividerGrey, boolean[][] shape) {
@@ -858,12 +859,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
                 reduceMatrix[i][j] = (int) (iaPixels[i][j] / dividerGrey);
             }
         }
-
-//        try {
-//            IMG_Writer.PaintGreyPNG(new ImageInt(reduceMatrix), new File("D:\\Trash\\AT\\Cluster\\reduceIMG.png"));
-//        } catch (IOException ex) {
-//            Logger.getLogger(ImageInt.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        
         int[][] glam = new int[(int) (255 / dividerGrey) + 1][(int) (255 / dividerGrey) + 1];
 
         for (int i = 0; i < iaPixels.length; i++) {
@@ -880,6 +876,90 @@ public class ImageInt extends ImageBoolean implements Serializable {
             }
         }
         return glam;
+    }
+    
+    public int[] getGLAM2(int dividerGrey) {
+
+        List<boolean[][]> directions = new ArrayList<>();
+        boolean[][] shapeRB = new boolean[][]{{false, false, false}, {false, false, false}, {false, false, true}};
+        boolean[][] shapeR = new boolean[][]{{false, false, false}, {false, false, true}, {false, false, false}};
+        boolean[][] shapeRT = new boolean[][]{{false, false, true}, {false, false, false}, {false, false, false}};
+        boolean[][] shapeT = new boolean[][]{{false, true, false}, {false, false, false}, {false, false, false}};
+        boolean[][] shapeLT = new boolean[][]{{true, false, false}, {false, false, false}, {false, false, false}};
+        boolean[][] shapeL = new boolean[][]{{false, false, false}, {true, false, false}, {false, false, false}};
+        boolean[][] shapeLB = new boolean[][]{{false, false, false}, {false, false, false}, {true, false, false}};
+        boolean[][] shapeB = new boolean[][]{{false, false, false}, {false, false, false}, {true, false, false}};
+        
+        directions.add(shapeRB);
+        directions.add(shapeR);
+        directions.add(shapeRT);
+        directions.add(shapeT);
+        directions.add(shapeLT);
+        directions.add(shapeL);
+        directions.add(shapeLB);
+        directions.add(shapeB);
+                
+        List<int[][]> res = new ArrayList<>();
+        for(boolean[][] shape : directions){
+            res.add(getGLAM(dividerGrey, shape));
+        }
+        
+        int[] features = new int[res.size()*res.get(0).length*res.get(0)[0].length];
+        
+        int iCounter=0;
+        for(int[][] iaa : res){
+            for(int[] ia : iaa){
+                for(int i : ia){
+                    features[iCounter] = i;
+                    iCounter++;
+                }
+            }
+        }
+        
+        return features;
+        
+    }
+    
+    public int[] getIGLAM(int dividerGrey) {
+
+        List<boolean[][]> directions = new ArrayList<>();
+        boolean[][] shapeRB = new boolean[][]{{false, false, false}, {false, false, false}, {false, false, true}};
+        boolean[][] shapeR = new boolean[][]{{false, false, false}, {false, false, true}, {false, false, false}};
+        boolean[][] shapeRT = new boolean[][]{{false, false, true}, {false, false, false}, {false, false, false}};
+        boolean[][] shapeT = new boolean[][]{{false, true, false}, {false, false, false}, {false, false, false}};
+        boolean[][] shapeLT = new boolean[][]{{true, false, false}, {false, false, false}, {false, false, false}};
+        boolean[][] shapeL = new boolean[][]{{false, false, false}, {true, false, false}, {false, false, false}};
+        boolean[][] shapeLB = new boolean[][]{{false, false, false}, {false, false, false}, {true, false, false}};
+        boolean[][] shapeB = new boolean[][]{{false, false, false}, {false, false, false}, {true, false, false}};
+        
+        directions.add(shapeRB);
+        directions.add(shapeR);
+        directions.add(shapeRT);
+        directions.add(shapeT);
+        directions.add(shapeLT);
+        directions.add(shapeL);
+        directions.add(shapeLB);
+        directions.add(shapeB);
+                
+        List<int[][]> res = new ArrayList<>();
+        for(boolean[][] shape : directions){
+            res.add(getGLAM(dividerGrey, shape));
+        }
+        
+        int[] features = new int[res.size()*res.get(0).length*res.get(0)[0].length];
+        
+        int iCounter=0;
+        for(int[][] iaa : res){
+            for(int[] ia : iaa){
+                for(int i : ia){
+                    features[iCounter] = i;
+                    iCounter++;
+                }
+            }
+        }
+        
+        return features;
+        
     }
 
     public void normalize() {
