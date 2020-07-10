@@ -7,9 +7,7 @@
 package com.tivconsultancy.opentiv.datamodels.overtime;
 
 import com.tivconsultancy.opentiv.math.specials.LookUp;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,7 +24,7 @@ public class DatabaseRAM<T extends DataBaseEntry> extends Database<T>{
     }
     
     @Override
-    public void setRes(String ident, T res, boolean refresh){
+    public void setRes(String ident, T res, boolean refresh, boolean append){
         overTime1DResuls.setorAdd(ident, res);
         if(refresh){
             refreshObjects();
@@ -34,7 +32,7 @@ public class DatabaseRAM<T extends DataBaseEntry> extends Database<T>{
     }
     
     public void setRes(String ident, T res){
-        setRes(ident, res, false);
+        setRes(ident, res, false, true);
     }
     
     public T getRes(String ident){

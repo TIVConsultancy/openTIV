@@ -6,16 +6,13 @@
 
 package com.tivconsultancy.opentiv.datamodels.overtime;
 
-import com.tivconsultancy.opentiv.datamodels.Archive;
 import com.tivconsultancy.opentiv.datamodels.TempOnDisk;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -37,9 +34,9 @@ public class DatabaseDisk<T extends DataBaseEntry> extends Database<T>{
     }
     
     @Override
-    public void setRes(String ident, T res, boolean refresh){
+    public void setRes(String ident, T res, boolean refresh, boolean append){
         try {
-            overTimeRes.put(ident, res);
+            overTimeRes.put(ident, res, append);
         } catch (IOException ex) {
             TIVLog.tivLogger.log(Level.SEVERE, "cannot set data to database (Disk) : " + ident, ex);
         }
@@ -50,11 +47,11 @@ public class DatabaseDisk<T extends DataBaseEntry> extends Database<T>{
     
     @Override
     public void setRes(String ident, T res){
-        setRes(ident, res, false);
+        setRes(ident, res, false, true);
     }
     
     @Override
-    public T getRes(String ident){
+    public T getRes(String ident){        
         try {
             return (T) overTimeRes.get(ident);
 //        return overTime1DResuls.get(iStep);

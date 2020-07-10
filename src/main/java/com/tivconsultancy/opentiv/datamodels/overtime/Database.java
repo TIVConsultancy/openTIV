@@ -34,7 +34,7 @@ public abstract class Database<T extends DataBaseEntry> {
     private final transient List<Refreshable> ObjectsToCallOnChange = new ArrayList<>();
     
     public abstract void setRes(String ident, T res);
-    public abstract void setRes(String ident, T res, boolean refresh);
+    public abstract void setRes(String ident, T res, boolean refresh, boolean append);
     public abstract T getRes(String ident);
     @Deprecated
     public abstract IndexDatabase getIndexedResults();

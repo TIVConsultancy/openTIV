@@ -54,11 +54,13 @@ public class TempOnDisk {
             } catch (IOException ex) {
                 TIVLog.tivLogger.log(Level.SEVERE, null, ex);
             }
+        }else{
+            baseFolder = whereToSave;
         }
     }
 
-    public void put(String ident, Serializable object) throws FileNotFoundException, IOException {
-        FileOutputStream fout = new FileOutputStream(new File(baseFolder, ident), true);
+    public void put(String ident, Serializable object, boolean append) throws FileNotFoundException, IOException {
+        FileOutputStream fout = new FileOutputStream(new File(baseFolder, ident), append);
         ObjectOutputStream oos = new ObjectOutputStream(fout);
         oos.writeObject(object);
     }
@@ -72,7 +74,9 @@ public class TempOnDisk {
     }
 
     public Serializable get(String ident) throws FileNotFoundException, IOException, ClassNotFoundException {
-        FileInputStream streamIn = new FileInputStream(new File(baseFolder, ident));
+        File inFile = new File(baseFolder, ident);
+        if(!inFile.exists()) return null;
+        FileInputStream streamIn = new FileInputStream(inFile);
         ObjectInputStream ois = new ObjectInputStream(streamIn);
         return (Serializable) ois.readObject();
     }

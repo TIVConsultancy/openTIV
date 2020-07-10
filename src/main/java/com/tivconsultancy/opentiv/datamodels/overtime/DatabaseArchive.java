@@ -26,7 +26,7 @@ public class DatabaseArchive<T extends DataBaseEntry> extends Database<T>{
     }
     
     @Override
-    public void setRes(String ident, T res, boolean refresh){
+    public void setRes(String ident, T res, boolean refresh, boolean append){
         overTimeRes.put(ident, res);
 //        overTime1DResuls.replaceOrAdd(ident, res);
         if(refresh){
@@ -36,7 +36,7 @@ public class DatabaseArchive<T extends DataBaseEntry> extends Database<T>{
     
     @Override
     public void setRes(String ident, T res){
-        setRes(ident, res, false);
+        setRes(ident, res, false, true);
     }
     
     @Override

@@ -19,7 +19,7 @@ public interface Controller {
     
     public void startNewMethod(Method newMethod);
     public void startNewIndexStep();
-    public void setSelectedFile(File f);
+    public void setSelectedFile(File fbefore, File f);
     
     public Database getPlotAbleOverTimeResults();
     public Database getDataBase();
