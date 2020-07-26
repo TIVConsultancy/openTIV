@@ -180,6 +180,17 @@ public interface Colorbar {
             loCol.add(new Color(0.705669f, 0.0155489f, 0.15024f));
             return loCol;
         }
+        
+        public static List<Color> getRedToOrange() {
+            List<Color> loCol = new ArrayList<Color>();
+            loCol.add(new Color(255, 0, 0));
+            loCol.add(new Color(255, 50, 0));
+            loCol.add(new Color(255, 100, 0));
+            loCol.add(new Color(255, 150, 0));
+            loCol.add(new Color(255, 200, 0));
+            
+            return loCol;
+        }
 
         public static List<Color> getColdRainbow() {
             List<Color> loCol = new ArrayList<Color>();

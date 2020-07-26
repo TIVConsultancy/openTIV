@@ -77,6 +77,21 @@ public class PointCloud2 implements Shape, Serializable {
         }
         return img;
     }
+    
+    public HashSet<MatrixEntry> fillOnIMG(double dMaxDist) {
+        HashSet<MatrixEntry> lmeFill = new HashSet<>();
+        for (ImagePointInt oOuter : lop) {
+            MatrixEntry meOuter = (MatrixEntry) oOuter;            
+            for (ImagePointInt oInner : lop) {
+                MatrixEntry meInner = (MatrixEntry) oInner;
+//                if (meOuter.getNorm(meInner) > dMaxDist) {
+//                    continue;
+//                }
+                lmeFill.addAll(Line.BresenhamAlgorithm(meOuter, meInner));
+            }
+        }
+        return lmeFill;
+    }
 
     public ImageInt paintOnIMG2(ImageInt img) {
         ImageInt iablanck = new ImageInt(img.iaPixels.length, img.iaPixels[0].length);
