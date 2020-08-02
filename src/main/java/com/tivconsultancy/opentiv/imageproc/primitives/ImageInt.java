@@ -979,5 +979,17 @@ public class ImageInt extends ImageBoolean implements Serializable {
         }
 
     }
+    
+    public List<MatrixEntry> getPoints(int value){
+        List<MatrixEntry> lme = new ArrayList<>();
+        for(int i = 0; i < this.iaPixels.length; i++){
+            for(int j = 0; j < this.iaPixels[0].length; j++){
+                if(this.iaPixels[i][j] == value){
+                    lme.add(new MatrixEntry(i, j));
+                }
+            }
+        }
+        return lme;
+    }
 
 }

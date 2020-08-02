@@ -15,6 +15,8 @@
  */
 package com.tivconsultancy.opentiv.math.specials;
 
+import com.tivconsultancy.opentiv.helpfunctions.io.Writer;
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,6 +186,17 @@ public class LookUp<T> implements Serializable {
     
     public List<NameObject<T>> getContent(){
         return lo;
+    }
+    
+    public void writeToFile(File f){
+        List<String> ls = new ArrayList<>();
+        for(NameObject o : lo){
+            String s = "{" + o.name + "}";
+            s = s + "," + "{" + o.o.toString() + "}";
+            ls.add(s);
+        }
+        Writer w = new Writer(f);
+        w.write(ls);
     }
 
 }
