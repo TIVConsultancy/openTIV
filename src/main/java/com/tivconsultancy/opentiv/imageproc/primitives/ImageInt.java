@@ -77,6 +77,19 @@ public class ImageInt extends ImageBoolean implements Serializable {
             }
         }
     }
+    
+    public ImageInt(int height,int width, byte[] a) {
+        super(height, width);
+//        if(iaa.length == 0) return;
+        iaPixels = new int[height][width];
+        int iCount = 0;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                iaPixels[i][j] = Byte.toUnsignedInt(a[iCount]);
+                iCount++;
+            }
+        }
+    }
 
     public ImageInt(int[][] iaa, File origin) {
         super(iaa.length, iaa[0].length);
@@ -990,6 +1003,14 @@ public class ImageInt extends ImageBoolean implements Serializable {
             }
         }
         return lme;
+    }
+    
+    public void setField(int[][] iaField, int iStart, int jStart){
+        for(int i = 0; i<iaField.length; i++){
+            for(int j =0; j<iaField[0].length; j++){
+                this.iaPixels[iStart+i][jStart+j] = iaField[i][j];
+            }
+        }
     }
 
 }
