@@ -43,9 +43,9 @@ public class Prot_ObjectMasking extends Protocol implements Serializable {
     private String name = "Masking";
 
     public Prot_ObjectMasking() {
-        masking1 = new ImageInt(50, 50, 0);
-        masking2 = new ImageInt(50, 50, 0);
-        totMask = new ImageInt(50, 50, 0);
+        masking1 = new ImageInt(50, 50, 255);
+        masking2 = new ImageInt(50, 50, 255);
+        totMask = new ImageInt(50, 50, 255);
         buildLookUp();
         initSettins();
         buildClusters();

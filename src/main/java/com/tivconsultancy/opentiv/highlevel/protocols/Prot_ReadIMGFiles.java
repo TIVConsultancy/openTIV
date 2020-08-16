@@ -48,7 +48,7 @@ public class Prot_ReadIMGFiles extends Protocol implements Serializable {
     
     public Prot_ReadIMGFiles() {
         super();
-        imgRead = new ImageInt(50, 50, 150);
+        imgRead = new ImageInt(50, 50, 255);
         buildLookUp();
         initSettings();
         buildClusters();

@@ -48,7 +48,7 @@ public class Prot_EdgeDetect extends Protocol implements Serializable{
 
     public Prot_EdgeDetect() {
         super();
-        imgEdges = new ImageInt(50, 50, 0.0);
+        imgEdges = new ImageInt(50, 50, 255);
         buildLookUp();
         initSettings();
         buildClusters();

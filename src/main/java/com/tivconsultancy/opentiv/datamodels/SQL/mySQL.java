@@ -43,18 +43,18 @@ import javax.swing.ImageIcon;
  *
  * @author TZ ThomasZiegenhein@TIVConsultancy.com +1 480 494 7254
  */
-public class mySQL implements SQLDatabase {
+public class MySQL implements SQLDatabase {
 
     private String url = "jdbc:sqlserver://;servername=DESKTOP-SB670FH\\CRYSTALLINE;databaseName=virtualreactorA";
     private String user = "Crystalline";
     private String password = "enillatsyrC01";
     private String reactor;    
 
-    public mySQL(String reactor) {
+    public MySQL(String reactor) {
         this.reactor = reactor;
     }
 
-    public mySQL(String url, String user, String password, String reactor) {
+    public MySQL(String url, String user, String password, String reactor) {
         this.url = url;
         this.user = user;
         this.password = password;

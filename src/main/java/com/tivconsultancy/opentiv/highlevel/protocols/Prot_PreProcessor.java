@@ -47,7 +47,7 @@ public class Prot_PreProcessor extends Protocol implements Serializable {
     
     public Prot_PreProcessor(){
         super();
-        preproc = new ImageInt(50, 50, 150);
+        preproc = new ImageInt(50, 50, 255);
         buildLookUp();
         initSettings();
         buildClusters();
