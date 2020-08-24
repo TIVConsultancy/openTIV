@@ -77,8 +77,8 @@ public class ImageInt extends ImageBoolean implements Serializable {
             }
         }
     }
-    
-    public ImageInt(int height,int width, byte[] a) {
+
+    public ImageInt(int height, int width, byte[] a) {
         super(height, width);
 //        if(iaa.length == 0) return;
         iaPixels = new int[height][width];
@@ -856,7 +856,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
         ImageInt sub = this.getsubArea2(me.i, me.j, dRadius);
         return sub.getGLAM(dividerGrey);
     }
-    
+
     public int[] getGLAM2(MatrixEntry me, int dRadius, int dividerGrey) {
         ImageInt sub = this.getsubArea2(me.i, me.j, dRadius);
         return sub.getGLAM2(dividerGrey);
@@ -865,14 +865,14 @@ public class ImageInt extends ImageBoolean implements Serializable {
     public int[][] getGLAM(int dividerGrey, boolean[][] shape) {
 
         int shapeSize = (int) (shape.length / 2.0);
-        
+
         int[][] reduceMatrix = new int[iaPixels.length][iaPixels[0].length];
         for (int i = 0; i < iaPixels.length; i++) {
             for (int j = 0; j < iaPixels[0].length; j++) {
                 reduceMatrix[i][j] = (int) (iaPixels[i][j] / dividerGrey);
             }
         }
-        
+
         int[][] glam = new int[(int) (255 / dividerGrey) + 1][(int) (255 / dividerGrey) + 1];
 
         for (int i = 0; i < iaPixels.length; i++) {
@@ -880,8 +880,10 @@ public class ImageInt extends ImageBoolean implements Serializable {
                 int ig = reduceMatrix[i][j];
                 for (int isub = -shapeSize; isub <= shapeSize; isub++) {
                     for (int jsub = -shapeSize; jsub <= shapeSize; jsub++) {
-                        if (this.isInside(i + isub, j + jsub) && shape[isub+shapeSize][jsub+shapeSize]) {
-                            if(isub == 0 && jsub == 0) continue;
+                        if (this.isInside(i + isub, j + jsub) && shape[isub + shapeSize][jsub + shapeSize]) {
+                            if (isub == 0 && jsub == 0) {
+                                continue;
+                            }
                             glam[ig][reduceMatrix[i + isub][j + jsub]] = glam[ig][reduceMatrix[i + isub][j + jsub]] + 1;
                         }
                     }
@@ -890,7 +892,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
         }
         return glam;
     }
-    
+
     public int[] getGLAM2(int dividerGrey) {
 
         List<boolean[][]> directions = new ArrayList<>();
@@ -902,7 +904,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
         boolean[][] shapeL = new boolean[][]{{false, false, false}, {true, false, false}, {false, false, false}};
         boolean[][] shapeLB = new boolean[][]{{false, false, false}, {false, false, false}, {true, false, false}};
         boolean[][] shapeB = new boolean[][]{{false, false, false}, {false, false, false}, {true, false, false}};
-        
+
         directions.add(shapeRB);
         directions.add(shapeR);
         directions.add(shapeRT);
@@ -911,28 +913,28 @@ public class ImageInt extends ImageBoolean implements Serializable {
         directions.add(shapeL);
         directions.add(shapeLB);
         directions.add(shapeB);
-                
+
         List<int[][]> res = new ArrayList<>();
-        for(boolean[][] shape : directions){
+        for (boolean[][] shape : directions) {
             res.add(getGLAM(dividerGrey, shape));
         }
-        
-        int[] features = new int[res.size()*res.get(0).length*res.get(0)[0].length];
-        
-        int iCounter=0;
-        for(int[][] iaa : res){
-            for(int[] ia : iaa){
-                for(int i : ia){
+
+        int[] features = new int[res.size() * res.get(0).length * res.get(0)[0].length];
+
+        int iCounter = 0;
+        for (int[][] iaa : res) {
+            for (int[] ia : iaa) {
+                for (int i : ia) {
                     features[iCounter] = i;
                     iCounter++;
                 }
             }
         }
-        
+
         return features;
-        
+
     }
-    
+
     public int[] getIGLAM(int dividerGrey) {
 
         List<boolean[][]> directions = new ArrayList<>();
@@ -944,7 +946,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
         boolean[][] shapeL = new boolean[][]{{false, false, false}, {true, false, false}, {false, false, false}};
         boolean[][] shapeLB = new boolean[][]{{false, false, false}, {false, false, false}, {true, false, false}};
         boolean[][] shapeB = new boolean[][]{{false, false, false}, {false, false, false}, {true, false, false}};
-        
+
         directions.add(shapeRB);
         directions.add(shapeR);
         directions.add(shapeRT);
@@ -953,26 +955,26 @@ public class ImageInt extends ImageBoolean implements Serializable {
         directions.add(shapeL);
         directions.add(shapeLB);
         directions.add(shapeB);
-                
+
         List<int[][]> res = new ArrayList<>();
-        for(boolean[][] shape : directions){
+        for (boolean[][] shape : directions) {
             res.add(getGLAM(dividerGrey, shape));
         }
-        
-        int[] features = new int[res.size()*res.get(0).length*res.get(0)[0].length];
-        
-        int iCounter=0;
-        for(int[][] iaa : res){
-            for(int[] ia : iaa){
-                for(int i : ia){
+
+        int[] features = new int[res.size() * res.get(0).length * res.get(0)[0].length];
+
+        int iCounter = 0;
+        for (int[][] iaa : res) {
+            for (int[] ia : iaa) {
+                for (int i : ia) {
                     features[iCounter] = i;
                     iCounter++;
                 }
             }
         }
-        
+
         return features;
-        
+
     }
 
     public void normalize() {
@@ -987,30 +989,52 @@ public class ImageInt extends ImageBoolean implements Serializable {
 
         for (int i = 0; i < iaPixels.length; i++) {
             for (int j = 0; j < iaPixels[0].length; j++) {
-                iaPixels[i][j] = (int) (iaPixels[i][j]*(255.0/iMax));
+                iaPixels[i][j] = (int) (iaPixels[i][j] * (255.0 / iMax));
             }
         }
 
     }
-    
-    public List<MatrixEntry> getPoints(int value){
+
+    public List<MatrixEntry> getPoints(int value) {
         List<MatrixEntry> lme = new ArrayList<>();
-        for(int i = 0; i < this.iaPixels.length; i++){
-            for(int j = 0; j < this.iaPixels[0].length; j++){
-                if(this.iaPixels[i][j] == value){
+        for (int i = 0; i < this.iaPixels.length; i++) {
+            for (int j = 0; j < this.iaPixels[0].length; j++) {
+                if (this.iaPixels[i][j] == value) {
                     lme.add(new MatrixEntry(i, j));
                 }
             }
         }
         return lme;
     }
-    
-    public void setField(int[][] iaField, int iStart, int jStart){
-        for(int i = 0; i<iaField.length; i++){
-            for(int j =0; j<iaField[0].length; j++){
-                this.iaPixels[iStart+i][jStart+j] = iaField[i][j];
+
+    public void setField(int[][] iaField, int iStart, int jStart) {
+        for (int i = 0; i < iaField.length; i++) {
+            for (int j = 0; j < iaField[0].length; j++) {
+                this.iaPixels[iStart + i][jStart + j] = iaField[i][j];
             }
         }
+    }
+
+    public ImageInt flip() {
+        int[][] ianew = new int[iaPixels[0].length][iaPixels.length];
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
+                ianew[j][i] = iaPixels[i][j];
+            }
+        }
+        return new ImageInt(ianew);
+    }
+
+    public ImageInt rotateImage() {
+        int[][] arr = iaPixels;
+        int[][] newArray = new int[iaPixels[0].length][iaPixels.length];
+
+        for (int i = 0; i < arr[0].length; i++) {
+            for (int j = arr.length - 1; j >= 0; j--) {
+                newArray[i][j] = arr[j][i];
+            }
+        }
+        return new ImageInt(newArray);
     }
 
 }

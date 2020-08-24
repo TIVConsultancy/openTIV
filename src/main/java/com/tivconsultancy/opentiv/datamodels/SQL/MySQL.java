@@ -15,15 +15,14 @@
  */
 package com.tivconsultancy.opentiv.datamodels.SQL;
 
+import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import static java.lang.System.in;
 import java.lang.reflect.Field;
-import java.sql.Array;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,9 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 /**
  *
@@ -45,26 +41,31 @@ import javax.swing.ImageIcon;
  */
 public class MySQL implements SQLDatabase {
 
-    private String url = "jdbc:sqlserver://;servername=DESKTOP-SB670FH\\CRYSTALLINE;databaseName=virtualreactorA";
+    private final String computerName;
+    private String url;
     private String user = "Crystalline";
     private String password = "enillatsyrC01";
-    private String reactor;    
+    private String reactor;
 
-    public MySQL(String reactor) {
+    public MySQL(String reactor) throws UnknownHostException {
+        this.computerName = InetAddress.getLocalHost().getHostName();
+        this.url = "jdbc:sqlserver://;servername="+computerName+"\\CRYSTALLINE;databaseName=virtualreactor"+reactor;        
         this.reactor = reactor;
     }
 
-    public MySQL(String url, String user, String password, String reactor) {
+    public MySQL(String url, String user, String password, String reactor) throws UnknownHostException {
+        this.computerName = InetAddress.getLocalHost().getHostName();
+        this.url = "jdbc:sqlserver://;servername="+computerName+"\\CRYSTALLINE;databaseName=virtualreactor"+reactor;        
         this.url = url;
         this.user = user;
         this.password = password;
         this.reactor = reactor;
     }
-    
-    public String getUser(){
+
+    public String getUser() {
         return user;
     }
-    
+
     /**
      * Connect to the MySQL database
      *
@@ -75,22 +76,22 @@ public class MySQL implements SQLDatabase {
         //addLibraryPath("D:\\Sync\\TIVConsultancy\\_Customers\\Technobis\\Project3\\mySQLDatabase\\sqljdbc_8.4\\enu\\auth\\x64");
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:sqlserver://;servername=DESKTOP-SB670FH\\CRYSTALLINE;databaseName=virtualreactor"+reactor+";user="+user+";password="+password);        
+            conn = DriverManager.getConnection("jdbc:sqlserver://;servername="+computerName+"\\CRYSTALLINE;databaseName=virtualreactor" + reactor + ";user=" + user + ";password=" + password);
         } catch (Exception e) {
             TIVLog.tivLogger.log(Level.SEVERE, "Cannot connect to SQL on URL: " + url, e);
         }
         return conn;
     }
-    
+
     /**
      * Connect to the MySQL database
      *
      * @param reactor
      * @return a Connection object
      */
-    public boolean ableToConnect(String reactor) {                
+    public boolean ableToConnect(String reactor) {
         try {
-            DriverManager.getConnection("jdbc:sqlserver://;servername=DESKTOP-SB670FH\\CRYSTALLINE;databaseName=virtualreactor"+reactor+";user="+user+";password="+password);        
+            DriverManager.getConnection("jdbc:sqlserver://;servername="+computerName+"\\CRYSTALLINE;databaseName=virtualreactor" + reactor + ";user=" + user + ";password=" + password);
             return true;
         } catch (Exception e) {
             return false;
@@ -100,7 +101,7 @@ public class MySQL implements SQLDatabase {
     public List<String> getColumnEntries(String tableName, String columnName) {
         return getColumnEntries("dbo", tableName, columnName);
     }
-    
+
     public List<String> getColumnEntries(String schemaName, String tableName, String columnName) {
         String sqlSelect = "SELECT " + columnName + " from " + schemaName + "." + tableName;
         List<String> lsOut = new ArrayList<>();
@@ -117,9 +118,17 @@ public class MySQL implements SQLDatabase {
         }
         return lsOut;
     }
-    
+
+    public ImageInt getRawImage(String id) throws SQLException {
+        byte[] a = getBinaryStream("SELECT RawImage FROM dbo.RawImageData WHERE ID = " + id, "RawImage");
+        int width = 640;
+        int height = 480;
+        ImageInt img = new ImageInt(height, width, a);
+        return img;
+    }
+
     public List<String> getColumnEntries(String schemaName, String tableName, String columnName, String sideCondition) {
-        String sqlSelect = "SELECT " + columnName + " from " + schemaName + "." + tableName + " " +sideCondition;
+        String sqlSelect = "SELECT " + columnName + " from " + schemaName + "." + tableName + " " + sideCondition;
         List<String> lsOut = new ArrayList<>();
         try (Connection conn = this.connect(this.reactor);
                 Statement stmt = conn.createStatement();
@@ -207,15 +216,15 @@ public class MySQL implements SQLDatabase {
             TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query list", ex);
         }
     }
-    
+
     public byte[] getBinaryStream(String sqlStatement, String Column) throws SQLException {
         BufferedImage img = null;
-        try (Connection conn = this.connect(this.reactor);PreparedStatement pstmt = conn.prepareStatement(sqlStatement); ResultSet rs = pstmt.executeQuery()) {
+        try (Connection conn = this.connect(this.reactor); PreparedStatement pstmt = conn.prepareStatement(sqlStatement); ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 Blob blob = rs.getBlob(Column);
                 byte[] a = blob.getBytes(1, (int) blob.length());
-                InputStream is = new ByteArrayInputStream(a);                
-                
+                InputStream is = new ByteArrayInputStream(a);
+
                 return a;
 //                try (InputStream is = blob.getBinaryStream()) {
 //                    return is;
@@ -224,11 +233,11 @@ public class MySQL implements SQLDatabase {
 //                }
             }
         } catch (Exception e) {
-            TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query: " +sqlStatement, e);
+            TIVLog.tivLogger.log(Level.SEVERE, "Cannot execute query: " + sqlStatement, e);
         }
         return null;
     }
-    
+
     public static void addLibraryPath(String pathToAdd) throws Exception {
         final Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
         usrPathsField.setAccessible(true);
