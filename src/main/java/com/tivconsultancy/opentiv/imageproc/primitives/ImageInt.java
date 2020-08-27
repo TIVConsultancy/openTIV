@@ -15,9 +15,11 @@
  */
 package com.tivconsultancy.opentiv.imageproc.primitives;
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.Matrix;
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader.getGrayScale;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer.castToByteprimitive;
+import com.tivconsultancy.opentiv.math.algorithms.Sorting;
 import com.tivconsultancy.opentiv.math.interfaces.SideCondition;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import com.tivconsultancy.opentiv.math.sets.Set1D;
@@ -68,14 +70,28 @@ public class ImageInt extends ImageBoolean implements Serializable {
     }
 
     public ImageInt(int[][] iaa) {
+        this(iaa, false);
+    }
+
+    public ImageInt(int[][] iaa, boolean norm) {
         super(iaa.length, iaa[0].length);
-//        if(iaa.length == 0) return;
-        iaPixels = new int[iaa.length][iaa[0].length];
-        for (int i = 0; i < iaa.length; i++) {
-            for (int j = 0; j < iaa[0].length; j++) {
-                iaPixels[i][j] = iaa[i][j];
+        if (norm) {
+            int maxVal = Matrix.getMax(iaa);
+            iaPixels = new int[iaa.length][iaa[0].length];
+            for (int i = 0; i < iaa.length; i++) {
+                for (int j = 0; j < iaa[0].length; j++) {
+                    iaPixels[i][j] = (int) ((1.0*iaa[i][j])/(1.0*maxVal)*255);
+                }
+            }
+        } else {
+            iaPixels = new int[iaa.length][iaa[0].length];
+            for (int i = 0; i < iaa.length; i++) {
+                for (int j = 0; j < iaa[0].length; j++) {
+                    iaPixels[i][j] = iaa[i][j];
+                }
             }
         }
+
     }
 
     public ImageInt(int height, int width, byte[] a) {

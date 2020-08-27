@@ -16,6 +16,7 @@
 package com.tivconsultancy.opentiv.helpfunctions.matrix;
 
 import com.tivconsultancy.opentiv.helpfunctions.strings.StringWorker;
+import com.tivconsultancy.opentiv.imageproc.primitives.ImagePoint;
 import com.tivconsultancy.opentiv.math.interfaces.*;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import java.io.Serializable;
@@ -799,6 +800,14 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
             return new MatrixEntry((int) op.y, (int) op.x, op.dValue);
         }
         return new MatrixEntry((int) op.y, (int) op.x);
+    }
+    
+    public static MatrixEntry valuOf(ImagePoint op) {
+        if (op == null) {
+            return null;
+        }
+        
+       return new MatrixEntry(op.getPos());
     }
 
 }
