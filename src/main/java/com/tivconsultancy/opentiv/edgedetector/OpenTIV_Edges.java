@@ -16,6 +16,7 @@
 package com.tivconsultancy.opentiv.edgedetector;
 
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
 import com.tivconsultancy.opentiv.helpfunctions.statistics.Basics;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.BasicIMGOper;
@@ -31,6 +32,7 @@ import com.tivconsultancy.opentiv.imageproc.contours.CPX;
 import com.tivconsultancy.opentiv.imageproc.contours.ContourSplitting;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
+import com.tivconsultancy.opentiv.imageproc.shapes.ArbStructure2;
 import com.tivconsultancy.opentiv.imageproc.shapes.Circle;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.exceptions.EmptySetException;
@@ -216,14 +218,27 @@ public class OpenTIV_Edges {
         return getEdgesTechnobis(oInput, (Integer) oSettings.getSettingsValue("OuterEdgesThreshold"));
     }
     
-    public static ImageInt fillSurrounding(ImageInt oInput){
+    public static ImageInt fillSurrounding(ImageInt oInput, int value, boolean setMarked){
         ImageInt o = oInput.clone();
         (new Morphology()).markFillN4(o, 0, 0);
         (new Morphology()).markFillN4(o, o.iaPixels.length-1, 0);
         (new Morphology()).markFillN4(o, 0, o.iaPixels[0].length-1);
-        (new Morphology()).markFillN4(o, o.iaPixels.length-1, o.iaPixels[0].length-1);        
-        Morphology.setNotMarkedPoints(o, 255);
+        (new Morphology()).markFillN4(o, o.iaPixels.length-1, o.iaPixels[0].length-1);      
+        if(setMarked){
+            Morphology.setMarkedPoints(o, value);
+        }else{
+            Morphology.setNotMarkedPoints(o, value);
+        }        
         return o;
+    }
+    
+    public static ImageInt fillSurrounding(ImageInt oInput){
+        return fillSurrounding(oInput, 255, false);
+    }
+    
+    public static ArbStructure2 fill(ImageInt oInput, MatrixEntry meSeed){
+        ImageInt o = oInput.clone();
+        return new ArbStructure2((new Morphology()).markFillN4(o, meSeed.i, meSeed.j));        
     }
 
     public static ImageInt getEdges(ImageInt oInput, Settings oSettings) throws IOException, EmptySetException {

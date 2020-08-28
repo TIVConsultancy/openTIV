@@ -372,7 +372,7 @@ public class Morphology implements Serializable{
         }
     }
 
-    public static void setmarkedPoints(ImageInt oInput, int iValue) {
+    public static void setMarkedPoints(ImageInt oInput, int iValue) {
         for (int i = 0; i < oInput.iaPixels.length; i++) {
             for (int j = 0; j < oInput.iaPixels[0].length; j++) {
                 if (oInput.baMarker[i][j]) {

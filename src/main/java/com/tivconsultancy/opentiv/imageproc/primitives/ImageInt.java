@@ -80,7 +80,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
             iaPixels = new int[iaa.length][iaa[0].length];
             for (int i = 0; i < iaa.length; i++) {
                 for (int j = 0; j < iaa[0].length; j++) {
-                    iaPixels[i][j] = (int) ((1.0*iaa[i][j])/(1.0*maxVal)*255);
+                    iaPixels[i][j] = (int) ((1.0 * iaa[i][j]) / (1.0 * maxVal) * 255);
                 }
             }
         } else {
@@ -560,11 +560,32 @@ public class ImageInt extends ImageBoolean implements Serializable {
     }
 
     public void setPoints(List<MatrixEntry> lme, int iValue) {
-        for (MatrixEntry me : lme) {
-            if (me.i >= 0 && me.j >= 0 && me.i < iaPixels.length && me.j < iaPixels[0].length) {
-                iaPixels[me.i][me.j] = iValue;
+        setPoints(lme, iValue, 0);
+//        for (MatrixEntry me : lme) {
+//            if (me.i >= 0 && me.j >= 0 && me.i < iaPixels.length && me.j < iaPixels[0].length) {
+//                iaPixels[me.i][me.j] = iValue;
+//            }
+//        }
+    }
+
+    public void setPoints(List<MatrixEntry> lme, int iValue, int iRadius) {
+        if (iRadius == 0) {
+            for (MatrixEntry me : lme) {
+                if (me.i >= 0 && me.j >= 0 && me.i < iaPixels.length && me.j < iaPixels[0].length) {
+                    iaPixels[me.i][me.j] = iValue;
+                }
+            }
+        } else {
+            for (MatrixEntry meO : lme) {
+                if (meO.i >= 0 && meO.j >= 0 && meO.i < iaPixels.length && meO.j < iaPixels[0].length) {
+                    List<MatrixEntry> expand = this.getsubArea(meO.i, meO.j, iRadius);
+                    for (MatrixEntry me : expand) {
+                        iaPixels[me.i][me.j] = iValue;
+                    }
+                }
             }
         }
+
     }
 
     public void setPointsIMGP(List<ImagePoint> lme, int iValue) {
