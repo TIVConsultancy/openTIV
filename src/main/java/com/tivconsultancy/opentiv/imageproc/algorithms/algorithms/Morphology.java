@@ -97,17 +97,23 @@ public class Morphology implements Serializable{
         oInput.resetMarkers();
     }
 
-    public static void erosion(ImageInt oInput) {
+    public static void erosion(ImageInt oInput) {        
         oInput.resetMarkers();
         for (int i = 0; i < oInput.iaPixels.length; i++) {
             for (int j = 0; j < oInput.iaPixels[0].length; j++) {
-                if (oInput.iaPixels[i][j] < 127 && !oInput.baMarker[i][j]) {
+                if (oInput.iaPixels[i][j] < 127) {
                     oInput.baMarker[i][j] = true;
-                    oInput.setNeighborsN8(i, j, 0);
-                    oInput.setNeighborsN8(i, j, true);
                 }
             }
         }
+        for (int i = 0; i < oInput.iaPixels.length; i++) {
+            for (int j = 0; j < oInput.iaPixels[0].length; j++) {
+                if (oInput.baMarker[i][j]) {
+                    oInput.setNeighborsN8(i, j, 0);
+                }
+            }
+        }
+        
         oInput.resetMarkers();
     }
 

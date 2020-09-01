@@ -166,6 +166,16 @@ public class LookUp<T> implements Serializable {
         }
     }
     
+    public boolean remove(T obj){
+        NameObject o = get(obj);
+        if(o != null){
+            lo.remove(o);
+            return true;
+        }else{
+            return false;            
+        }        
+    }
+    
     public boolean set(String name ,T toSet){
         if(getEntry(name) == null){
             return false;
@@ -197,6 +207,15 @@ public class LookUp<T> implements Serializable {
         }
         Writer w = new Writer(f);
         w.write(ls);
+    }
+    
+    public NameObject getLast(){
+        if(lo.size() == 0) return null;
+        return this.lo.get(lo.size()-1);
+    }
+    
+    public boolean isEmpty(){
+        return this.lo.isEmpty();
     }
 
 }

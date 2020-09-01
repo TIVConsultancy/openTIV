@@ -1848,9 +1848,39 @@ public class Entries {
         return iC;
     }
     
+    public static void setPoints(List<MatrixEntry> lme, int[][] input, int iValue, int iRadius) {
+        if (iRadius == 0) {
+            for (MatrixEntry me : lme) {
+                if (me.i >= 0 && me.j >= 0 && me.i < input.length && me.j < input[0].length) {
+                    input[me.i][me.j] = iValue;
+                }
+            }
+        } else {
+            for (MatrixEntry meO : lme) {
+                if (meO.i >= 0 && meO.j >= 0 && meO.i < input.length && meO.j < input[0].length) {
+                    List<MatrixEntry> expand = getsubArea(meO.i, meO.j, iRadius, input);
+                    for (MatrixEntry me : expand) {
+                        input[me.i][me.j] = iValue;
+                    }
+                }
+            }
+        }
+    }
+    
+    public static List<MatrixEntry> getsubArea(int iCenter, int jCenter, int iRadius, int[][] input) {
+        List<MatrixEntry> lmeReturn = new ArrayList<>();
+        for (int i = Math.max(iCenter - iRadius, 0); i < Math.min(iCenter + iRadius, input.length); i++) {
+            for (int j = Math.max(jCenter - iRadius, 0); j < Math.min(jCenter + iRadius, input[0].length); j++) {
+                lmeReturn.add(new MatrixEntry(i, j, input[i][j]));
+            }
+        }
+        return lmeReturn;
+    }
+    
     public static interface OperationME {        
         public MatrixEntry perform(MatrixEntry me, MatrixEntry me1);        
     }
+        
 
     /*      static public int[][] getArea(int[][] array, OrderedPair leftUp, OrderedPair rightDown){
     

@@ -41,6 +41,22 @@ public class MatrixGenerator {
 
         return iaReturn;
     }
+    
+    public static int[][] createInteger(int iSizeX, int iSizeY, int iValue) {
+        int[][] iaReturn = new int[iSizeY][iSizeX];
+
+        for (int i = 0; i < iSizeY; i++) {
+
+            for (int j = 0; j < iSizeX; j++) {
+
+                iaReturn[i][j] = iValue;
+
+            }
+
+        }
+
+        return iaReturn;
+    }
 
     public static double[][] createQuadraticEqualizationMatrix(int iSize) {
 

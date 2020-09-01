@@ -585,7 +585,6 @@ public class ImageInt extends ImageBoolean implements Serializable {
                 }
             }
         }
-
     }
 
     public void setPointsIMGP(List<ImagePoint> lme, int iValue) {
