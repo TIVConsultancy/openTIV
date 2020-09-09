@@ -1365,7 +1365,7 @@ public class Matrix {
     }
     
     public static double getMax(double[][] iaInput) {
-        double max = Integer.MIN_VALUE;
+        double max = -1.0*Double.MAX_VALUE;
 
         for (double[] i : iaInput) {
             for (double j : i) {
@@ -2310,7 +2310,6 @@ public class Matrix {
         int j = (int) mpPoint.j;
 
         boolean bInBounds = false;
-
         if (i >= 0 && j >= 0) {
 
             if ((int) i < iaInput.length) {
@@ -2324,7 +2323,29 @@ public class Matrix {
             }
 
         }
+        return bInBounds;
 
+    }
+    
+    public static boolean inBounds(double[][] iaInput, MatrixEntry mpPoint) {
+
+        int i = (int) mpPoint.i;
+        int j = (int) mpPoint.j;
+
+        boolean bInBounds = false;
+        if (i >= 0 && j >= 0) {
+
+            if ((int) i < iaInput.length) {
+
+                if ((int) j < iaInput[0].length) {
+
+                    bInBounds = true;
+
+                }
+
+            }
+
+        }
         return bInBounds;
 
     }
@@ -2680,6 +2701,22 @@ public class Matrix {
         }
 
         return iaReturn;
+    }
+    
+    public static double[][] multiplication(double[][] daInput1, double value) {
+
+        double[][] daReturn = new double[daInput1.length][daInput1[0].length];
+
+        for (int i = 0; i < daInput1.length; i++) {
+
+            for (int j = 0; j < daInput1[0].length; j++) {
+
+                daReturn[i][j] = daInput1[i][j] * value;
+            }
+
+        }
+
+        return daReturn;
     }
 
     public static int[][] reshape(int[][] iaInput, int i1, int j1, int i2, int j2) {

@@ -1015,20 +1015,23 @@ public class ImageInt extends ImageBoolean implements Serializable {
 
     public void normalize() {
         int iMax = 0;
+        int iMin = Integer.MAX_VALUE;
         for (int i = 0; i < iaPixels.length; i++) {
             for (int j = 0; j < iaPixels[0].length; j++) {
                 if (iMax < iaPixels[i][j]) {
                     iMax = iaPixels[i][j];
+                }
+                if (iMin > iaPixels[i][j]) {
+                    iMin = iaPixels[i][j];
                 }
             }
         }
 
         for (int i = 0; i < iaPixels.length; i++) {
             for (int j = 0; j < iaPixels[0].length; j++) {
-                iaPixels[i][j] = (int) (iaPixels[i][j] * (255.0 / iMax));
+                iaPixels[i][j] = (int) ( (Math.abs(iMin) + iaPixels[i][j]) * (255.0 / (iMax+Math.abs(iMin))));
             }
         }
-
     }
 
     public List<MatrixEntry> getPoints(int value) {

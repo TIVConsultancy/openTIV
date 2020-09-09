@@ -143,6 +143,7 @@ public class StringWorker {
     public static List<String> separate(String sLine, String sDelimiter) {
 
         List<String> lsTemp = new ArrayList<String>();
+        sLine.split(sDelimiter);
         if (sLine != null && !sLine.isEmpty()) {
             Scanner oScanner = new Scanner(sLine);
             oScanner = oScanner.useDelimiter(sDelimiter);
