@@ -87,7 +87,7 @@ public class Convolution {
             return null;
         }
 
-    }
+    }                
     
     public static double[][] Convolution(double[][] daInput, final double[][] daConvolution) {
 
@@ -470,6 +470,101 @@ public class Convolution {
         }
 
     }
+    
+    public static double[][] Convolution(double[][] iaInput, final int[][] iaConvolution) {
+
+        if (iaInput.length >= iaConvolution.length && iaInput[0].length >= iaConvolution[0].length) {
+            double[][] daReturn = new double[iaInput.length][iaInput[0].length];
+
+            for (int i = 0; i < daReturn.length; i++) {
+
+                for (int j = 0; j < daReturn[0].length; j++) {
+
+                    int iMDown = (int) (i - Math.floor(((double) iaConvolution.length - 1) / 2.0));
+
+                    int iMUp = (int) (i + Math.round(((double) iaConvolution.length - 1) / 2.0));
+
+                    // System.out.println("UpdDown");
+                    // System.out.println(iMDown + "|" + i + "|" + iMUp);
+
+                    /*if ((iMUp - iMDown) < (iaConvolution.length-1)){
+                     System.out.println("boing");
+                     iMUp = iMUp +1;
+                     }*/
+
+ /*if (iMDown < 0) {
+                     iMDown = 0;
+                     }
+
+                     if (iMUp > iaInput.length) {
+                     iMUp = iaInput.length;
+                     }*/
+                    int jMLeft = (int) (j - Math.floor(((double) iaConvolution[0].length - 1) / 2.0));
+
+                    int jMRight = (int) (j + Math.round(((double) iaConvolution[0].length - 1) / 2.0));
+
+                    //System.out.println(jMLeft + "|" + j + "|" + jMRight);
+
+                    /*if (jMLeft < 0) {
+                     jMLeft = 0;
+                     }
+
+                     if (jMRight > iaInput[0].length) {
+                     jMRight = iaInput[0].length;
+                     }*/
+                    double dTemp = 0;
+
+                    int iIrunner = 0;
+
+                    int iMClean = 0;
+
+                    for (int iM = iMDown; iM <= iMUp; iM++) {
+
+                        if (iM < 0) {
+                            iMClean = iaInput.length + iM;
+                        } else if (iM >= iaInput.length) {
+                            iMClean = (iM - iaInput.length);
+                        } else {
+                            iMClean = iM;
+                        }
+
+                        int iJRunner = 0;
+
+                        int jMClean = 0;
+
+                        for (int jM = jMLeft; jM <= jMRight; jM++) {
+
+                            if (jM < 0) {
+                                jMClean = iaInput[0].length + jM;
+                            } else if (jM >= iaInput[0].length) {
+                                jMClean = (jM - iaInput[0].length);
+                            } else {
+                                jMClean = jM;
+                            }
+
+                            //System.out.println(daConvolution[iIrunner][iJRunner]);
+                            dTemp = dTemp + iaInput[iMClean][jMClean] * iaConvolution[iIrunner][iJRunner];
+
+                            iJRunner = iJRunner + 1;
+
+                        }
+
+                        iIrunner = iIrunner + 1;
+
+                    }
+
+                    //System.out.println(dTemp);
+                    daReturn[i][j] = dTemp;
+
+                }
+
+            }
+            return (daReturn);
+        } else {
+            return null;
+        }
+
+    }
 
     public static void Convolution2(int[][] iaInput, final double[][] daConvolution) {
 
@@ -587,6 +682,112 @@ public class Convolution {
                          jMRight = iaInput[0].length;
                          }*/
                         int dTemp = 0;
+
+                        int iIrunner = 0;
+
+                        int iMClean = 0;
+
+                        for (int iM = iMDown; iM <= iMUp; iM++) {
+
+                            if (iM < 0) {
+                                iMClean = iaInput.length + iM;
+                            } else if (iM >= iaInput.length) {
+                                iMClean = (iM - iaInput.length);
+                            } else {
+                                iMClean = iM;
+                            }
+
+                            int iJRunner = 0;
+
+                            int jMClean = 0;
+
+                            for (int jM = jMLeft; jM <= jMRight; jM++) {
+
+                                if (jM < 0) {
+                                    jMClean = iaInput[0].length + jM;
+                                } else if (jM >= iaInput[0].length) {
+                                    jMClean = (jM - iaInput[0].length);
+                                } else {
+                                    jMClean = jM;
+                                }
+
+                                //System.out.println(daConvolution[iIrunner][iJRunner]);
+                                dTemp = dTemp + iaInput[iMClean][jMClean] * iaConvolution[iIrunner][iJRunner];
+
+                                iJRunner = iJRunner + 1;
+
+                            }
+
+                            iIrunner = iIrunner + 1;
+
+                        }
+
+                        //System.out.println(dTemp);
+                        iaReturn[i][j] = dTemp;
+
+                    }
+                }
+
+            });
+
+            return (iaReturn);
+        } else {
+            return null;
+        }
+
+    }
+    
+    public static double[][] ConvolutionParallel(final double[][] iaInput, final int[][] iaConvolution) {
+
+        if (iaInput.length >= iaConvolution.length && iaInput[0].length >= iaConvolution[0].length) {
+            final double[][] iaReturn = new double[iaInput.length][iaInput[0].length];
+
+            Collection<Integer> elems = new LinkedList<Integer>();
+
+            for (int i = 0; i < iaReturn.length; i++) {
+                elems.add(i);
+            }
+
+            Parallel.For(elems, new Parallel.Operation<Integer>() {
+
+                @Override
+                public void perform(Integer pParameter) {
+                    int i = pParameter;
+                    for (int j = 0; j < iaReturn[0].length; j++) {
+
+                        int iMDown = (int) (i - Math.floor(((double) iaConvolution.length - 1) / 2.0));
+
+                        int iMUp = (int) (i + Math.round(((double) iaConvolution.length - 1) / 2.0));
+
+                        // System.out.println("UpdDown");
+                        // System.out.println(iMDown + "|" + i + "|" + iMUp);
+
+                        /*if ((iMUp - iMDown) < (iaConvolution.length-1)){
+                         System.out.println("boing");
+                         iMUp = iMUp +1;
+                         }*/
+
+ /*if (iMDown < 0) {
+                         iMDown = 0;
+                         }
+
+                         if (iMUp > iaInput.length) {
+                         iMUp = iaInput.length;
+                         }*/
+                        int jMLeft = (int) (j - Math.floor(((double) iaConvolution[0].length - 1) / 2.0));
+
+                        int jMRight = (int) (j + Math.round(((double) iaConvolution[0].length - 1) / 2.0));
+
+                        //System.out.println(jMLeft + "|" + j + "|" + jMRight);
+
+                        /*if (jMLeft < 0) {
+                         jMLeft = 0;
+                         }
+
+                         if (jMRight > iaInput[0].length) {
+                         jMRight = iaInput[0].length;
+                         }*/
+                        double dTemp = 0;
 
                         int iIrunner = 0;
 

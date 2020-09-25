@@ -1075,5 +1075,15 @@ public class ImageInt extends ImageBoolean implements Serializable {
         }
         return new ImageInt(newArray);
     }
+    
+    public ImageInt scale(int scaledWidth, int scaledHeight) {
+        BufferedImage inputImage = this.getBuffImage();
+        BufferedImage outputImage = new BufferedImage(scaledWidth,
+                                                      scaledHeight, inputImage.getType());
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+        return new ImageInt(outputImage);
+    }
 
 }

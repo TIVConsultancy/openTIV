@@ -328,17 +328,17 @@ public class MatrixOperations {
 
     }
 
-    public static int[] Multiplication(int[] naInput1, double iMulti) {
+    public static double[] Multiplication(int[] naInput1, double iMulti) {
         /**
          * daInput1 * dMulti
          */
-        int[] iaOutput = new int[naInput1.length];
+        double[] iaOutput = new double[naInput1.length];
 
         int iRowNumber = naInput1.length;
 
         for (int i = 0; i < iRowNumber; i++) {
 
-            iaOutput[i] = (int) (naInput1[i] * iMulti);
+            iaOutput[i] = (naInput1[i] * iMulti);
 
         }
 
@@ -400,11 +400,11 @@ public class MatrixOperations {
 
     }
 
-    public static int[][] Multiplication(int[][] naInput1, double iMulti) {
+    public static double[][] Multiplication(int[][] naInput1, double iMulti) {
         /**
          * daInput1 * dMulti
          */
-        int[][] iaOutput = new int[naInput1.length][naInput1[0].length];
+        double[][] iaOutput = new double[naInput1.length][naInput1[0].length];
 
         int iRowNumber = naInput1.length;
 
@@ -414,7 +414,7 @@ public class MatrixOperations {
 
         }
 
-        return (iaOutput);
+        return iaOutput;
 
     }
 
