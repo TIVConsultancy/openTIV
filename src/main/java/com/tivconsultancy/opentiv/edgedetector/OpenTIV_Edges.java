@@ -15,7 +15,6 @@
  */
 package com.tivconsultancy.opentiv.edgedetector;
 
-
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
 import com.tivconsultancy.opentiv.helpfunctions.statistics.Basics;
@@ -35,7 +34,9 @@ import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.shapes.ArbStructure2;
 import com.tivconsultancy.opentiv.imageproc.shapes.Circle;
 import com.tivconsultancy.opentiv.logging.TIVLog;
+import com.tivconsultancy.opentiv.math.algorithms.Sorting;
 import com.tivconsultancy.opentiv.math.exceptions.EmptySetException;
+import com.tivconsultancy.opentiv.math.specials.EnumObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -84,8 +85,7 @@ public class OpenTIV_Edges {
     }
 
     public static ImageInt performEdgeOperations(Settings oSettings, ImageInt oEdgesInput, ImageInt SourceImage) {
-                        
-        
+
 //        Logger log = setupLogger(oSettings);
 //        Stopwatch.addTimmer("EgdeOperations");
         ImageGrid oEdges = new ImageGrid(oEdgesInput.iaPixels);
@@ -155,10 +155,10 @@ public class OpenTIV_Edges {
                 if (Boolean.valueOf(String.valueOf(oSettings.getSettingsValue("SplitByCurv")))) {
                     allContours = splitByCurve(allContours, oEdges, Integer.valueOf(oSettings.getSettingsValue("OrderCurvature").toString()), Double.valueOf(oSettings.getSettingsValue("ThresCurvSplitting").toString()));
                 }
-                if (Boolean.valueOf(String.valueOf( oSettings.getSettingsValue("RemoveWeakEdges")))) {
+                if (Boolean.valueOf(String.valueOf(oSettings.getSettingsValue("RemoveWeakEdges")))) {
                     allContours = RemoveWeakEdges(allContours, Integer.valueOf(oSettings.getSettingsValue("ThresWeakEdges").toString()), SourceImage);
                 }
-                if (Boolean.valueOf( String.valueOf(oSettings.getSettingsValue("SortOutSmallEdges")))) {
+                if (Boolean.valueOf(String.valueOf(oSettings.getSettingsValue("SortOutSmallEdges")))) {
                     allContours = sortoutSmallEdges(allContours, (Integer) oSettings.getSettingsValue("MinSize"));
                 }
             }
@@ -213,32 +213,64 @@ public class OpenTIV_Edges {
         return EdgeDetections.getEdges(oInput, (Integer) oSettings.getSettingsValue("OuterEdgesThreshold"));
 //        return getEdges(oInput, oSettings);
     }
-    
+
     public static ImageInt getTechnobisEdges(ImageInt oInput, Settings oSettings) throws IOException, EmptySetException {
         return getEdgesTechnobis(oInput, (Integer) oSettings.getSettingsValue("OuterEdgesThreshold"));
     }
-    
-    public static ImageInt fillSurrounding(ImageInt oInput, int value, boolean setMarked){
+
+    public static ImageInt fillSurrounding(ImageInt oInput, int value, boolean setMarked) {
         ImageInt o = oInput.clone();
         (new Morphology()).markFillN4(o, 0, 0);
-        (new Morphology()).markFillN4(o, o.iaPixels.length-1, 0);
-        (new Morphology()).markFillN4(o, 0, o.iaPixels[0].length-1);
-        (new Morphology()).markFillN4(o, o.iaPixels.length-1, o.iaPixels[0].length-1);      
-        if(setMarked){
+        (new Morphology()).markFillN4(o, o.iaPixels.length - 1, 0);
+        (new Morphology()).markFillN4(o, 0, o.iaPixels[0].length - 1);
+        (new Morphology()).markFillN4(o, o.iaPixels.length - 1, o.iaPixels[0].length - 1);
+        if (setMarked) {
             Morphology.setMarkedPoints(o, value);
-        }else{
+        } else {
             Morphology.setNotMarkedPoints(o, value);
-        }        
+        }
         return o;
     }
-    
-    public static ImageInt fillSurrounding(ImageInt oInput){
+
+    public static ImageInt fillSurrounding2(ImageInt oInput, int value, boolean setMarked) {
+        ImageInt o = oInput.clone();
+        ImageInt o2 = oInput.clone();
+        List<List<MatrixEntry>> llme = new ArrayList<>();
+        List<MatrixEntry> largest = null;
+        llme.add((new Morphology()).markFillN4(o, 0, 0));
+        llme.add((new Morphology()).markFillN4(o, o.iaPixels.length - 1, 0));
+        llme.add((new Morphology()).markFillN4(o, 0, o.iaPixels[0].length - 1));
+        llme.add((new Morphology()).markFillN4(o, o.iaPixels.length - 1, o.iaPixels[0].length - 1));
+        try {
+            EnumObject e = Sorting.getMaxCharacteristic(llme, new Sorting.Characteristic() {
+                @Override
+                public Double getCharacteristicValue(Object pParameter) {
+                    return (double)((List<MatrixEntry>) pParameter).size();
+                }
+            });
+            largest = (List<MatrixEntry>) e.o;
+        } catch (EmptySetException ex) {
+            Logger.getLogger(OpenTIV_Edges.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(largest == null) return o2;
+        
+        o2.markPoints(largest, true);
+        
+        if (setMarked) {
+            Morphology.setMarkedPoints(o2, value);
+        } else {
+            Morphology.setNotMarkedPoints(o2, value);
+        }
+        return o2;
+    }
+
+    public static ImageInt fillSurrounding(ImageInt oInput) {
         return fillSurrounding(oInput, 255, false);
     }
-    
-    public static ArbStructure2 fill(ImageInt oInput, MatrixEntry meSeed){
+
+    public static ArbStructure2 fill(ImageInt oInput, MatrixEntry meSeed) {
         ImageInt o = oInput.clone();
-        return new ArbStructure2((new Morphology()).markFillN4(o, meSeed.i, meSeed.j));        
+        return new ArbStructure2((new Morphology()).markFillN4(o, meSeed.i, meSeed.j));
     }
 
     public static ImageInt getEdges(ImageInt oInput, Settings oSettings) throws IOException, EmptySetException {
@@ -293,7 +325,7 @@ public class OpenTIV_Edges {
         ImageGrid oSourceGrid = new ImageGrid(oSource.iaPixels);
         for (CPX o : loInput) {
             List<Double> ldEdgeStrength = o.getEdgeStrength(oSourceGrid);
-            Double d50Edge = Basics.median(ldEdgeStrength);            
+            Double d50Edge = Basics.median(ldEdgeStrength);
             if (d50Edge != null && d50Edge > iEdgeThres) {
                 loReturn.add(o);
             }
@@ -317,7 +349,7 @@ public class OpenTIV_Edges {
         oBlackBGrid = Ziegenhein_2018.closeOpenContourLinear(oBlackBGrid, iDist);
         return BasicOperations.getAllContours(oBlackBGrid);
     }
-    
+
     public static List<CPX> connectContours(List<CPX> loInput, int iLength, int jLength, int iDist) throws EmptySetException {
         ImageGrid oBlackBGrid = new ImageGrid(iLength, jLength);
         CPX.setOnGrid(oBlackBGrid, loInput, 255);
@@ -335,7 +367,7 @@ public class OpenTIV_Edges {
         return log;
     }
 
-    public static class ReturnCotnainer_EllipseFit implements Serializable{
+    public static class ReturnCotnainer_EllipseFit implements Serializable {
 
         private static final long serialVersionUID = -394283629933680489L;
 

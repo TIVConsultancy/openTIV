@@ -15,7 +15,9 @@
  */
 package com.tivconsultancy.opentiv.imageproc.primitives;
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  *
@@ -40,6 +42,12 @@ public class ImageBoolean implements Serializable{
         baMarker = bba;
     }
     
+    public void markPoints(List<MatrixEntry> lme, boolean b){
+        for(MatrixEntry me : lme){
+            baMarker[me.i][me.j] = b;
+        }
+    }
+    
     public static ImageBoolean valueOf(ImageInt img) {
         ImageBoolean imgReturn = new ImageBoolean(img.baMarker.length, img.baMarker[0].length);
         for (int i = 0; i < img.baMarker.length; i++) {
@@ -48,6 +56,6 @@ public class ImageBoolean implements Serializable{
             }
         }
         return imgReturn;
-    }
+    }        
     
 }
