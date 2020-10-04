@@ -395,6 +395,74 @@ public class ImageInt extends ImageBoolean implements Serializable {
             iaPixels[i + 1][j + 1] = iValue;
         }
     }
+    
+    public void setNeighborsN8(int i, int j, int iValue, SideCondition<MatrixEntry> o) {
+        /*
+         Resturn array list with counter clockwise order:
+         3--2--1
+         4-- --0
+         5--6--7
+        
+         Values are null when on boundary
+         */
+
+        List<MatrixEntry> lo = new ArrayList<>();
+        if (j >= iaPixels[i].length - 1) {
+        } else {
+            if (o.check(new MatrixEntry(i, j + 1))) {
+                iaPixels[i][j + 1] = iValue;
+            }            
+        }
+
+        if (j >= iaPixels[i].length - 1 || i <= 0) {
+        } else {
+            if (o.check(new MatrixEntry(i - 1, j + 1))) {
+                iaPixels[i - 1][j + 1] = iValue;
+            }            
+        }
+
+        if (i <= 0) {
+        } else {
+            if (o.check(new MatrixEntry(i - 1, j))) {
+                iaPixels[i - 1][j] = iValue;
+            }            
+        }
+
+        if (j <= 0 || i <= 0) {
+        } else {
+            if (o.check(new MatrixEntry(i - 1, j - 1))) {
+                iaPixels[i - 1][j - 1] = iValue;
+            }            
+        }
+
+        if (j <= 0) {
+        } else {
+            if (o.check(new MatrixEntry(i, j - 1))) {
+                iaPixels[i][j - 1] = iValue;
+            }            
+        }
+
+        if (j <= 0 || i >= iaPixels.length - 1) {
+        } else {
+            if (o.check(new MatrixEntry(i + 1, j - 1))) {
+                iaPixels[i + 1][j - 1] = iValue;
+            }            
+        }
+
+        if (i >= iaPixels.length - 1) {
+        } else {
+            if (o.check(new MatrixEntry(i + 1, j))) {
+                iaPixels[i + 1][j] = iValue;    
+            }            
+        }
+
+        if (i >= iaPixels.length - 1 || j >= iaPixels[i].length - 1) {
+        } else {
+            if (o.check(new MatrixEntry(i + 1, j + 1))) {
+                iaPixels[i + 1][j + 1] = iValue;
+            }            
+        }
+    }
 
     public void setNeighborsN8(int i, int j, boolean bValue) {
         /*

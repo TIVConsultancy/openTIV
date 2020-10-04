@@ -65,17 +65,42 @@ public class Morphology implements Serializable{
     }
 
     public static void dilatation(ImageInt oInput) {
+        dilatation(oInput, 255, 128);
+    }
+    
+    public static void dilatation(ImageInt oInput, int value, int threshold) {
         oInput.resetMarkers();
         for (int i = 0; i < oInput.iaPixels.length; i++) {
             for (int j = 0; j < oInput.iaPixels[0].length; j++) {
-                if (oInput.iaPixels[i][j] > 127 && !oInput.baMarker[i][j]) {
+                if (oInput.iaPixels[i][j] >= threshold && !oInput.baMarker[i][j]) {
                     oInput.baMarker[i][j] = true;
-                    oInput.setNeighborsN8(i, j, 255);
+                    oInput.setNeighborsN8(i, j, value);
                     oInput.setNeighborsN8(i, j, true);
                 }
             }
         }
-
+        oInput.resetMarkers();
+    }
+    
+    public static void dilatation2(ImageInt oInput, int value, int threshold) {
+        oInput.resetMarkers();
+        ImageInt temp = oInput.clone();
+        for (int i = 0; i < oInput.iaPixels.length; i++) {
+            for (int j = 0; j < oInput.iaPixels[0].length; j++) {
+                if (temp.iaPixels[i][j] >= threshold && !temp.baMarker[i][j]) {
+                    oInput.baMarker[i][j] = true;
+                    SideCondition<MatrixEntry> side = new SideCondition<MatrixEntry>() {
+                        @Override
+                        public boolean check(MatrixEntry pParameter) {
+                            return oInput.getValue(pParameter) <= threshold;
+                        }
+                    };
+                    oInput.setNeighborsN8(i, j, value, side);
+//                    System.out.println(i);
+//                    System.out.println(oInput.iaPixels[i][j]);
+                }
+            }
+        }
         oInput.resetMarkers();
     }
 
