@@ -15,11 +15,13 @@
  */
 package com.tivconsultancy.opentiv.imageproc.contours;
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.EdgeDetections;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.N8;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Ziegenhein_2018;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Ziegenhein_2018.CNCP;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
+import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImagePoint;
 import com.tivconsultancy.opentiv.imageproc.shapes.Line2;
 import com.tivconsultancy.opentiv.math.algorithms.Sorting;
@@ -78,6 +80,15 @@ public class CPX implements Normable<CPX>, Serializable {
         loPoints.addAll(lo);
         return loPoints;
     }
+    
+    public List<MatrixEntry> getPointsME() {        
+        List<MatrixEntry> loPoints = new ArrayList<>();
+        loPoints.add(oStart.getME());
+        for(ImagePoint op : lo){
+            loPoints.add(op.getME());
+        }        
+        return loPoints;
+    }        
 
     public static boolean checkIfStart(ImagePoint o) {
         N8 oN8 = new N8(o.getGrid(), o);

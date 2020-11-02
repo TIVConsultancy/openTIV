@@ -20,11 +20,14 @@ import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
 import com.tivconsultancy.opentiv.helpfunctions.strings.StringWorker;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.HistogramOperations;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.NoiseReduction;
+import com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer;
 import com.tivconsultancy.opentiv.imageproc.img_properties.GrayHistogram;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.functions.Spline;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -144,7 +147,7 @@ public class OpenTIV_PreProc {
                 oInput = oInput.getsubX(0, iCutRight - iCutLeft);
             }
         }
-
+        
         return oInput;
     }
 

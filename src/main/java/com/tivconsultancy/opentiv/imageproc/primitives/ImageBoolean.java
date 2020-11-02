@@ -43,7 +43,7 @@ public class ImageBoolean implements Serializable{
     }
     
     public void markPoints(List<MatrixEntry> lme, boolean b){
-        for(MatrixEntry me : lme){
+        for(MatrixEntry me : lme){            
             baMarker[me.i][me.j] = b;
         }
     }
@@ -56,6 +56,10 @@ public class ImageBoolean implements Serializable{
             }
         }
         return imgReturn;
-    }        
+    }
+    
+    public boolean getBool(MatrixEntry me){
+        return this.baMarker[me.i][me.j];
+    }
     
 }

@@ -16,9 +16,12 @@
 package com.tivconsultancy.opentiv.imageproc.shapes;
 
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
+import com.tivconsultancy.opentiv.imageproc.primitives.ImageBoolean;
+import com.tivconsultancy.opentiv.math.primitives.ObjectPair;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import com.tivconsultancy.opentiv.math.sets.Set1D;
 import com.tivconsultancy.opentiv.math.sets.Set2D;
+import com.tivconsultancy.opentiv.math.specials.EnumObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,17 +46,17 @@ public class ArbStructure2 implements Shape, Serializable {
             }
         }
     }
-    
-    public OrderedPair getPosition(){
+
+    public OrderedPair getPosition() {
         double dX = 0.0;
         double dY = 0.0;
         double dCounter = 0.0;
-        for(MatrixEntry me : loPoints){
+        for (MatrixEntry me : loPoints) {
             dX = dX + me.j;
             dY = dY + me.i;
             dCounter++;
         }
-        return new OrderedPair(dX/dCounter, dY/dCounter);
+        return new OrderedPair(dX / dCounter, dY / dCounter);
     }
 
     public List<MatrixEntry> getBoundingBox() {
@@ -89,16 +92,47 @@ public class ArbStructure2 implements Shape, Serializable {
         lmeBox.add(rightBottomCorner);
         return lmeBox;
     }
-    
-    public Set2D getBoundBoxSet(){
+
+    public Set2D getBoundBoxSet() {
         List<MatrixEntry> lmeBoundBox = getBoundingBox();
         Set1D x = new Set1D(lmeBoundBox.get(0).j, lmeBoundBox.get(1).j);
         Set1D y = new Set1D(lmeBoundBox.get(0).i, lmeBoundBox.get(1).i);
         return new Set2D(x, y);
     }
 
+    public boolean containsPoint(List<MatrixEntry> lme, int iMax, int jMax) {
+        ArbStructure2 temp = new ArbStructure2(lme);
+        if (!temp.getBoundBoxSet().overlap(this.getBoundBoxSet())) {
+            return false;
+        }
+        ImageBoolean set = new ImageBoolean(iMax, jMax);
+        set.markPoints(this.loPoints, true);
+        for (MatrixEntry me : lme) {
+            if (set.getBool(me)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /*
+    * Brut force, improve!
+    */
+    public EnumObject getDistance(ArbStructure2 arb){
+        EnumObject minDist = new EnumObject(Double.MAX_VALUE, null);
+        for(MatrixEntry meOutside : this.loPoints){
+            for(MatrixEntry meInside : arb.loPoints){
+                double dist = meOutside.SecondCartesian(meInside);
+                if(dist<minDist.dEnum){
+                    minDist = new EnumObject(dist, new ObjectPair(meOutside, meInside));
+                }                
+            }
+        }
+        return minDist;
+    }
+
     @Override
-    public double getSize() {        
+    public double getSize() {
         return Math.sqrt(loPoints.size() / Math.PI);
     }
 

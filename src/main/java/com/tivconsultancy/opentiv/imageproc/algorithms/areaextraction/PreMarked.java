@@ -27,12 +27,18 @@ import java.util.List;
  * @author Thomas Ziegenhein
  */
 public class PreMarked {
-    public static List<ArbStructure2> getAreasBlackOnWhite(ImageInt Input){        
+    public static List<ArbStructure2> getAreasBlackOnWhite(ImageInt Input, boolean useN4){        
         Input.resetMarkers();
         List<ArbStructure2> lsStructures = new ArrayList<>();
         MatrixEntry me_Fill = getNextBlackPoint(Input, new MatrixEntry(0, 0));
         while(me_Fill != null){
-            ArbStructure2 Structure = new ArbStructure2((new Morphology()).markFillN4(Input, me_Fill.i, me_Fill.j));
+            ArbStructure2 Structure;
+            if(useN4){
+                Structure = new ArbStructure2((new Morphology()).markFillN4(Input, me_Fill.i, me_Fill.j));
+            }else{
+                Structure = new ArbStructure2((new Morphology()).markFillN8(Input, me_Fill.i, me_Fill.j));
+            }
+            
             if(Structure != null){
                 if(!Structure.loPoints.isEmpty()){
                     lsStructures.add(Structure);
@@ -41,7 +47,11 @@ public class PreMarked {
             me_Fill = getNextBlackPoint(Input, me_Fill);
         }
         return lsStructures;
-    }        
+    }
+    
+    public static List<ArbStructure2> getAreasBlackOnWhite(ImageInt Input){        
+        return getAreasBlackOnWhite(Input, true);
+    }
     
     public static MatrixEntry getNextBlackPoint(ImageInt Input, MatrixEntry meStart){
         for(int i = 0 ; i < Input.iaPixels.length; i++){

@@ -15,6 +15,7 @@
  */
 package com.tivconsultancy.opentiv.imageproc.primitives;
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.math.interfaces.*;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import java.io.Serializable;
@@ -52,6 +53,11 @@ public class ImagePoint implements Serializable, Additionable<ImagePoint>, Subst
 
     public OrderedPair getPos() {
         return this.getGrid().getPos(this);
+    }
+    
+    public MatrixEntry getME(){
+        OrderedPair op = this.getPos();
+        return new MatrixEntry((int) op.y, (int) op.x, this.iValue);
     }
 
     public double getConvolution(int[][] iaConvolution) {

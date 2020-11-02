@@ -19,7 +19,7 @@ import com.tivconsultancy.opentiv.helpfunctions.matrix.Matrix;
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader.getGrayScale;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer.castToByteprimitive;
-import com.tivconsultancy.opentiv.math.algorithms.Sorting;
+import com.tivconsultancy.opentiv.math.interfaces.Additionable;
 import com.tivconsultancy.opentiv.math.interfaces.SideCondition;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import com.tivconsultancy.opentiv.math.sets.Set1D;
@@ -39,7 +39,7 @@ import javax.swing.ImageIcon;
  *
  * @author Thomas Ziegenhein
  */
-public class ImageInt extends ImageBoolean implements Serializable {
+public class ImageInt extends ImageBoolean implements Serializable, Additionable<ImageInt> {
 
     private static final long serialVersionUID = -3978520008605049954L;
 
@@ -395,7 +395,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
             iaPixels[i + 1][j + 1] = iValue;
         }
     }
-    
+
     public void setNeighborsN8(int i, int j, int iValue, SideCondition<MatrixEntry> o) {
         /*
          Resturn array list with counter clockwise order:
@@ -411,56 +411,56 @@ public class ImageInt extends ImageBoolean implements Serializable {
         } else {
             if (o.check(new MatrixEntry(i, j + 1))) {
                 iaPixels[i][j + 1] = iValue;
-            }            
+            }
         }
 
         if (j >= iaPixels[i].length - 1 || i <= 0) {
         } else {
             if (o.check(new MatrixEntry(i - 1, j + 1))) {
                 iaPixels[i - 1][j + 1] = iValue;
-            }            
+            }
         }
 
         if (i <= 0) {
         } else {
             if (o.check(new MatrixEntry(i - 1, j))) {
                 iaPixels[i - 1][j] = iValue;
-            }            
+            }
         }
 
         if (j <= 0 || i <= 0) {
         } else {
             if (o.check(new MatrixEntry(i - 1, j - 1))) {
                 iaPixels[i - 1][j - 1] = iValue;
-            }            
+            }
         }
 
         if (j <= 0) {
         } else {
             if (o.check(new MatrixEntry(i, j - 1))) {
                 iaPixels[i][j - 1] = iValue;
-            }            
+            }
         }
 
         if (j <= 0 || i >= iaPixels.length - 1) {
         } else {
             if (o.check(new MatrixEntry(i + 1, j - 1))) {
                 iaPixels[i + 1][j - 1] = iValue;
-            }            
+            }
         }
 
         if (i >= iaPixels.length - 1) {
         } else {
             if (o.check(new MatrixEntry(i + 1, j))) {
-                iaPixels[i + 1][j] = iValue;    
-            }            
+                iaPixels[i + 1][j] = iValue;
+            }
         }
 
         if (i >= iaPixels.length - 1 || j >= iaPixels[i].length - 1) {
         } else {
             if (o.check(new MatrixEntry(i + 1, j + 1))) {
                 iaPixels[i + 1][j + 1] = iValue;
-            }            
+            }
         }
     }
 
@@ -673,7 +673,6 @@ public class ImageInt extends ImageBoolean implements Serializable {
     }
 
     public void setPointIMGP(ImagePoint me, int iValue) {
-
         OrderedPair op = me.getPos();
         if (op.x >= 0 && op.y >= 0 && op.y < iaPixels.length && op.x < iaPixels[0].length) {
             iaPixels[(int) op.y][(int) op.x] = iValue;
@@ -818,6 +817,25 @@ public class ImageInt extends ImageBoolean implements Serializable {
 
     }
 
+    public ImageInt getsubY2(int iMin, int iMax) {
+
+        int iMinIndex = 0;
+        if (iMin > 0 && iMin < iaPixels.length - 1) {
+            iMinIndex = iMin;
+        }
+        int iMaxIndex = iaPixels.length;
+        if (iMax < iaPixels.length && iMax > 0) {
+            iMaxIndex = iMax;
+        }
+        int[][] iaNew = new int[iMax - iMinIndex][iaPixels[0].length];
+        for (int i = iMinIndex; i < iMaxIndex; i++) {
+            iaNew[i - iMinIndex] = iaPixels[i];
+        }
+
+        return new ImageInt(iaNew);
+
+    }
+
     public int getSum() {
         int iSum = 0;
         for (int i = 0; i < iaPixels.length; i++) {
@@ -852,7 +870,30 @@ public class ImageInt extends ImageBoolean implements Serializable {
         }
 
         return new ImageInt(iaNew);
+    }
 
+    public ImageInt getsubX2(int iMin, int iMax) {
+
+        int iMinIndex = 0;
+        if (iMin > 0 && iMin < iaPixels[0].length - 1) {
+            iMinIndex = iMin;
+        }
+
+        int iMaxIndex = iaPixels[0].length;
+        if (iMax < iaPixels[0].length && iMax > 0) {
+            iMaxIndex = iMax;
+        }
+
+        int[][] iaNew = new int[iaPixels.length][iMax - iMin];
+        if ((iMaxIndex - iMinIndex) > (iMax - iMin)) {
+            return new ImageInt(iaNew);
+        }
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = iMinIndex; j < iMaxIndex; j++) {
+                iaNew[i][j - iMinIndex] = iaPixels[i][j];
+            }
+        }
+        return new ImageInt(iaNew);
     }
 
     public void resetMarkers() {
@@ -1097,7 +1138,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
 
         for (int i = 0; i < iaPixels.length; i++) {
             for (int j = 0; j < iaPixels[0].length; j++) {
-                iaPixels[i][j] = (int) ( (Math.abs(iMin) + iaPixels[i][j]) * (255.0 / (iMax+Math.abs(iMin))));
+                iaPixels[i][j] = (int) ((Math.abs(iMin) + iaPixels[i][j]) * (255.0 / (iMax + Math.abs(iMin))));
             }
         }
     }
@@ -1143,7 +1184,7 @@ public class ImageInt extends ImageBoolean implements Serializable {
         }
         return new ImageInt(newArray);
     }
-    
+
     public ImageInt scale(int scaledWidth, int scaledHeight) {
         BufferedImage inputImage = this.getBuffImage();
         BufferedImage outputImage = new BufferedImage(scaledWidth,
@@ -1152,6 +1193,51 @@ public class ImageInt extends ImageBoolean implements Serializable {
         g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
         g2d.dispose();
         return new ImageInt(outputImage);
+    }
+
+    public void iterate(IterativeFunction fun) {
+        for (int i = 0; i < this.iaPixels.length; i++) {
+            for (int j = 0; j < this.iaPixels[0].length; j++) {
+                fun.perform(i, j);
+            }
+        }
+    }
+    
+    public void iterate(IterativeFunction2 fun) {
+        for (int i = 0; i < this.iaPixels.length; i++) {
+            for (int j = 0; j < this.iaPixels[0].length; j++) {
+                fun.perform(i, j, this);
+            }
+        }
+    }
+
+    @Override
+    public ImageInt add(ImageInt o2) {
+        return this.add(o2, 255);
+    }
+    
+    public ImageInt add(ImageInt o2, int max){
+        ImageInt o1 = this;
+        if(this.iaPixels.length != o2.iaPixels.length || this.iaPixels[0].length != o2.iaPixels[0].length){
+            throw new UnsupportedOperationException("Images must have same size for addition.");            
+        }
+        this.iterate((int i, int j) -> {
+            o2.iaPixels[i][j] = Math.min(max, o2.iaPixels[i][j] + o1.iaPixels[i][j]);
+        });
+        return o2;
+    }
+
+    @Override
+    public ImageInt add2(ImageInt o2, String sType) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public interface IterativeFunction {
+        public void perform(int i, int j);
+    }
+    
+    public interface IterativeFunction2 {
+        public void perform(int i, int j, ImageInt img);
     }
 
 }

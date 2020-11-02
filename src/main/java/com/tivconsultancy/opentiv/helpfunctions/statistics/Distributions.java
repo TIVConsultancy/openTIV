@@ -76,7 +76,23 @@ public class Distributions {
 
         return loClasses;
 
-    }  
+    }
+    
+    public static <T> List<? extends DistributionClass> calcDistributionDoubleArray(List<T> loInput, List<? extends DistributionClass> loClasses, Operation<T> O) {
+
+        for (final T d : loInput) {            
+
+            for (DistributionClass Iclass : loClasses) {
+                if (Iclass.isInside(O.getCharacteristicValue(d))) {
+                    Iclass.addContent(O.perform(d));
+                    break;
+                }
+            }
+        }
+
+        return loClasses;
+
+    } 
     
     public static <T> List<? extends DistributionClass> calcDistributionWithFunction(List<T> loInput, List<? extends DistributionClass> loClasses, Operation<T> O) {
 

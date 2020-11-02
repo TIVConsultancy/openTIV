@@ -15,12 +15,16 @@
  */
 package com.tivconsultancy.opentiv.imageproc.contours;
 
+import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.BasicIMGOper;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Morphology;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Ziegenhein_2018;
+import com.tivconsultancy.opentiv.imageproc.primitives.ImageBoolean;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
+import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt.IterativeFunction;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImagePoint;
 import com.tivconsultancy.opentiv.imageproc.shapes.ArbStructure;
+import com.tivconsultancy.opentiv.imageproc.shapes.ArbStructure2;
 import com.tivconsultancy.opentiv.math.exceptions.EmptySetException;
 import java.io.File;
 import java.io.IOException;
@@ -54,14 +58,14 @@ public class BasicOperations {
 
         for (ImagePoint op : oEdges.oa) {
             if (op.iValue < 127 && !op.bMarker) {
-                ArbStructure oStruc = new ArbStructure(new Morphology().markFillN8(oEdges, op));                
+                ArbStructure oStruc = new ArbStructure(new Morphology().markFillN8(oEdges, op));
                 oEdges.setPoint(oStruc.loPoints, new ImageGrid.setIMGPoint() {
 
-                    @Override
-                    public void setPoint(ImageGrid oGrid, ImagePoint op) {
-                        oGrid.oa[op.i].bMarker = true;
-                    }
-                }, oEdges);                
+                            @Override
+                            public void setPoint(ImageGrid oGrid, ImagePoint op) {
+                                oGrid.oa[op.i].bMarker = true;
+                            }
+                        }, oEdges);
 //                oBlackBoard.setPointsIMGP(oStruc.loPoints, 255);
 //                IMG_Writer.PaintGreyPNG(oBlackBoard, new File("E:\\Sync\\TIVConsultancy\\UseCases\\Crystallography2_Technobis\\TIVConsultancy\\_strucTestOut.png"));
                 loStructures.add(oStruc);
@@ -70,6 +74,27 @@ public class BasicOperations {
         }
 
         return loStructures;
+    }
+
+    public static List<ArbStructure2> getAllStructures(ImageInt oStructures) {
+        
+        ImageInt objectMarker = BasicIMGOper.invert(oStructures.clone());
+        List<ArbStructure2> loStructures = new ArrayList<>();
+        oStructures.resetMarkers();
+        IterativeFunction fun = new ImageInt.IterativeFunction() {
+            @Override
+            public void perform(int i, int j) {
+                if (!objectMarker.baMarker[i][j] && objectMarker.iaPixels[i][j]<127) {
+                    ArbStructure2 oStruc = new ArbStructure2(new Morphology().markFillN8(objectMarker, i, j));                    
+                    loStructures.add(oStruc);
+                }
+
+            }
+        };
+        objectMarker.iterate(fun);
+
+        return loStructures;
+
     }
 
     public static List<CPX> getAllContours(ImageGrid oEdges) throws EmptySetException {

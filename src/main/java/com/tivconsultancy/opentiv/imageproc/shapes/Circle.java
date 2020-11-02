@@ -16,6 +16,7 @@
 package com.tivconsultancy.opentiv.imageproc.shapes;
 
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
+import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Morphology;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import java.awt.Color;
@@ -305,6 +306,28 @@ public class Circle implements Shape, Serializable {
     public String getOutputString() {
         // x,y,major axis, minor axis, orientation angle
         return this.meCenter.j + "," + this.meCenter.i + "," + "0.0" + "," + this.getMajorAxis() + "," + this.getMinorAxis() + "," + this.getOrientationAngle();
+    }
+    
+    public List<MatrixEntry> getAreaCircle(){
+        this.paint();
+        double maxLenght = Math.max(this.dDiameterI, this.dDiameterJ);
+        ImageInt img = new ImageInt((int) maxLenght+5, (int) maxLenght+5, 0);
+        img.setPoints(lmeCircle, 255);
+        List<MatrixEntry> lmeFill = (new Morphology()).markFillN4(img, 0, 0);
+        img.setPoints(lmeFill, 255);
+        List<MatrixEntry> lmeArea = new ArrayList<>();
+        for(MatrixEntry me : this.lmeCircle){
+            lmeArea.add(me);
+        }
+        img.iterate(new ImageInt.IterativeFunction() {
+            @Override
+            public void perform(int i, int j) {
+                if(img.iaPixels[i][j] == 0){
+                    lmeArea.add(new MatrixEntry(i, j));
+                }
+            }
+        });
+        return lmeArea;
     }
 
 }
