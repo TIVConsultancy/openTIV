@@ -44,6 +44,7 @@ public class Prot_ReadIMGFiles extends Protocol implements Serializable {
     public Prot_ReadIMGFiles(String name) {
         this();
         this.name = name;
+        buildLookUp();
     }
     
     public Prot_ReadIMGFiles() {

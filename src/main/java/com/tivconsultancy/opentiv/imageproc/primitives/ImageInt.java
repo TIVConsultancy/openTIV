@@ -655,6 +655,27 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
         }
     }
 
+    public void setPoints(List<MatrixEntry> lme, int iValue, int iRadius, Operation op) {
+        if (iRadius == 0) {
+            for (MatrixEntry me : lme) {
+                if (me.i >= 0 && me.j >= 0 && me.i < iaPixels.length && me.j < iaPixels[0].length) {
+                    iaPixels[me.i][me.j] = iValue;
+                }
+            }
+        } else {
+            for (MatrixEntry meO : lme) {
+                MatrixEntry meOp = op.perform(meO, this);
+                if(meOp == null) continue;
+                if (meOp.i >= 0 && meOp.j >= 0 && meOp.i < iaPixels.length && meOp.j < iaPixels[0].length) {
+                    List<MatrixEntry> expand = this.getsubArea(meOp.i, meOp.j, iRadius);
+                    for (MatrixEntry me : expand) {
+                        iaPixels[me.i][me.j] = iValue;
+                    }
+                }
+            }
+        }
+    }
+
     public void setPointsIMGP(List<ImagePoint> lme, int iValue) {
         for (ImagePoint me : lme) {
             OrderedPair op = me.getPos();
@@ -1188,7 +1209,7 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
     public ImageInt scale(int scaledWidth, int scaledHeight) {
         BufferedImage inputImage = this.getBuffImage();
         BufferedImage outputImage = new BufferedImage(scaledWidth,
-                                                      scaledHeight, inputImage.getType());
+                scaledHeight, inputImage.getType());
         Graphics2D g2d = outputImage.createGraphics();
         g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
         g2d.dispose();
@@ -1202,7 +1223,7 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
             }
         }
     }
-    
+
     public void iterate(IterativeFunction2 fun) {
         for (int i = 0; i < this.iaPixels.length; i++) {
             for (int j = 0; j < this.iaPixels[0].length; j++) {
@@ -1215,11 +1236,11 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
     public ImageInt add(ImageInt o2) {
         return this.add(o2, 255);
     }
-    
-    public ImageInt add(ImageInt o2, int max){
+
+    public ImageInt add(ImageInt o2, int max) {
         ImageInt o1 = this;
-        if(this.iaPixels.length != o2.iaPixels.length || this.iaPixels[0].length != o2.iaPixels[0].length){
-            throw new UnsupportedOperationException("Images must have same size for addition.");            
+        if (this.iaPixels.length != o2.iaPixels.length || this.iaPixels[0].length != o2.iaPixels[0].length) {
+            throw new UnsupportedOperationException("Images must have same size for addition.");
         }
         this.iterate((int i, int j) -> {
             o2.iaPixels[i][j] = Math.min(max, o2.iaPixels[i][j] + o1.iaPixels[i][j]);
@@ -1233,11 +1254,19 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
     }
 
     public interface IterativeFunction {
+
         public void perform(int i, int j);
     }
-    
+
     public interface IterativeFunction2 {
+
         public void perform(int i, int j, ImageInt img);
+    }
+
+    public interface Operation {
+        
+        public MatrixEntry perform(MatrixEntry me, ImageInt img);
+
     }
 
 }

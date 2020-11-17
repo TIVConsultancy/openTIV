@@ -43,6 +43,7 @@ public class Prot_PreProcessor extends Protocol implements Serializable {
     public Prot_PreProcessor(String name){
         this();
         this.name = name;
+        buildLookUp();
     }
     
     public Prot_PreProcessor(){
