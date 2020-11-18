@@ -114,18 +114,35 @@ public class ArbStructure2 implements Shape, Serializable {
         }
         return false;
     }
-    
+
+    public boolean containsPoint(MatrixEntry me) {
+        if (this.getBoundBoxSet().isInside(me, new Set2D.Characteristic() {
+                                       @Override
+                                       public OrderedPair getCharacteristicValue(Object pParameter) {
+                                           MatrixEntry me = (MatrixEntry) pParameter;
+                                           return new OrderedPair(me.j, me.i);
+                                       }
+                                   })) {
+            for (MatrixEntry meIn : loPoints) {
+                if (meIn.equalsMatrixEntry(meIn)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /*
     * Brut force, improve!
-    */
-    public EnumObject getDistance(ArbStructure2 arb){
+     */
+    public EnumObject getDistance(ArbStructure2 arb) {
         EnumObject minDist = new EnumObject(Double.MAX_VALUE, null);
-        for(MatrixEntry meOutside : this.loPoints){
-            for(MatrixEntry meInside : arb.loPoints){
+        for (MatrixEntry meOutside : this.loPoints) {
+            for (MatrixEntry meInside : arb.loPoints) {
                 double dist = meOutside.SecondCartesian(meInside);
-                if(dist<minDist.dEnum){
+                if (dist < minDist.dEnum) {
                     minDist = new EnumObject(dist, new ObjectPair(meOutside, meInside));
-                }                
+                }
             }
         }
         return minDist;
