@@ -63,6 +63,41 @@ public class Sorting {
 
         return oE;
     }
+    
+    public static <T> EnumObject getNearestInList(Collection<T> lop, T oIn, List<T> excludeObjects, Exclude<T> excludeOperation) throws EmptySetException, NotImplementedInterface {
+        if (oIn == null) {
+            throw new NullPointerException("Null input not allowed in getNearestInList");
+        }
+        if (lop.isEmpty()) {
+            throw new EmptySetException("Empty list input in getNearestInList");
+        }
+        if (!(oIn instanceof Normable)) {
+            throw new NotImplementedInterface("Object is not implementing Normable");
+        }
+        for (Object o : lop) {
+            if (o == null) {
+                throw new NullPointerException("Null input not allowed");
+            }
+            
+            if (!(o instanceof Normable)) {
+                throw new NotImplementedInterface("Object is not implementing Normable");
+            }
+        }
+
+        EnumObject oE = new EnumObject(Double.MAX_VALUE, null);
+        for (T o : lop) {
+            if(excludeOperation.getExclude(o, excludeObjects)){
+                continue;
+            }
+            double dDistance = ((Normable) o).getNorm(oIn);
+            if (dDistance < oE.dEnum) {
+                oE.dEnum = dDistance;
+                oE.o = o;
+            }
+        }
+
+        return oE;
+    }
 
     public static <T> boolean checkInCol(Collection<T> lo, T oIn) throws EmptySetException {
 
@@ -339,6 +374,10 @@ public class Sorting {
     
     public static interface Characteristic2<T> {
         public Double getCharacteristicValue(T pParameter, T pParameter2);
+    }
+    
+    public static interface Exclude<T> {
+        public boolean getExclude(T pParameter, List<T> loExclude);
     }
 
 }

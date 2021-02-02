@@ -17,6 +17,7 @@ package com.tivconsultancy.opentiv.imageproc.shapes;
 
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageBoolean;
+import com.tivconsultancy.opentiv.math.interfaces.Normable;
 import com.tivconsultancy.opentiv.math.primitives.ObjectPair;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import com.tivconsultancy.opentiv.math.sets.Set1D;
@@ -30,7 +31,7 @@ import java.util.List;
  *
  * @author Thomas Ziegenhein
  */
-public class ArbStructure2 implements Shape, Serializable {
+public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure2> {
 
     private static final long serialVersionUID = -6387066610382197860L;
 
@@ -176,5 +177,15 @@ public class ArbStructure2 implements Shape, Serializable {
     @Override
     public int getPixelCount() {
         return loPoints.size();
+    }
+
+    @Override
+    public Double getNorm(ArbStructure2 o2) {
+        return this.getDistance(o2).dEnum;
+    }
+
+    @Override
+    public Double getNorm2(ArbStructure2 o2, String sNormType) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
