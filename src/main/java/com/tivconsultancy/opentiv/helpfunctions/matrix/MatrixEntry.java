@@ -30,7 +30,7 @@ import java.util.List;
 public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Substractable<MatrixEntry> ,Normable<MatrixEntry> ,Multipliable<MatrixEntry> , Position, Value {
 
     private static final long serialVersionUID = 111132151L;
-    
+
     public int i;
     public int j;
     public double dValue;
@@ -85,7 +85,7 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
             this.j = me.j;
         }
     }
-    
+
     public MatrixEntry(OrderedPair me) {
         if (me != null) {
             this.i = (int) me.y;
@@ -350,6 +350,10 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
 
         return (!(onCorner) && (AtBorder));
 
+    }
+
+    public static boolean isAboveThresh(MatrixEntry me, double dThreshold) {
+        return me.dValue > dThreshold;
     }
 
     public static boolean isAtBorder(MatrixEntry meStart, MatrixEntry meEnd, MatrixEntry meToProveStart, MatrixEntry meToProveEnd) {
@@ -659,7 +663,7 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
         return sReturn;
 
     }
-    
+
     public OrderedPair toOrderedPair(){
         return new OrderedPair(this.j, this.i, this.dValue);
     }
@@ -801,13 +805,13 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
         }
         return new MatrixEntry((int) op.y, (int) op.x);
     }
-    
+
     public static MatrixEntry valuOf(ImagePoint op) {
         if (op == null) {
             return null;
         }
-        
-       return new MatrixEntry(op.getPos());
+
+        return new MatrixEntry(op.getPos());
     }
 
 }

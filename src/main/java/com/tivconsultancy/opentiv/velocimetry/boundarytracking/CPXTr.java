@@ -40,6 +40,11 @@ public class CPXTr extends CPX implements Trackable, Serializable {
         super(oStart);
     }
     
+    public CPXTr(CPX cpx) {
+        this.lo=cpx.lo;
+        this.oStart=cpx.oStart;
+    }
+    
     @Override
     public boolean isClosedContour(){
         if(oStart == null || oEnd == null) return false;

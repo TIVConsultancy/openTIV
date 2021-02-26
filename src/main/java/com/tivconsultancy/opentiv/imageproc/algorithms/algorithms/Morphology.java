@@ -180,7 +180,7 @@ public class Morphology implements Serializable{
         return loReturn;
     }
     
-
+    
     public List<MatrixEntry> markFillN4(ImageInt oInput, int i, int j) {
         if (!oInput.isInside(i, j) || oInput.iaPixels[i][j] >= 127) {
             return new ArrayList<>();

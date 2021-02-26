@@ -15,6 +15,7 @@
  */
 package com.tivconsultancy.opentiv.imageproc.contours;
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.BasicIMGOper;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Morphology;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Ziegenhein_2018;
@@ -61,11 +62,11 @@ public class BasicOperations {
                 ArbStructure oStruc = new ArbStructure(new Morphology().markFillN8(oEdges, op));
                 oEdges.setPoint(oStruc.loPoints, new ImageGrid.setIMGPoint() {
 
-                            @Override
-                            public void setPoint(ImageGrid oGrid, ImagePoint op) {
-                                oGrid.oa[op.i].bMarker = true;
-                            }
-                        }, oEdges);
+                    @Override
+                    public void setPoint(ImageGrid oGrid, ImagePoint op) {
+                        oGrid.oa[op.i].bMarker = true;
+                    }
+                }, oEdges);
 //                oBlackBoard.setPointsIMGP(oStruc.loPoints, 255);
 //                IMG_Writer.PaintGreyPNG(oBlackBoard, new File("E:\\Sync\\TIVConsultancy\\UseCases\\Crystallography2_Technobis\\TIVConsultancy\\_strucTestOut.png"));
                 loStructures.add(oStruc);
@@ -77,15 +78,15 @@ public class BasicOperations {
     }
 
     public static List<ArbStructure2> getAllStructures(ImageInt oStructures) {
-        
+
         ImageInt objectMarker = BasicIMGOper.invert(oStructures.clone());
         List<ArbStructure2> loStructures = new ArrayList<>();
         oStructures.resetMarkers();
         IterativeFunction fun = new ImageInt.IterativeFunction() {
             @Override
             public void perform(int i, int j) {
-                if (!objectMarker.baMarker[i][j] && objectMarker.iaPixels[i][j]<127) {
-                    ArbStructure2 oStruc = new ArbStructure2(new Morphology().markFillN8(objectMarker, i, j));                    
+                if (!objectMarker.baMarker[i][j] && objectMarker.iaPixels[i][j] < 127) {
+                    ArbStructure2 oStruc = new ArbStructure2(new Morphology().markFillN8(objectMarker, i, j));
                     loStructures.add(oStruc);
                 }
 
@@ -152,6 +153,70 @@ public class BasicOperations {
         loReturn.addAll(loOpen);
         loReturn.addAll(loClosed);
         return loReturn;
+    }
+
+    public static void markOuterEnds(List<MatrixEntry> lsip, ImageGrid oGrid, int iValue) {
+        MatrixEntry me = new MatrixEntry();
+        me.i = 0;
+        me.j = 0;
+        for (MatrixEntry ip : lsip) {
+            me.i += ip.i;
+            me.j += ip.j;
+        }
+
+        me.i = me.i / lsip.size();
+        me.j = me.j / lsip.size();
+        double dMaxDist = 0.0;
+        ImagePoint oip = new ImagePoint(0, 0, oGrid
+        );
+        for (MatrixEntry ip : lsip) {
+            double dDist = me.getNorm(ip);
+            if (dDist > dMaxDist) {
+                dMaxDist = dDist;
+                oip = new ImagePoint(ip.j, ip.i, 127, oGrid);
+            }
+        }
+//        cpx.oStart=oip;
+        oGrid.setPoint(oip, iValue);
+        me = oip.getME();
+        dMaxDist = 0.0;
+        ImagePoint oip2 = new ImagePoint(0, 0, oGrid);
+        for (MatrixEntry ip : lsip) {
+            double dDist = me.getNorm(ip);
+            if (dDist > dMaxDist) {
+                dMaxDist = dDist;
+                oip2 = new ImagePoint(ip.j, ip.i, 127, oGrid);
+            }
+        }
+
+        oGrid.setPoint(oip2, iValue);
+    }
+
+    public static void markOuterEnds2(List<MatrixEntry> lsip, ImageGrid oGrid, int iValue, ImageGrid oGrid2) {
+        MatrixEntry me = new MatrixEntry();
+        me.i = 0;
+        me.j = 0;
+        for (MatrixEntry ip : lsip) {
+            me.i += ip.i;
+            me.j += ip.j;
+        }
+
+        me.i = me.i / lsip.size();
+        me.j = me.j / lsip.size();
+        double dMeanDist = 0.0;
+
+        for (MatrixEntry ip : lsip) {
+            dMeanDist += me.getNorm(ip);
+        }
+        dMeanDist = dMeanDist / lsip.size();
+        for (MatrixEntry ip : lsip) {
+            ImagePoint mip = new ImagePoint(ip.j, ip.i, 0, oGrid);
+            if (oGrid.oa[mip.i].iValue == iValue && (ip.getNorm(me) < dMeanDist || oGrid2.oa[mip.i].iValue == 255 )) {
+                //|| new N8(oGrid, mip).getBP() > 2
+                oGrid.setPoint(mip, 0);
+            }
+        }
+
     }
 
 }

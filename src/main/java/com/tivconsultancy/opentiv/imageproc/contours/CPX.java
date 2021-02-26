@@ -55,10 +55,20 @@ public class CPX implements Normable<CPX>, Serializable {
     public PLF oPLF = null;
     public boolean bMarker = false;
 
+    public CPX(List<MatrixEntry> lme,ImageGrid oGrid) {
+        for (MatrixEntry me : lme) {
+            ImagePoint iP =new ImagePoint(me.j, me.i, 255, oGrid);
+            this.lo.add(iP);
+            if (checkIfStart(iP)){
+                this.oStart=iP;
+            }
+        }      
+    }
+    
     public CPX(){
         
     }
-    
+
     public CPX(ImagePoint oStart) throws EmptySetException {
         this.oStart = oStart;
         CNCP o = Ziegenhein_2018.getCNCPToStartingPoint(oStart);
@@ -80,15 +90,15 @@ public class CPX implements Normable<CPX>, Serializable {
         loPoints.addAll(lo);
         return loPoints;
     }
-    
-    public List<MatrixEntry> getPointsME() {        
+
+    public List<MatrixEntry> getPointsME() {
         List<MatrixEntry> loPoints = new ArrayList<>();
         loPoints.add(oStart.getME());
-        for(ImagePoint op : lo){
+        for (ImagePoint op : lo) {
             loPoints.add(op.getME());
-        }        
+        }
         return loPoints;
-    }        
+    }
 
     public static boolean checkIfStart(ImagePoint o) {
         N8 oN8 = new N8(o.getGrid(), o);
@@ -333,11 +343,11 @@ public class CPX implements Normable<CPX>, Serializable {
         oGrid.setPoint(loPointsToSet, iValueOnGrid);
 
     }
-    
-    public List<Double> getEdgeStrength(ImageGrid oSource){        
+
+    public List<Double> getEdgeStrength(ImageGrid oSource) {
         List<Double> loReturn = new ArrayList<>();
-        for(ImagePoint op : lo){
-            loReturn.add(EdgeDetections.sobelOperator(oSource, op));                        
+        for (ImagePoint op : lo) {
+            loReturn.add(EdgeDetections.sobelOperator(oSource, op));
         }
         return loReturn;
     }
@@ -358,22 +368,27 @@ public class CPX implements Normable<CPX>, Serializable {
         int iRight = Math.min(iPos + (iJump / 2), this.lo.size() - 1);
 
         List<ImagePoint> loLocal = this.lo.subList(iLeft, iRight);
-        
+
         ImagePoint oFocalLocal = getFocalPoint(loLocal);
-        
-        for(ImagePoint o : oArea.oa){
-            if(o.bMarker){
-                if(oFocalLocal.getPos().equals(o.getPos(), new Comparison<OrderedPair>() {
+        for (ImagePoint o : oArea.oa) {
+            if (o.bMarker&&oFocalLocal!=null) {
+                if (oFocalLocal.getPos().equals(o.getPos(), new Comparison<OrderedPair>() {
 
                     @Override
                     public int compare(OrderedPair o1, OrderedPair o2) {
-                        if(o1.x == o2.x && o1.y == o2.y) return 0;
+                        if (o1.x == o2.x && o1.y == o2.y) {
+                            return 0;
+                        }
                         return 1;
                     }
-                })) return true;
-            }            
+                })) {
+                    return true;
+                }
+            }
         }
-        return false;        
+        
+        
+        return false;
 
     }
 
@@ -410,13 +425,13 @@ public class CPX implements Normable<CPX>, Serializable {
                 bEnd = true;
             }
         }
-        
+
         if (this.lo != null && oComp.lo != null) {
             if (this.lo.size() == oComp.lo.size()) {
                 blo = true;
                 for (ImagePoint oOuter : this.lo) {
-                    if(!oComp.lo.contains(oOuter)){
-                        blo=false;
+                    if (!oComp.lo.contains(oOuter)) {
+                        blo = false;
                         break;
                     }
 //                    for (ImagePoint oInner : oComp.lo) {
@@ -446,26 +461,28 @@ public class CPX implements Normable<CPX>, Serializable {
         hash = 97 * hash + Objects.hashCode(this.oEnd);
         return hash;
     }
-    
-    public OrderedPair getPosition(){
+
+    public OrderedPair getPosition() {
         OrderedPair oPosRef = new OrderedPair(oStart.getPos());
         int iCount = 0;
-        for(ImagePoint o : this.lo){
+        for (ImagePoint o : this.lo) {
             oPosRef.add(o.getPos());
             iCount++;
         }
-        if(iCount == 0) return oStart.getPos();
-        return oPosRef.mult(1.0 /(double) iCount);
+        if (iCount == 0) {
+            return oStart.getPos();
+        }
+        return oPosRef.mult(1.0 / (double) iCount);
     }
 
     @Override
     public Double getNorm(CPX o2) {
         Double dDist = 0.0;
         int iCount = 0;
-        for(ImagePoint o : lo){
+        for (ImagePoint o : lo) {
             try {
                 dDist = dDist + ((EnumObject) Sorting.getMinCharacteristic(o2.lo, o, new Sorting.Characteristic2<ImagePoint>() {
-                    
+
                     @Override
                     public Double getCharacteristicValue(ImagePoint pParameter, ImagePoint pParameter2) {
                         return pParameter.getPos().getNorm(pParameter2.getPos());
@@ -476,7 +493,9 @@ public class CPX implements Normable<CPX>, Serializable {
                 Logger.getLogger(CPX.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        if(iCount == 0) return null;
+        if (iCount == 0) {
+            return null;
+        }
         return dDist / ((double) iCount);
     }
 

@@ -15,10 +15,12 @@
  */
 package com.tivconsultancy.opentiv.imageproc.algorithms.algorithms;
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import static com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Gao_2018.checkIfEndCNCP;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImagePoint;
+import com.tivconsultancy.opentiv.imageproc.shapes.ArbStructure2;
 import com.tivconsultancy.opentiv.imageproc.shapes.Line2;
 import com.tivconsultancy.opentiv.imageproc.shapes.Splines;
 import com.tivconsultancy.opentiv.math.algorithms.Sorting;
@@ -49,17 +51,17 @@ public class Ziegenhein_2018 {
     public static ImageGrid preProcessorStep1(ImageGrid oGrid) throws EmptySetException {
         Ziegenhein_2018.CNCPNetwork.markCNCPNetwork(oGrid, new Ziegenhein_2018.sortOutRule() {
 
-                                                @Override
-                                                public List<CNCP> remove(Ziegenhein_2018.CNCPNetwork o) {
-                                                    List<CNCP> loRemove = new ArrayList<>();
-                                                    for (CNCP oN : o.lo) {
-                                                        if (oN.lo.isEmpty() || oN.lo.size() <= 5) {
-                                                            loRemove.add(oN);
-                                                        }
-                                                    }
-                                                    return loRemove;
-                                                }
-                                            }, 0);
+            @Override
+            public List<CNCP> remove(Ziegenhein_2018.CNCPNetwork o) {
+                List<CNCP> loRemove = new ArrayList<>();
+                for (CNCP oN : o.lo) {
+                    if (oN.lo.isEmpty() || oN.lo.size() <= 5) {
+                        loRemove.add(oN);
+                    }
+                }
+                return loRemove;
+            }
+        }, 0);
         return oGrid;
     }
 
@@ -67,14 +69,14 @@ public class Ziegenhein_2018 {
         //remove all open curves which have are below a certain size or are closer to the boundaries than a certain size
         oClean = Ziegenhein_2018.CNCPNetwork.markOpenCNCP(oClean, new Ziegenhein_2018.sortOutRule3<CNCP>() {
 
-                                                      @Override
-                                                      public boolean remove(CNCP o, HashSet<CNCP> lo) {
-                                                          boolean bProblem = o.lo.size() <= 5;
-                                                          bProblem = bProblem || (o.oStart.getPos().x <= 4 || o.oStart.getPos().y <= 4);
-                                                          bProblem = bProblem || (o.oStart.getPos().x >= (o.oStart.getGrid().jLength - 4) || o.oStart.getPos().y >= (o.oStart.getGrid().iLength - 4));
-                                                          return bProblem;
-                                                      }
-                                                  }, 0);
+            @Override
+            public boolean remove(CNCP o, HashSet<CNCP> lo) {
+                boolean bProblem = o.lo.size() <= 5;
+                bProblem = bProblem || (o.oStart.getPos().x <= 4 || o.oStart.getPos().y <= 4);
+                bProblem = bProblem || (o.oStart.getPos().x >= (o.oStart.getGrid().jLength - 4) || o.oStart.getPos().y >= (o.oStart.getGrid().iLength - 4));
+                return bProblem;
+            }
+        }, 0);
         return oClean;
     }
 
@@ -82,14 +84,14 @@ public class Ziegenhein_2018 {
         //remove all open curves which have are below a certain size or are closer to the boundaries than a certain size
         oGrid = Ziegenhein_2018.CNCPNetwork.markOpenCNCP(oGrid, new Ziegenhein_2018.sortOutRule3<CNCP>() {
 
-                                                     @Override
-                                                     public boolean remove(CNCP o, HashSet<CNCP> lo) {
-                                                         boolean bProblem = o.lo.size() <= iMinLength;
-                                                         bProblem = bProblem || (o.oStart.getPos().x <= 4 || o.oStart.getPos().y <= 4);
-                                                         bProblem = bProblem || (o.oStart.getPos().x >= (o.oStart.getGrid().jLength - 4) || o.oStart.getPos().y >= (o.oStart.getGrid().iLength - 4));
-                                                         return bProblem;
-                                                     }
-                                                 }, 0);
+            @Override
+            public boolean remove(CNCP o, HashSet<CNCP> lo) {
+                boolean bProblem = o.lo.size() <= iMinLength;
+                bProblem = bProblem || (o.oStart.getPos().x <= 4 || o.oStart.getPos().y <= 4);
+                bProblem = bProblem || (o.oStart.getPos().x >= (o.oStart.getGrid().jLength - 4) || o.oStart.getPos().y >= (o.oStart.getGrid().iLength - 4));
+                return bProblem;
+            }
+        }, 0);
         return oGrid;
     }
 
@@ -97,18 +99,18 @@ public class Ziegenhein_2018 {
         //remove all open curves which have are below a certain size or are closer to the boundaries than a certain size
         oGrid = Ziegenhein_2018.CNCPNetwork.markOpenCNCP(oGrid, new Ziegenhein_2018.sortOutRule3<CNCP>() {
 
-                                                     @Override
-                                                     public boolean remove(CNCP o, HashSet<CNCP> lo) {
-                                                         EnumObject oEnum = null;
-                                                         try {
-                                                             oEnum = o.getclosest(lo);
-                                                         } catch (EmptySetException ex) {
-                                                             Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
-                                                         }
+            @Override
+            public boolean remove(CNCP o, HashSet<CNCP> lo) {
+                EnumObject oEnum = null;
+                try {
+                    oEnum = o.getclosest(lo);
+                } catch (EmptySetException ex) {
+                    Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-                                                         return (oEnum == null || oEnum.o == null || (o.lo.size() < iMinLength && oEnum.dEnum > iMaxDist));
-                                                     }
-                                                 }, 0);
+                return (oEnum == null || oEnum.o == null || (o.lo.size() < iMinLength && oEnum.dEnum > iMaxDist));
+            }
+        }, 0);
         return oGrid;
     }
 
@@ -119,26 +121,26 @@ public class Ziegenhein_2018 {
 
             oGrid = Ziegenhein_2018.CNCPNetwork.markCNCPNetwork(oGrid, new Ziegenhein_2018.sortOutRule() {
 
-                                                            @Override
-                                                            public List<Ziegenhein_2018.CNCP> remove(Ziegenhein_2018.CNCPNetwork o) {
-                                                                List<Ziegenhein_2018.CNCP> loRemove = new ArrayList<>();
-                                                                loRemove.addAll(o.lo);
-                                                                try {
-                                                                    List<CNCP> loPair = o.getSmoothestPair();
-                                                                    loRemove.removeAll(loPair);
-                                                                } catch (EmptySetException ex) {
-                                                                    Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
-                                                                }
+                @Override
+                public List<Ziegenhein_2018.CNCP> remove(Ziegenhein_2018.CNCPNetwork o) {
+                    List<Ziegenhein_2018.CNCP> loRemove = new ArrayList<>();
+                    loRemove.addAll(o.lo);
+                    try {
+                        List<CNCP> loPair = o.getSmoothestPair();
+                        loRemove.removeAll(loPair);
+                    } catch (EmptySetException ex) {
+                        Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 
-                                                                for (CNCP oCNCP : o.lo) {
-                                                                    if (oCNCP.lo.size() < 5) {
-                                                                        loRemove.add(oCNCP);
-                                                                    }
-                                                                }
+                    for (CNCP oCNCP : o.lo) {
+                        if (oCNCP.lo.size() < 5) {
+                            loRemove.add(oCNCP);
+                        }
+                    }
 
-                                                                return loRemove;
-                                                            }
-                                                        }, 0);
+                    return loRemove;
+                }
+            }, 0);
             oGrid.resetMarkers();
             iMaxLoop--;
         }
@@ -149,53 +151,53 @@ public class Ziegenhein_2018 {
         //close all countours which have an end point closer than 5 pixels
         oGrid = Ziegenhein_2018.CNCPNetwork.OpenCNCP(oGrid, new Ziegenhein_2018.RuleWithAction<CNCP>() {
 
-                                                 @Override
-                                                 public boolean isValid(CNCP o, HashSet<CNCP> lo) {
-                                                     if (o != null && o.oStart != null && o.oEnd != null) {
-                                                         return (o.oStart.getPos().getNorm(o.oEnd.getPos()) <= iDist);
+            @Override
+            public boolean isValid(CNCP o, HashSet<CNCP> lo) {
+                if (o != null && o.oStart != null && o.oEnd != null) {
+                    return (o.oStart.getPos().getNorm(o.oEnd.getPos()) <= iDist);
 
-                                                     }
-                                                     return false;
-                                                 }
+                }
+                return false;
+            }
 
-                                                 @Override
-                                                 public void operate(CNCP o) {
-                                                     if (o.oStart == null || o.oEnd == null) {
-                                                         return;
-                                                     }
-                                                     if (o.lo.size() < 5) {
-                                                         return;
-                                                     }
-                                                     o.closeEndPointsSmooth(2, 255, null);
-                                                 }
-                                             });
+            @Override
+            public void operate(CNCP o) {
+                if (o.oStart == null || o.oEnd == null) {
+                    return;
+                }
+                if (o.lo.size() < 5) {
+                    return;
+                }
+                o.closeEndPointsSmooth(2, 255, null);
+            }
+        });
         return oGrid;
     }
-    
+
     public static ImageGrid closeOpenContourLinear(ImageGrid oGrid, int iDist) throws EmptySetException {
         //close all countours which have an end point closer than 5 pixels
         oGrid = Ziegenhein_2018.CNCPNetwork.OpenCNCP(oGrid, new Ziegenhein_2018.RuleWithAction<CNCP>() {
 
-                                                 @Override
-                                                 public boolean isValid(CNCP o, HashSet<CNCP> lo) {
-                                                     if (o != null && o.oStart != null && o.oEnd != null) {
-                                                         return (o.oStart.getPos().getNorm(o.oEnd.getPos()) <= iDist);
+            @Override
+            public boolean isValid(CNCP o, HashSet<CNCP> lo) {
+                if (o != null && o.oStart != null && o.oEnd != null) {
+                    return (o.oStart.getPos().getNorm(o.oEnd.getPos()) <= iDist);
 
-                                                     }
-                                                     return false;
-                                                 }
+                }
+                return false;
+            }
 
-                                                 @Override
-                                                 public void operate(CNCP o) {
-                                                     if (o.oStart == null || o.oEnd == null) {
-                                                         return;
-                                                     }
-                                                     if (o.lo.size() < 5) {
-                                                         return;
-                                                     }
-                                                     o.closeEndPointsLinear(255, null);
-                                                 }
-                                             });
+            @Override
+            public void operate(CNCP o) {
+                if (o.oStart == null || o.oEnd == null) {
+                    return;
+                }
+                if (o.lo.size() < 5) {
+                    return;
+                }
+                o.closeEndPointsLinear(255, null);
+            }
+        });
         return oGrid;
     }
 
@@ -203,51 +205,51 @@ public class Ziegenhein_2018 {
 
         oGrid = Ziegenhein_2018.CNCPNetwork.OpenCNCP(oGrid, new Ziegenhein_2018.RuleWithDoubleAction<CNCP>() {
 
-                                                 @Override
-                                                 public List<CNCP> isValid(CNCP o, HashSet<CNCP> lo) {
+            @Override
+            public List<CNCP> isValid(CNCP o, HashSet<CNCP> lo) {
 
-                                                     List<CNCP> loReturn = new ArrayList<>();
-                                                     try {
-                                                         for (EnumObject oEnum : o.getclosest(lo, iDist)) {
-                                                             if (oEnum.dEnum > 1.5 && oEnum.o != null) {
-                                                                 loReturn.add((CNCP) oEnum.o);
-                                                             }
-                                                         }
-                                                     } catch (EmptySetException ex) {
-                                                         Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
-                                                     }
+                List<CNCP> loReturn = new ArrayList<>();
+                try {
+                    for (EnumObject oEnum : o.getclosest(lo, iDist)) {
+                        if (oEnum.dEnum > 1.5 && oEnum.o != null) {
+                            loReturn.add((CNCP) oEnum.o);
+                        }
+                    }
+                } catch (EmptySetException ex) {
+                    Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-                                                     return loReturn;
+                return loReturn;
 
-                                                 }
+            }
 
-                                                 @Override
-                                                 public void operate(CNCP o1, List<CNCP> lo2, ImageGrid oGrid) {
-                                                     for (CNCP o2 : lo2) {
-                                                         if (o1.oStart == null || o1.oEnd == null || o2.oStart == null || o2.oEnd == null) {
-                                                             return;
-                                                         }
-                                                         List<EnumObject> loHelp = new ArrayList<>();
-                                                         loHelp.add(new EnumObject(o1.oStart.getNorm(o2.oEnd), new Object[]{o1.oStart, o2.oEnd}));
-                                                         loHelp.add(new EnumObject(o1.oStart.getNorm(o2.oStart), new Object[]{o1.oStart, o2.oStart}));
-                                                         loHelp.add(new EnumObject(o1.oEnd.getNorm(o2.oEnd), new Object[]{o1.oEnd, o2.oEnd}));
-                                                         loHelp.add(new EnumObject(o1.oEnd.getNorm(o2.oStart), new Object[]{o1.oEnd, o2.oStart}));
-                                                         EnumObject oHelp = null;
-                                                         try {
-                                                             oHelp = Sorting.getMinCharacteristic(loHelp, (Sorting.Characteristic<EnumObject>) (EnumObject pParameter) -> {
-                                                                                              return pParameter.dEnum;
-                                                                                          });
-                                                         } catch (EmptySetException ex) {
-                                                             Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
-                                                         }
-                                                         if (oHelp != null) {
-                                                             oHelp = (EnumObject) oHelp.o;
-                                                             Line2 oLine = new Line2((ImagePoint) ((Object[]) oHelp.o)[0], (ImagePoint) ((Object[]) oHelp.o)[1]);
-                                                             oLine.setLine(oGrid, 255);
-                                                         }
-                                                     }
-                                                 }
-                                             });
+            @Override
+            public void operate(CNCP o1, List<CNCP> lo2, ImageGrid oGrid) {
+                for (CNCP o2 : lo2) {
+                    if (o1.oStart == null || o1.oEnd == null || o2.oStart == null || o2.oEnd == null) {
+                        return;
+                    }
+                    List<EnumObject> loHelp = new ArrayList<>();
+                    loHelp.add(new EnumObject(o1.oStart.getNorm(o2.oEnd), new Object[]{o1.oStart, o2.oEnd}));
+                    loHelp.add(new EnumObject(o1.oStart.getNorm(o2.oStart), new Object[]{o1.oStart, o2.oStart}));
+                    loHelp.add(new EnumObject(o1.oEnd.getNorm(o2.oEnd), new Object[]{o1.oEnd, o2.oEnd}));
+                    loHelp.add(new EnumObject(o1.oEnd.getNorm(o2.oStart), new Object[]{o1.oEnd, o2.oStart}));
+                    EnumObject oHelp = null;
+                    try {
+                        oHelp = Sorting.getMinCharacteristic(loHelp, (Sorting.Characteristic<EnumObject>) (EnumObject pParameter) -> {
+                            return pParameter.dEnum;
+                        });
+                    } catch (EmptySetException ex) {
+                        Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    if (oHelp != null) {
+                        oHelp = (EnumObject) oHelp.o;
+                        Line2 oLine = new Line2((ImagePoint) ((Object[]) oHelp.o)[0], (ImagePoint) ((Object[]) oHelp.o)[1]);
+                        oLine.setLine(oGrid, 255);
+                    }
+                }
+            }
+        });
         return oGrid;
     }
 
@@ -255,53 +257,53 @@ public class Ziegenhein_2018 {
 
         oGrid = Ziegenhein_2018.CNCPNetwork.OpenCNCP(oGrid, new Ziegenhein_2018.RuleWithDoubleAction<CNCP>() {
 
-                                                 @Override
-                                                 public List<CNCP> isValid(CNCP o, HashSet<CNCP> lo) {
+            @Override
+            public List<CNCP> isValid(CNCP o, HashSet<CNCP> lo) {
 
-                                                     List<CNCP> loReturn = new ArrayList<>();
-                                                     try {
-                                                         for (EnumObject oEnum : o.getclosest(lo, iDist)) {
-                                                             if (oEnum.dEnum > 1.5 && oEnum.o != null) {
-                                                                 loReturn.add((CNCP) oEnum.o);
-                                                             }
-                                                         }
-                                                     } catch (EmptySetException ex) {
-                                                         Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
-                                                     }
+                List<CNCP> loReturn = new ArrayList<>();
+                try {
+                    for (EnumObject oEnum : o.getclosest(lo, iDist)) {
+                        if (oEnum.dEnum > 1.5 && oEnum.o != null) {
+                            loReturn.add((CNCP) oEnum.o);
+                        }
+                    }
+                } catch (EmptySetException ex) {
+                    Logger.getLogger(Ziegenhein_2018.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-                                                     return loReturn;
+                return loReturn;
 
-                                                 }
+            }
 
-                                                 @Override
-                                                 public void operate(CNCP o1, List<CNCP> lo2, ImageGrid oGrid) {
-                                                     for (CNCP o2 : lo2) {
-                                                         if (o1.oStart == null || o1.oEnd == null || o2.oStart == null || o2.oEnd == null) {
-                                                             return;
-                                                         }
+            @Override
+            public void operate(CNCP o1, List<CNCP> lo2, ImageGrid oGrid) {
+                for (CNCP o2 : lo2) {
+                    if (o1.oStart == null || o1.oEnd == null || o2.oStart == null || o2.oEnd == null) {
+                        return;
+                    }
 
-                                                         if (o1.oStart.getNorm(o2.oEnd) < iDist) {
-                                                             Line2 oLine = new Line2(o1.oStart, o2.oEnd);
-                                                             oLine.setLine(oGrid, 255);
-                                                         }
+                    if (o1.oStart.getNorm(o2.oEnd) < iDist) {
+                        Line2 oLine = new Line2(o1.oStart, o2.oEnd);
+                        oLine.setLine(oGrid, 255);
+                    }
 
-                                                         if (o1.oStart.getNorm(o2.oStart) < iDist) {
-                                                             Line2 oLine = new Line2(o1.oStart, o2.oStart);
-                                                             oLine.setLine(oGrid, 255);
-                                                         }
+                    if (o1.oStart.getNorm(o2.oStart) < iDist) {
+                        Line2 oLine = new Line2(o1.oStart, o2.oStart);
+                        oLine.setLine(oGrid, 255);
+                    }
 
-                                                         if (o1.oEnd.getNorm(o2.oEnd) < iDist) {
-                                                             Line2 oLine = new Line2(o1.oStart, o2.oEnd);
-                                                             oLine.setLine(oGrid, 255);
-                                                         }
+                    if (o1.oEnd.getNorm(o2.oEnd) < iDist) {
+                        Line2 oLine = new Line2(o1.oStart, o2.oEnd);
+                        oLine.setLine(oGrid, 255);
+                    }
 
-                                                         if (o1.oEnd.getNorm(o2.oStart) < iDist) {
-                                                             Line2 oLine = new Line2(o1.oStart, o2.oStart);
-                                                             oLine.setLine(oGrid, 255);
-                                                         }
-                                                     }
-                                                 }
-                                             });
+                    if (o1.oEnd.getNorm(o2.oStart) < iDist) {
+                        Line2 oLine = new Line2(o1.oStart, o2.oStart);
+                        oLine.setLine(oGrid, 255);
+                    }
+                }
+            }
+        });
         return oGrid;
     }
 
@@ -373,11 +375,11 @@ public class Ziegenhein_2018 {
 
         return ((ImagePoint) ((EnumObject) Sorting.getMinCharacteristic(loHelp, new Sorting.Characteristic<EnumObject>() {
 
-                                                                    @Override
-                                                                    public Double getCharacteristicValue(EnumObject pParameter) {
-                                                                        return pParameter.dEnum;
-                                                                    }
-                                                                }).o).o).getPos();
+            @Override
+            public Double getCharacteristicValue(EnumObject pParameter) {
+                return pParameter.dEnum;
+            }
+        }).o).o).getPos();
 
 //        for (ImagePoint p : lo) {
 //            if (p != null && p.iValue > 0 && !p.bMarker) {
@@ -615,6 +617,33 @@ public class Ziegenhein_2018 {
         return oGrid;
     }
 
+    public static ImageInt thinoutEdges(ImageInt oGrid, ArbStructure2 as) {
+        List<MatrixEntry> lme = new ArrayList<>();
+        for (MatrixEntry me : as.loPoints) {
+            if (oGrid.iaPixels[me.i][me.j] > 0) {
+                N8 oN8 = new N8(oGrid, me.i, me.j);
+
+                if ((oN8.getBP() == 0)
+                        || (oN8.getBP() == 2 && oN8.getC2WE() == 1)
+                        || (oN8.getBP() == 2 && oN8.getC2P() == 1)
+                        || (oN8.getBP() == 3 && oN8.getC3P() == 1)
+                        || (oN8.getBP() == 3 && oN8.getC2WE() == 1 && oN8.getC2P() == 1)
+                        || (oN8.getBP() == 4 && oN8.getC4P() == 1)
+                        || (oN8.getBP() == 4 && oN8.getC2WE() == 1 && oN8.getC2P() == 2)
+                        || (oN8.getBP() == 5 && oN8.getC5P() == 1)) {
+                    oGrid.iaPixels[me.i][me.j] = 0;
+                    lme.add(me);
+                }
+            }
+        }
+        for (MatrixEntry me : lme) {
+            if (as.loPoints.contains(me)){
+                as.loPoints.remove(me);
+            }
+        }
+        return oGrid;
+    }
+
     public static ImageGrid markEndStart(ImageGrid oGrid, int iValue) {
         for (ImagePoint o : oGrid.oa) {
             if (!o.bMarker && o.iValue > 0 && checkIfStart(o)) {
@@ -624,6 +653,20 @@ public class Ziegenhein_2018 {
             if (!o.bMarker && o.iValue > 0 && checkIfEnd(o)) {
                 o.iValue = iValue;
             }
+        }
+        return oGrid;
+    }
+
+    public static ImageGrid markEndStart2(ImageGrid oGrid, int iValue) {
+        for (ImagePoint o : oGrid.oa) {
+            if (o.iValue > 0 && checkIfStart(o)) {
+                o.iValue = iValue;
+            }
+
+            if (o.iValue > 0 && checkIfEnd(o)) {
+                o.iValue = iValue;
+            }
+
         }
         return oGrid;
     }
@@ -941,21 +984,21 @@ public class Ziegenhein_2018 {
 
             EnumObject oHelp = Sorting.getMinCharacteristic(lo, this, new Sorting.Characteristic2<CNCP>() {
 
-                                                        @Override
-                                                        public Double getCharacteristicValue(CNCP pParameter, CNCP pParameter2) {
-                                                            if (pParameter.oEnd == null || pParameter.oStart == null || pParameter2.oEnd == null || pParameter2.oStart == null) {
-                                                                return Double.MAX_VALUE;
-                                                            }
-                                                            if (pParameter.equals(pParameter2)) {
-                                                                return Double.MAX_VALUE;
-                                                            }
-                                                            Double d1 = pParameter.oEnd.getNorm(pParameter2.oStart);
-                                                            Double d2 = pParameter.oEnd.getNorm(pParameter2.oEnd);
-                                                            Double d3 = pParameter.oStart.getNorm(pParameter2.oStart);
-                                                            Double d4 = pParameter.oStart.getNorm(pParameter2.oEnd);
-                                                            return Math.abs(Math.min(d1, Math.min(d2, Math.min(d3, d4))));
-                                                        }
-                                                    });
+                @Override
+                public Double getCharacteristicValue(CNCP pParameter, CNCP pParameter2) {
+                    if (pParameter.oEnd == null || pParameter.oStart == null || pParameter2.oEnd == null || pParameter2.oStart == null) {
+                        return Double.MAX_VALUE;
+                    }
+                    if (pParameter.equals(pParameter2)) {
+                        return Double.MAX_VALUE;
+                    }
+                    Double d1 = pParameter.oEnd.getNorm(pParameter2.oStart);
+                    Double d2 = pParameter.oEnd.getNorm(pParameter2.oEnd);
+                    Double d3 = pParameter.oStart.getNorm(pParameter2.oStart);
+                    Double d4 = pParameter.oStart.getNorm(pParameter2.oEnd);
+                    return Math.abs(Math.min(d1, Math.min(d2, Math.min(d3, d4))));
+                }
+            });
 
             return oHelp;
 
@@ -979,11 +1022,11 @@ public class Ziegenhein_2018 {
             }
 
             Collections.sort(loHelp, new Comparator<EnumObject>() {
-                         @Override
-                         public int compare(EnumObject o1, EnumObject o2) {
-                             return ((int) Math.signum(o1.dEnum - o2.dEnum));
-                         }
-                     });
+                @Override
+                public int compare(EnumObject o1, EnumObject o2) {
+                    return ((int) Math.signum(o1.dEnum - o2.dEnum));
+                }
+            });
 
             List<EnumObject> loReturn = new ArrayList<>();
 

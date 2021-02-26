@@ -28,11 +28,13 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 /**
@@ -665,7 +667,9 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
         } else {
             for (MatrixEntry meO : lme) {
                 MatrixEntry meOp = op.perform(meO, this);
-                if(meOp == null) continue;
+                if (meOp == null) {
+                    continue;
+                }
                 if (meOp.i >= 0 && meOp.j >= 0 && meOp.i < iaPixels.length && meOp.j < iaPixels[0].length) {
                     List<MatrixEntry> expand = this.getsubArea(meOp.i, meOp.j, iRadius);
                     for (MatrixEntry me : expand) {
@@ -865,6 +869,10 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
             }
         }
         return iSum;
+    }
+
+    public double getMean() {
+        return (double) this.getSum() / (double) (iaPixels.length * iaPixels[0].length);
     }
 
     public ImageInt getsubX(Set1D xInterval) {
@@ -1164,6 +1172,20 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
         }
     }
 
+    public ImageInt inverseBlackWhite() {
+        ImageInt inverse = new ImageInt(iaPixels.length, iaPixels[0].length);
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
+                if (iaPixels[i][j] == 255) {
+                    inverse.iaPixels[i][j] = 0;
+                } else {
+                    inverse.iaPixels[i][j] = 255;
+                }
+            }
+        }
+        return inverse;
+    }
+
     public List<MatrixEntry> getPoints(int value) {
         List<MatrixEntry> lme = new ArrayList<>();
         for (int i = 0; i < this.iaPixels.length; i++) {
@@ -1264,7 +1286,7 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
     }
 
     public interface Operation {
-        
+
         public MatrixEntry perform(MatrixEntry me, ImageInt img);
 
     }

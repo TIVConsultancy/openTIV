@@ -33,7 +33,7 @@ import javax.imageio.ImageIO;
  *
  * @author Thomas Ziegenhein
  */
-public class ImageGrid implements Serializable{
+public class ImageGrid implements Serializable {
 
     private static final long serialVersionUID = 98231744434220894L;
 
@@ -49,8 +49,8 @@ public class ImageGrid implements Serializable{
             oa[i] = new ImagePoint(i, 0, this);
         }
     }
-    
-     public ImageGrid(int iLength, int jLength, int iGreyLevel ) {
+
+    public ImageGrid(int iLength, int jLength, int iGreyLevel) {
         this.iLength = iLength;
         this.jLength = jLength;
         this.oa = new ImagePoint[iLength * jLength];
@@ -78,16 +78,16 @@ public class ImageGrid implements Serializable{
         }
         this.iLength = iLength;
         this.jLength = jLength;
-        this.oa = new ImagePoint[iLength * jLength];        
+        this.oa = new ImagePoint[iLength * jLength];
         for (int i = 0; i < iLength * jLength; i++) {
             oa[i] = new ImagePoint(i, ia[i], this);
         }
     }
 
-    public ImageGrid(BufferedImage oBuffIMG) {        
+    public ImageGrid(BufferedImage oBuffIMG) {
         BufferedImage oBufImageGrey = getGrayScale(oBuffIMG);
         int[] iaData = new int[oBufImageGrey.getHeight() * oBufImageGrey.getWidth()];
-        iaData = oBufImageGrey.getData().getPixels(0, 0, oBufImageGrey.getWidth(), oBufImageGrey.getHeight(), iaData);    
+        iaData = oBufImageGrey.getData().getPixels(0, 0, oBufImageGrey.getWidth(), oBufImageGrey.getHeight(), iaData);
         iLength = oBufImageGrey.getHeight();
         jLength = oBufImageGrey.getWidth();
         if (iLength * jLength != iaData.length) {
@@ -116,14 +116,14 @@ public class ImageGrid implements Serializable{
     }
 
     public boolean checkIfInBound(OrderedPair op) {
-        return op.x < jLength && op.y < iLength;
+        return op.x < jLength && op.y < iLength && op.x >= 0 && op.y >= 0;
     }
 
     public int getIndex(OrderedPair op) {
         //there is no check if i,j is in bounds for speed up issues
         return (int) ((op.y) * jLength + op.x);
     }
-    
+
     public int getIndex(int i, int j) {
         //there is no check if i,j is in bounds for speed up issues
         return i * jLength + j;
@@ -150,9 +150,9 @@ public class ImageGrid implements Serializable{
         }
         return ia;
     }
-    
+
     public int[] getData() {
-        int[] ia = new int[iLength*jLength];
+        int[] ia = new int[iLength * jLength];
         for (ImagePoint o : oa) {
             ia[o.i] = o.iValue;
         }
@@ -455,9 +455,9 @@ public class ImageGrid implements Serializable{
             }
         }
     }
-    
+
     public void setData(int[] iaData) {
-        for(int i = 0; i < Math.min(iaData.length, oa.length); i++){
+        for (int i = 0; i < Math.min(iaData.length, oa.length); i++) {
             oa[i].iValue = iaData[i];
         }
     }
@@ -494,20 +494,20 @@ public class ImageGrid implements Serializable{
         int iMinIndex = 0;
         if (iMin > 0 && iMin <= iLength) {
             iMinIndex = this.getIndex(new OrderedPair(0, iMin));
-        }else{
+        } else {
             iMin = 0;
         }
         int iMaxIndex = oa.length - 1;
         if (iMax <= iLength && iMax > 0) {
             iMaxIndex = this.getIndex(new OrderedPair(jLength - 1, iMax - 1));
-        }else{
+        } else {
             iMax = iLength;
         }
         int[] iaNew = new int[iMaxIndex - iMinIndex + 1];
         for (int i = iMinIndex; i <= iMaxIndex; i++) {
             iaNew[i - iMinIndex] = oa[i].iValue;
         }
-        
+
         return new ImageGrid((iMax - iMin), jLength, iaNew);
 
     }
@@ -527,23 +527,23 @@ public class ImageGrid implements Serializable{
         }
         return new ImageGrid(iLength, jlengthNew, iaNew);
     }
-    
+
     public ImagePoint[][] getsubArea(ImagePoint oCenter, int iRadius) {
         OrderedPair opCenter = oCenter.getPos();
         int iCenter = (int) opCenter.y;
         int jCenter = (int) opCenter.x;
-        
-        int iStart = Math.max(0, iCenter-iRadius);
+
+        int iStart = Math.max(0, iCenter - iRadius);
         int iEnd = Math.min(iLength, iCenter + iRadius);
-        int jStart = Math.max(0, jCenter -iRadius);
-        int jEnd = Math.min(jLength, jCenter +iRadius);
-        
+        int jStart = Math.max(0, jCenter - iRadius);
+        int jEnd = Math.min(jLength, jCenter + iRadius);
+
         ImagePoint[][] oReturn = new ImagePoint[iEnd - iStart][jEnd - jStart];
-        
-        for(int i = iStart ; i < iEnd; i++){
-            for(int j = jStart; j < jEnd; j++){
-                oReturn[i-iStart][j-jStart] = this.oa[this.getIndex(i, j)];
-            }            
+
+        for (int i = iStart; i < iEnd; i++) {
+            for (int j = jStart; j < jEnd; j++) {
+                oReturn[i - iStart][j - jStart] = this.oa[this.getIndex(i, j)];
+            }
         }
         return oReturn;
     }
@@ -556,7 +556,7 @@ public class ImageGrid implements Serializable{
         }
         return bMarkers;
     }
-    
+
     public int[][] getMarkedPointsAsInt() {
         int[][] iaMarkers = new int[this.iLength][this.jLength];
         for (ImagePoint oPoint : oa) {
@@ -603,6 +603,7 @@ public class ImageGrid implements Serializable{
 //    }
 
     public interface setIMGPoint {
+
         public void setPoint(ImageGrid oGrid, ImagePoint op);
     }
 
