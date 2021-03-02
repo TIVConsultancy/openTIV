@@ -54,6 +54,13 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
         this.j = (int) j;
 
     }
+    
+    public MatrixEntry(String standardString) {
+        String[] splits = standardString.split(",");
+        this.i = Integer.valueOf(splits[0]);
+        this.j = Integer.valueOf(splits[1]);
+
+    }
 
     public static List<MatrixEntry> doUniqueME(List<MatrixEntry> lme) {
         boolean bCheck = false;
@@ -812,6 +819,10 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
         }
 
         return new MatrixEntry(op.getPos());
+    }
+    
+    public String getStandardString(){
+        return this.i + "," + this.j;
     }
 
 }

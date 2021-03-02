@@ -17,6 +17,7 @@ package com.tivconsultancy.opentiv.math.specials;
 
 import com.tivconsultancy.opentiv.math.interfaces.Normable;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
@@ -46,6 +47,23 @@ public class EnumObject implements Normable<EnumObject>, Serializable{
     @Override
     public String toString(){
         return dEnum + ", " + o.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 83 * hash + Objects.hashCode(this.dEnum);
+        hash = 83 * hash + Objects.hashCode(this.o);
+        return hash;
+    }
+    
+    public boolean equals(Object o){
+        if(o instanceof EnumObject){
+            if(((EnumObject) o).o.equals(this.o) && ((EnumObject) o).dEnum == this.dEnum){
+                return true;
+            }
+        }
+        return false;
     }
     
 }
