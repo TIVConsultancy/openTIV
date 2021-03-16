@@ -21,6 +21,8 @@ import com.tivconsultancy.opentiv.imageproc.contours.CPX;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImagePoint;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.List;
 
@@ -134,28 +136,41 @@ public class BasicIMGOper {
     public static ImageInt adaptiveAverage(ImageInt preproc, int iRadius) {
 
         ImageInt threshold = new ImageInt(preproc.iaPixels.length, preproc.iaPixels[0].length, 0);
-        
+
         for (int i = 0; i < preproc.iaPixels.length; i++) {
             for (int j = 0; j < preproc.iaPixels[0].length; j++) {
                 List<MatrixEntry> lme = preproc.getsubArea(i, j, iRadius);
                 double avg = 0.0;
                 double weight = 0.0;
-                for(MatrixEntry me : lme){
+                for (MatrixEntry me : lme) {
                     avg = avg + preproc.getValue(me);
                     weight = weight + 1.0;
                 }
-                if(weight == 0.0){
+                if (weight == 0.0) {
                     continue;
                 }
-                avg = avg/weight;
-                if(preproc.iaPixels[i][j] >= avg){
+                avg = avg / weight;
+                if (preproc.iaPixels[i][j] >= avg) {
                     threshold.iaPixels[i][j] = 255;
                 }
-                
+
             }
         }
 
         return threshold;
+    }
+
+    public static ImageInt rotate(ImageInt img, double angle) {
+        BufferedImage buffImg = img.getBuffImage();
+        int w = buffImg.getWidth();
+        int h = buffImg.getHeight();
+
+        BufferedImage rotated = new BufferedImage(w, h, buffImg.getType());
+        Graphics2D graphic = rotated.createGraphics();
+        graphic.rotate(Math.toRadians(angle), w / 2, h / 2);
+        graphic.drawImage(buffImg, null, 0, 0);
+        graphic.dispose();
+        return new ImageInt(rotated);
     }
 
     public static interface ThresholdOperation {
