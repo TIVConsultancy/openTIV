@@ -47,6 +47,10 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
             }
         }
     }
+    
+    public ArbStructure2 clone(){
+        return new ArbStructure2(loPoints);
+    }
 
     public OrderedPair getPosition() {
         double dX = 0.0;
@@ -148,7 +152,7 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
         }
         return minDist;
     }
-
+    
     @Override
     public double getSize() {
         return Math.sqrt(loPoints.size() / Math.PI);

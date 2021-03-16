@@ -54,9 +54,9 @@ public class N8 implements Serializable {
             }
         }
     }
-    
+
     public N8(ImageInt o, int i, int j) {
-        List<MatrixEntry> loRef = o.getNeighborsN8(i,j);
+        List<MatrixEntry> loRef = o.getNeighborsN8(i, j);
         for (MatrixEntry p : loRef) {
             if (p != null && o.iaPixels[p.i][p.j] > 0) {
                 this.lo.add(1);
@@ -281,19 +281,23 @@ public class N8 implements Serializable {
         }
         return C2P;
     }
-    
+
     public int getC2E() {
         int C2P = 0;
         for (int i = 0; i <= 7; i++) {
-            if(i%2 != 0) C2P = C2P + check_pattern_01010(i);            
+            if (i % 2 != 0) {
+                C2P = C2P + check_pattern_01010(i);
+            }
         }
         return C2P;
     }
-    
+
     public int getC2WE() {
         int C2P = 0;
         for (int i = 0; i <= 7; i++) {
-            if(i%2 == 0) C2P = C2P + check_pattern_W101(i);            
+            if (i % 2 == 0) {
+                C2P = C2P + check_pattern_W101(i);
+            }
         }
         return C2P;
     }
@@ -321,7 +325,7 @@ public class N8 implements Serializable {
         }
         return C4P;
     }
-    
+
     public int getC5P() {
         int C5P = 0;
         for (int i = 0; i <= 7; i++) {
@@ -351,7 +355,7 @@ public class N8 implements Serializable {
         }
         return 0;
     }
-    
+
     public int check_pattern_01010(int i) {
         if (i > 7) {
             throw new UnsupportedOperationException("");
@@ -361,12 +365,12 @@ public class N8 implements Serializable {
         int i3 = i + 3 > 7 ? i + 2 - 7 : i + 3;
         int i4 = i + 4 > 7 ? i + 3 - 7 : i + 4;
 
-        if (lo.get(i) == 0 && lo.get(i1) > 0 && lo.get(i2) == 0 && lo.get(i3) >= 1 && lo.get(i4) == 0 ) {
+        if (lo.get(i) == 0 && lo.get(i1) > 0 && lo.get(i2) == 0 && lo.get(i3) >= 1 && lo.get(i4) == 0) {
             return 1;
         }
         return 0;
     }
-    
+
     public int check_pattern_W101(int i) {
         if (i > 7) {
             throw new UnsupportedOperationException("");
@@ -374,12 +378,11 @@ public class N8 implements Serializable {
         int i1 = i + 1 > 7 ? i - 7 : i + 1;
         int i2 = i + 2 > 7 ? i + 1 - 7 : i + 2;
 
-        if (lo.get(i) > 0 && lo.get(i1) == 0 && lo.get(i2) > 0 ) {
+        if (lo.get(i) > 0 && lo.get(i1) == 0 && lo.get(i2) > 0) {
             return 1;
         }
         return 0;
-    }  
-    
+    }
 
     public int check_pattern_01110(int i) {
         if (i > 7) {
@@ -431,7 +434,7 @@ public class N8 implements Serializable {
         return 0;
 
     }
-    
+
     public int check_pattern_0111110(int i) {
         if (i > 7) {
             throw new UnsupportedOperationException("");
@@ -558,13 +561,21 @@ public class N8 implements Serializable {
 
         return false;
     }
-    
+
     public boolean hasIn(int value){
         for(Integer i : lo){
             if(i == value){
                 return true;
             }
         }
+        return false;
+    }
+    
+        public boolean isNeigh(int value){
+            if(lo.get(value) == 1){
+                return true;
+            }
+
         return false;
     }
 

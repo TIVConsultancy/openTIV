@@ -16,7 +16,10 @@
 package com.tivconsultancy.opentiv.helpfunctions.io;
 
 
+import com.sun.javafx.iio.common.ImageTools;
+import com.tivconsultancy.opentiv.helpfunctions.matrix.Matrix;
 import com.tivconsultancy.opentiv.helpfunctions.strings.StringWorker;
+import com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.BufferedReader;
@@ -986,21 +989,21 @@ public class Reader {
 
     public int[][] readImageGrey() throws IOException {
         
-        throw new UnsupportedOperationException("Revise");
+      //  throw new UnsupportedOperationException("Revise");
 
-//        BufferedImage oBufImageGrey = ImageIO.read(fFile);
+        BufferedImage oBufImageGrey = ImageIO.read(fFile);
 //
-//        oBufImageGrey = ImageTools.getGrayScale(oBufImageGrey);
+        oBufImageGrey =IMG_Reader.getGrayScale(oBufImageGrey);
 //
 ////        Image oImae = ImageIO.read(fFile);
 //        //BufferedImage oBufImagegrey = new BufferedImage(oBufImage.getWidth(), oBufImage.getHeight(), BufferedImage.TYPE_BYTE_GRAY );
 //        //oBufImagegrey = ImageIO.read(fFile);
-//        int[] iaData = new int[oBufImageGrey.getHeight() * oBufImageGrey.getWidth() * 2];
+        int[] iaData = new int[oBufImageGrey.getHeight() * oBufImageGrey.getWidth() * 2];
 //
-//        iaData = oBufImageGrey.getData().getPixels(0, 0, oBufImageGrey.getWidth(), oBufImageGrey.getHeight(), iaData);
+        iaData = oBufImageGrey.getData().getPixels(0, 0, oBufImageGrey.getWidth(), oBufImageGrey.getHeight(), iaData);
 //
 //        //oBufImageGrey.getRGB(0, 0, oBufImageGrey.getWidth(), oBufImageGrey.getHeight(), iaData, 0, 20);
-//        int[][] iaReturn = Matrix.reshape(iaData, oBufImageGrey.getHeight(), oBufImageGrey.getWidth());
+        int[][] iaReturn = Matrix.reshape(iaData, oBufImageGrey.getHeight(), oBufImageGrey.getWidth());
 //
 //        /*
 //         byte[] pixels = ((DataBufferByte) oBufImage.getRaster().getDataBuffer()).getData();
@@ -1034,9 +1037,9 @@ public class Reader {
 //         lsaRGBAlpha.add(iatReadIn);
 //
 //         }*/
-//        this.close();
+        this.close();
 //
-//        return iaReturn;
+        return iaReturn;
     }
 
     public List<int[][]> readImage() throws IOException {

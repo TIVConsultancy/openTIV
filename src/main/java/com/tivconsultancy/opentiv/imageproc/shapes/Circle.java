@@ -15,6 +15,7 @@
  */
 package com.tivconsultancy.opentiv.imageproc.shapes;
 
+import com.tivconsultancy.opentiv.helpfunctions.io.Writer;
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Morphology;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
@@ -47,6 +48,7 @@ public class Circle implements Shape, Serializable {
     int iMax_Lengthj = 1000;
     //-----------------------
     public Double dAngle = null;
+    public Double dAvergeGreyDerivative=null;
 
     public Circle(MatrixEntry meCenter, double dDiameter) {
         this.meCenter = meCenter;
@@ -54,6 +56,7 @@ public class Circle implements Shape, Serializable {
         this.dDiameterJ = dDiameter;
         dCircStep = (Math.PI * dDiameter); //(int) Math.ceil(4.0/dDiameter);
         this.dAngle = 0.0;
+        this.dAvergeGreyDerivative=0.0;
         paint();
     }
 
@@ -70,6 +73,7 @@ public class Circle implements Shape, Serializable {
         this.dDiameterI = dDiameterI;
         this.dDiameterJ = dDiameterJ;
         this.dAngle = 0.0;
+        this.dAvergeGreyDerivative=0.0;
         dCircStep = (Math.PI * Math.max(dDiameterJ, dDiameterI)); //(int) Math.ceil(4.0/dDiameter);
         paint();
     }
@@ -80,6 +84,7 @@ public class Circle implements Shape, Serializable {
         this.dDiameterJ = dDiameterJ;
         dCircStep = (Math.PI * Math.max(dDiameterJ, dDiameterI)); //(int) Math.ceil(4.0/dDiameter);
         this.dAngle = dAngle;
+        this.dAvergeGreyDerivative=0.0;
         paint();
     }
 
@@ -328,6 +333,15 @@ public class Circle implements Shape, Serializable {
             }
         });
         return lmeArea;
+    }
+    
+    public static void writeOut(List<Circle> lC,String sOutput){
+        List<String> lsOut = new ArrayList<>();
+        for (Circle circle : lC) {
+            lsOut.add(circle.getOutputString());
+        }
+        lsOut.add(0,"x,y,z,major axis, minor axis, orientation angle");
+        new Writer(sOutput).writebigString(lsOut);
     }
 
 }

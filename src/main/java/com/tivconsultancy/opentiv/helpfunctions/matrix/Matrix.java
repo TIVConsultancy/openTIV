@@ -1243,7 +1243,7 @@ public class Matrix {
 
             for (int j = 0; j < iaInput[0].length; j++) {
 
-                daReturn[i][j] = (int) (iaInput[i][j] / dMax);
+                daReturn[i][j] =  (iaInput[i][j] / dMax);
 
             }
 
