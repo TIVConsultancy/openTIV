@@ -126,10 +126,20 @@ public class Line implements Serializable{
     }
 
     public ImageInt setLine(ImageInt iaBlackBord, int iValue) {
-        for (MatrixEntry me : lmeLine) {
+//        for (MatrixEntry me : lmeLine) {
             iaBlackBord.setPoints(lmeLine, iValue);
-        }
+//        }
         return iaBlackBord;
+    }
+    
+    public boolean checkIfCrossValue(ImageInt iaImage,int iValue){
+        boolean bCheck = false;
+        for (MatrixEntry me : lmeLine) {
+            if (iaImage.iaPixels[me.i][me.j]==iValue){
+                bCheck=true;
+            }
+        }
+        return bCheck;
     }
 
     @Override
