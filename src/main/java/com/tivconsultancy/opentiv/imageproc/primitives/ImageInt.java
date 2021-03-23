@@ -20,9 +20,11 @@ import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader.getGrayScale;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer.castToByteprimitive;
 import com.tivconsultancy.opentiv.math.interfaces.Additionable;
+import com.tivconsultancy.opentiv.math.interfaces.Multipliable;
 import com.tivconsultancy.opentiv.math.interfaces.SideCondition;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import com.tivconsultancy.opentiv.math.sets.Set1D;
+import com.tivconsultancy.opentiv.physics.interfaces.Prototype;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -41,7 +43,7 @@ import javax.swing.ImageIcon;
  *
  * @author Thomas Ziegenhein
  */
-public class ImageInt extends ImageBoolean implements Serializable, Additionable<ImageInt> {
+public class ImageInt extends ImageBoolean implements Serializable, Additionable<ImageInt>, Multipliable<ImageInt>, Prototype<ImageInt> {
 
     private static final long serialVersionUID = -3978520008605049954L;
 
@@ -1272,6 +1274,32 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
 
     @Override
     public ImageInt add2(ImageInt o2, String sType) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ImageInt getPrototype() {
+        if(iaPixels != null && this.iaPixels.length>0){
+            return new ImageInt(this.iaPixels.length, this.iaPixels[0].length, 0);
+        }
+        return new ImageInt(1, 1, 0);
+    }
+
+    @Override
+    public ImageInt mult(Double d) {
+        ImageInt multIMG = this.clone();
+        ImageInt start = this;
+        iterate(new IterativeFunction() {
+            @Override
+            public void perform(int i, int j) {
+                multIMG.iaPixels[i][j] = (int) (start.iaPixels[i][j] * d);
+            }
+        } );
+        return multIMG;
+    }
+
+    @Override
+    public ImageInt mult2(Double d, String sType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
