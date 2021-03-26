@@ -15,7 +15,6 @@
  */
 package com.tivconsultancy.opentiv.datamodels.overtime;
 
-import com.tivconsultancy.opentiv.datamodels.Results1DPlotAble;
 import java.io.Serializable;
 
 /**
