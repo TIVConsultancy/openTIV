@@ -38,7 +38,7 @@ public class DatabaseRAM<T extends DataBaseEntry> extends Database<T>{
     public T getRes(String ident){
         return overTime1DResuls.get(ident);
     }
-
+    
     @Override
     public IndexDatabase getIndexedResults() {
         throw new UnsupportedOperationException("Not supported yet.");

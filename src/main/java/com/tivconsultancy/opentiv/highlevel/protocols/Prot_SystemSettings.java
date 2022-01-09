@@ -76,6 +76,7 @@ public class Prot_SystemSettings extends Protocol implements Serializable {
     private void initSettings() {
 //        this.loSettings.add(new SettingObject("Activated", "SimpleEdges", true, SettingObject.SettingsType.Boolean));
         this.loSettings.add(new SettingObject("Store Temp Data", "tivGUI_dataStore", true, SettingObject.SettingsType.Boolean));
+        this.loSettings.add(new SettingObject("Draw Final Result", "tivGUI_dataDraw", true, SettingObject.SettingsType.Boolean));
         this.loSettings.add(new SettingObject("Storeage option", "tivGUI_Storeage", HEAP.toString(), SettingObject.SettingsType.String));
     }
 
@@ -84,7 +85,7 @@ public class Prot_SystemSettings extends Protocol implements Serializable {
         lsClusters.clear();
         lsClusters.add(FactorySettingsCluster.
                 getStandardCluster("Data",
-                                   new String[]{"tivGUI_dataStore"},
+                                   new String[]{"tivGUI_dataStore","tivGUI_dataDraw"},
                                    "Temporary Data Storeage ", this));
     }
 

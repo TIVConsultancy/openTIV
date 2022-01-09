@@ -31,13 +31,17 @@ public class ReturnContainerBoundaryTracking implements Serializable {
 
     private static final long serialVersionUID = -4125210442722832757L;
 
-    public ImageInt contours1 = null;
-    public ImageInt contours2 = null;
+//    public ImageInt contours1 = null;
+//    public ImageInt contours2 = null;
+    public List<CPXTr> lCPXTr1 = null;
+    public List<CPXTr> lCPXTr2 = null;
     public Map<CPXTr, VelocityVec> velocityVectors = new HashMap<>();
 
-    public ReturnContainerBoundaryTracking(Map<CPXTr, VelocityVec> vectors, ImageInt contours1, ImageInt contours2) {
-        this.contours1 = contours1;
-        this.contours2 = contours2;
+    public ReturnContainerBoundaryTracking(Map<CPXTr, VelocityVec> vectors, List<CPXTr> lCPXTr1, List<CPXTr> lCPXTr2) {
+//        this.contours1 = contours1;
+//        this.contours2 = contours2;
+        this.lCPXTr1=lCPXTr1;
+        this.lCPXTr2=lCPXTr2;
         this.velocityVectors = vectors;
     }
 

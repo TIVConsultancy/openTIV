@@ -97,7 +97,7 @@ public interface Colorbar {
                 this.oOperatrion = oOperation;
             }
         }
-        
+
         @Override
         public Color getColor(Double dValueInput) {
             double dValue = this.oOperatrion.operate(dValueInput);
@@ -110,7 +110,7 @@ public interface Colorbar {
                 if (o.oStartEnd.isInside(dFraction)) {
                     fColor = o.interpolate(dFraction);
                     break;
-                }else{
+                } else {
                     fColor = o.interpolate(1.0);
                 }
             }
@@ -121,7 +121,7 @@ public interface Colorbar {
 
             return Color.getHSBColor(fColor[0], fColor[1], fColor[2]);
         }
-        
+
         @Override
         public Double getMappingStartValue() {
             return dMappingStart;
@@ -180,7 +180,7 @@ public interface Colorbar {
             loCol.add(new Color(0.705669f, 0.0155489f, 0.15024f));
             return loCol;
         }
-        
+
         public static List<Color> getRedToOrange() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(255, 0, 0));
@@ -188,7 +188,7 @@ public interface Colorbar {
             loCol.add(new Color(255, 100, 0));
             loCol.add(new Color(255, 150, 0));
             loCol.add(new Color(255, 200, 0));
-            
+
             return loCol;
         }
 
@@ -205,42 +205,58 @@ public interface Colorbar {
             loCol.add(new Color(217, 95, 14));
             return loCol;
         }
-        
+
         public static List<Color> getWarmToColdRainbow() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(0, 105, 234));
             loCol.add(new Color(170, 64, 64));
             return loCol;
-        } 
-        
+        }
+
         public static List<Color> getColdToWarmRainbow() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(43, 140, 190));
             loCol.add(new Color(225, 71, 7));
             return loCol;
-        } 
-        
+        }
+
         public static List<Color> getColdToWarmRainbow2() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(43, 140, 190));
             loCol.add(Color.GREEN);
-            loCol.add(Color.RED);   
+            loCol.add(Color.RED);
             loCol.add(Color.WHITE);
             return loCol;
         }
-        
+
         public static List<Color> getJet() {
             List<Color> loCol = new ArrayList<Color>();
-            loCol.add(new Color(43, 140, 190));            
+            loCol.add(new Color(43, 140, 190));
             loCol.add(Color.BLUE);
-            loCol.add(Color.CYAN);                     
+            loCol.add(Color.CYAN);
             loCol.add(Color.WHITE);
             loCol.add(Color.YELLOW);
             loCol.add(Color.RED);
-            
+
             return loCol;
         }
-        
+
+        public static List<Color> getJet2() {
+            List<Color> loCol = new ArrayList<Color>();
+            loCol.add(new Color(43, 140, 190));
+            loCol.add(Color.BLUE);
+            loCol.add(Color.CYAN);
+            loCol.add(Color.WHITE);
+            loCol.add(Color.YELLOW);
+            loCol.add(Color.RED);
+            loCol.add(Color.GREEN);
+            loCol.add(Color.MAGENTA);
+            loCol.add(Color.ORANGE);
+            loCol.add(Color.PINK);
+
+            return loCol;
+        }
+
         public static List<Color> getBrown() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(198, 114, 67));
@@ -248,7 +264,7 @@ public interface Colorbar {
             //loCol.add(new Color(30, 166, 176));           
             return loCol;
         }
-        
+
         public static List<Color> getLightBrown() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(156, 79, 32));
@@ -256,7 +272,7 @@ public interface Colorbar {
             //loCol.add(new Color(30, 166, 176));           
             return loCol;
         }
-        
+
         public static List<Color> getveryLightBrown() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(218, 164, 109));
@@ -264,7 +280,7 @@ public interface Colorbar {
             //loCol.add(new Color(30, 166, 176));           
             return loCol;
         }
-        
+
         public static List<Color> getLightBlue() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(115, 136, 160));
@@ -272,7 +288,7 @@ public interface Colorbar {
             //loCol.add(new Color(30, 166, 176));           
             return loCol;
         }
-        
+
         public static List<Color> getdarkGreen() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(118, 102, 33));
@@ -280,7 +296,7 @@ public interface Colorbar {
             //loCol.add(new Color(30, 166, 176));           
             return loCol;
         }
-        
+
         public static List<Color> getPink() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(254, 119, 125));
@@ -288,22 +304,22 @@ public interface Colorbar {
             //loCol.add(new Color(30, 166, 176));           
             return loCol;
         }
-        
+
         public static List<Color> getGrey() {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(255, 255, 255));
             loCol.add(new Color(0, 0, 0));
             //loCol.add(new Color(30, 166, 176));           
             return loCol;
-        } 
-        
+        }
+
         public static List<Color> getCustom(int R, int G, int B, int R2, int G2, int B2) {
             List<Color> loCol = new ArrayList<Color>();
             loCol.add(new Color(R, G, B));
             loCol.add(new Color(R2, G2, B2));
             //loCol.add(new Color(30, 166, 176));           
             return loCol;
-        } 
+        }
 
         public static interface ColorOperation<Double> {
 

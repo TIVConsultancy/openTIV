@@ -17,6 +17,8 @@ package com.tivconsultancy.opentiv.masking.main;
 
 import com.tivconsultancy.opentiv.helpfunctions.hpc.Stopwatch;
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixGenerator;
+import com.tivconsultancy.opentiv.helpfunctions.operations.Convolution;
 import com.tivconsultancy.opentiv.helpfunctions.settings.SettingObject;
 import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.BasicIMGOper;
@@ -33,7 +35,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  *
@@ -55,9 +56,12 @@ public class OpenTIV_Masking {
 
         Stopwatch.addTimmer("AutoShape");
         try {
-            if ((boolean) oSettings.getSettingsValue("Ziegenhein2018")) {
+            if (oSettings.getSettingsValue("Mask") == ("Ziegenhein2018")) {
                 oNew = Input.clone();
                 oNew = getMask(oNew, oSettings);
+            } else if (oSettings.getSettingsValue("Mask") == ("Hessenkemper2018")) {
+                oNew = Input.clone();
+                oNew = getMask2(oNew, oSettings);
             }
         } catch (Exception e) {
             log.severe("------------------------------");
@@ -88,7 +92,6 @@ public class OpenTIV_Masking {
 //            log.severe(e.getMessage());
 //        }
 //        Stopwatch.stop("SimpleShapes");
-
         return oNew;
 
     }
@@ -149,9 +152,9 @@ public class OpenTIV_Masking {
 //        IMG_Writer.PaintGreyPNG(o, new File("E:\\Goattec\\PIVGUITest\\masking_thinEdgeAfterMorph.png"));
         o.resetMarkers();
         (new Morphology()).markFillN4(o, 0, 0);
-        (new Morphology()).markFillN4(o, o.iaPixels.length-1, 0);
-        (new Morphology()).markFillN4(o, 0, o.iaPixels[0].length-1);
-        (new Morphology()).markFillN4(o, o.iaPixels.length-1, o.iaPixels[0].length-1);
+        (new Morphology()).markFillN4(o, o.iaPixels.length - 1, 0);
+        (new Morphology()).markFillN4(o, 0, o.iaPixels[0].length - 1);
+        (new Morphology()).markFillN4(o, o.iaPixels.length - 1, o.iaPixels[0].length - 1);
         Morphology.setNotMarkedPoints(o, 255);
 //        IMG_Writer.PaintGreyPNG(o, new File("E:\\Goattec\\PIVGUITest\\masking.png"));
         boolean[][] boa = o.baMarker;
@@ -166,33 +169,30 @@ public class OpenTIV_Masking {
                 }
             }
         }
-        
-        ImageInt oBlackBoard = new ImageInt(iaBlackBoard);
-        
-//        IMG_Writer.PaintGreyPNG(oBlackBoard, new File("E:\\Goattec\\PIVGUITest\\masking2.png"));
 
+        ImageInt oBlackBoard = new ImageInt(iaBlackBoard);
+
+//        IMG_Writer.PaintGreyPNG(oBlackBoard, new File("E:\\Goattec\\PIVGUITest\\masking2.png"));
         MatrixEntry oStartFill = oBlackBoard.containsValue(0);
         while (oStartFill != null) {
             List<MatrixEntry> loStructure = (new Morphology()).markFillN4(oBlackBoard, oStartFill.i, oStartFill.j);
-            loStructure.add(oStartFill);            
+            loStructure.add(oStartFill);
             if (loStructure.size() < iSmallestStructure) {
-                oBlackBoard.setPoints(loStructure, 255);             
+                oBlackBoard.setPoints(loStructure, 255);
             }
-            if(loStructure.size() >= iSmallestStructure){
+            if (loStructure.size() >= iSmallestStructure) {
                 oBlackBoard.setPoints(loStructure, 1);
 //                IMG_Writer.PaintGreyPNG(oBlackBoard, new File("E:\\Goattec\\PIVGUITest\\masking3.png"));
             }
             oStartFill = oBlackBoard.containsValue(0);
         }
 
-           
-        
         for (int i = 0; i < oBlackBoard.iaPixels.length; i++) {
             for (int j = 0; j < oBlackBoard.iaPixels[0].length; j++) {
                 if (oBlackBoard.iaPixels[i][j] == 1) {
                     oInput.iaPixels[i][j] = 0;
                     oBlackBoard.baMarker[i][j] = true;
-                }else{
+                } else {
                     oBlackBoard.baMarker[i][j] = false;
                 }
             }
@@ -210,6 +210,86 @@ public class OpenTIV_Masking {
 //        IMG_Writer.PaintGreyPNG(oBlackBoard, new File("E:\\Goattec\\PIVGUITest\\maskingOut.png"));
         return oBlackBoard;
 
+    }
+
+    public static ImageInt getMask2(ImageInt oInput, Settings oSettings) {
+        ImageInt iReturn = oInput.clone();
+        int iThresh =  Integer.valueOf((String)oSettings.getSettingsValue("thresh"));
+        int iErosion = Integer.valueOf((String)oSettings.getSettingsValue("ero"));
+        int iDilation = Integer.valueOf((String)oSettings.getSettingsValue("dila"));
+        iReturn = BasicIMGOper.WhiteCut(iReturn, iThresh);
+        iReturn.iaPixels = Convolution.Convolution(iReturn.iaPixels, MatrixGenerator.get5x5NormalDistribution());
+        iReturn.iaPixels = getMedian(iReturn.iaPixels, 5, 5);
+        iReturn = BasicIMGOper.threshold(iReturn, iThresh);
+        iReturn.iaPixels = getMedian(iReturn.iaPixels, 5, 5);
+        iReturn = BasicIMGOper.threshold(iReturn, iThresh);
+        iReturn.iaPixels = Convolution.Convolution(iReturn.iaPixels, MatrixGenerator.get5x5NormalDistribution());
+        iReturn = BasicIMGOper.threshold(iReturn, iThresh);
+        for (int i = 0; i < iErosion; i++) {
+            Morphology.erosion(iReturn);
+        }
+        for (int i = 0; i < iDilation; i++) {
+            Morphology.dilatation(iReturn);
+        }
+        return iReturn;
+    }
+
+    public static int[][] getMedian(int[][] iaInput, int iMedianSizeX, int iMedianSizeY) {
+
+        int[][] iaReturn = new int[iaInput.length][iaInput[0].length];
+
+        for (int i = 0; i < iaInput.length; i++) {
+
+            for (int j = 0; j < iaInput[0].length; j++) {
+
+                int iMDown = i - iMedianSizeY;
+
+                if (iMDown < 0) {
+                    iMDown = 0;
+                }
+
+                int iMUp = i + iMedianSizeY;
+
+                if (iMUp > iaInput.length) {
+                    iMUp = iaInput.length;
+                }
+
+                int jMLeft = j - iMedianSizeX;
+
+                if (jMLeft < 0) {
+                    jMLeft = 0;
+                }
+
+                int jMRight = j + iMedianSizeX;
+
+                if (jMRight > iaInput[0].length) {
+                    jMRight = iaInput[0].length;
+                }
+
+                //List<Integer> liVicinity = new ArrayList<Integer>();
+                int[] iaVicinity = new int[(iMUp - iMDown) * (jMRight - jMLeft)];
+
+                int runner = 0;
+
+                for (int iM = iMDown; iM < iMUp; iM++) {
+
+                    for (int jM = jMLeft; jM < jMRight; jM++) {
+
+                        iaVicinity[runner] = iaInput[iM][jM];
+                        runner = runner + 1;
+
+                    }
+
+                }
+
+                java.util.Arrays.sort(iaVicinity);
+
+                iaReturn[i][j] = iaVicinity[(int) (((double) iaVicinity.length) / 2.0)];
+
+            }
+
+        }
+        return iaReturn;
     }
 
 }

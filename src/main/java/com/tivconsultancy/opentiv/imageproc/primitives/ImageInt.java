@@ -400,6 +400,142 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
         }
     }
 
+    public boolean setNeighborsN8Erosion(int i, int j, int iValue, int[][] iConstraint) {
+        boolean bEroded = false;
+        if (j >= iaPixels[i].length - 1) {
+        } else {
+            if (iConstraint[i][j + 1] < 127 && iaPixels[i][j + 1] > 127) {
+                iaPixels[i][j + 1] = iValue;
+                bEroded = true;
+            }
+        }
+
+        if (j >= iaPixels[i].length - 1 || i <= 0) {
+        } else {
+            if (iConstraint[i - 1][j + 1] < 127 && iaPixels[i - 1][j + 1] > 127) {
+                iaPixels[i - 1][j + 1] = iValue;
+                bEroded = true;
+            }
+        }
+
+        if (i <= 0) {
+        } else {
+            if (iConstraint[i - 1][j] < 127 && iaPixels[i - 1][j] > 127) {
+                iaPixels[i - 1][j] = iValue;
+                bEroded = true;
+            }
+        }
+
+        if (j <= 0 || i <= 0) {
+        } else {
+            if (iConstraint[i - 1][j - 1] < 127 && iaPixels[i - 1][j - 1] > 127) {
+                iaPixels[i - 1][j - 1] = iValue;
+                bEroded = true;
+            }
+        }
+
+        if (j <= 0) {
+        } else {
+            if (iConstraint[i][j - 1] < 127 && iaPixels[i][j - 1] > 127) {
+                iaPixels[i][j - 1] = iValue;
+                bEroded = true;
+            }
+        }
+
+        if (j <= 0 || i >= iaPixels.length - 1) {
+        } else {
+            if (iConstraint[i + 1][j - 1] < 127 && iaPixels[i + 1][j - 1] > 127) {
+                iaPixels[i + 1][j - 1] = iValue;
+                bEroded = true;
+            }
+        }
+
+        if (i >= iaPixels.length - 1) {
+        } else {
+            if (iConstraint[i + 1][j] < 127 && iaPixels[i + 1][j] > 127) {
+                iaPixels[i + 1][j] = iValue;
+                bEroded = true;
+            }
+        }
+
+        if (i >= iaPixels.length - 1 || j >= iaPixels[i].length - 1) {
+        } else {
+            if (iConstraint[i + 1][j + 1] < 127 && iaPixels[i + 1][j + 1] > 127) {
+                iaPixels[i + 1][j + 1] = iValue;
+                bEroded = true;
+            }
+        }
+        return bEroded;
+    }
+
+    public boolean setNeighborsN4Dilation(int i, int j, int iValue, int[][] iConstraint) {
+        boolean bDilated = false;
+        if (j >= iaPixels[i].length - 1) {
+        } else {
+            if (iConstraint[i][j + 1] > 127 && iaPixels[i][j + 1] == 0) {
+                iaPixels[i][j + 1] = iValue;
+                bDilated = true;
+            }
+        }
+
+//        if (j >= iaPixels[i].length - 1 || i <= 0) {
+//        } else {
+//            if (iConstraint[i - 1][j + 1] > 127 && iaPixels[i - 1][j + 1] == 0) {
+//                iaPixels[i - 1][j + 1] = iValue;
+//                bDilated = true;
+//            }
+//        }
+
+        if (i <= 0) {
+        } else {
+            if (iConstraint[i - 1][j] > 127 && iaPixels[i - 1][j] == 0) {
+                iaPixels[i - 1][j] = iValue;
+                bDilated = true;
+            }
+        }
+
+//        if (j <= 0 || i <= 0) {
+//        } else {
+//            if (iConstraint[i - 1][j - 1] > 127 && iaPixels[i - 1][j - 1] == 0) {
+//                iaPixels[i - 1][j - 1] = iValue;
+//                bDilated = true;
+//            }
+//        }
+
+        if (j <= 0) {
+        } else {
+            if (iConstraint[i][j - 1] > 127 && iaPixels[i][j - 1] == 0) {
+                iaPixels[i][j - 1] = iValue;
+                bDilated = true;
+            }
+        }
+
+//        if (j <= 0 || i >= iaPixels.length - 1) {
+//        } else {
+//            if (iConstraint[i + 1][j - 1] > 127 && iaPixels[i + 1][j - 1] == 0) {
+//                iaPixels[i + 1][j - 1] = iValue;
+//                bDilated = true;
+//            }
+//        }
+
+        if (i >= iaPixels.length - 1) {
+        } else {
+            if (iConstraint[i + 1][j] > 127 && iaPixels[i + 1][j] == 0) {
+                iaPixels[i + 1][j] = iValue;
+                bDilated = true;
+            }
+        }
+
+//        if (i >= iaPixels.length - 1 || j >= iaPixels[i].length - 1) {
+//        } else {
+//            if (iConstraint[i + 1][j + 1] > 127 && iaPixels[i + 1][j + 1] == 0) {
+//                iaPixels[i + 1][j + 1] = iValue;
+//                bDilated = true;
+//            }
+//        }
+        return bDilated;
+    }
+
     public void setNeighborsN8(int i, int j, int iValue, SideCondition<MatrixEntry> o) {
         /*
          Resturn array list with counter clockwise order:
@@ -649,7 +785,7 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
             }
         } else {
             for (MatrixEntry meO : lme) {
-                if (meO.i >= 0 && meO.j >= 0 && meO.i < iaPixels.length && meO.j < iaPixels[0].length) {
+                if (meO.i >= 0 && meO.j >= 0 && meO.i < iaPixels.length-iRadius && meO.j < iaPixels[0].length-iRadius) {
                     List<MatrixEntry> expand = this.getsubArea(meO.i, meO.j, iRadius);
                     for (MatrixEntry me : expand) {
                         iaPixels[me.i][me.j] = iValue;
@@ -710,6 +846,22 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
     public void setPoint(MatrixEntry me, int iValue) {
         if (me.i >= 0 && me.j >= 0 && me.i < iaPixels.length && me.j < iaPixels[0].length) {
             iaPixels[me.i][me.j] = iValue;
+        }
+    }
+
+    public void setPoint(MatrixEntry me, int iValue, int iRadius) {
+        if (iRadius == 0) {
+            if (me.i >= 0 && me.j >= 0 && me.i < iaPixels.length && me.j < iaPixels[0].length) {
+                iaPixels[me.i][me.j] = iValue;
+            }
+        } else {
+            if (me.i >= 0 && me.j >= 0 && me.i < iaPixels.length && me.j < iaPixels[0].length) {
+                List<MatrixEntry> expand = this.getsubArea(me.i, me.j, iRadius);
+                for (MatrixEntry mme : expand) {
+                    iaPixels[mme.i][mme.j] = iValue;
+                }
+
+            }
         }
     }
 
@@ -922,6 +1074,38 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
         for (int i = 0; i < iaPixels.length; i++) {
             for (int j = iMinIndex; j < iMaxIndex; j++) {
                 iaNew[i][j - iMinIndex] = iaPixels[i][j];
+            }
+        }
+        return new ImageInt(iaNew);
+    }
+
+    public ImageInt getsubXY(int iMinX, int iMaxX, int iMinY, int iMaxY) {
+
+        int iMinIndex = 0;
+        if (iMinX > 0 && iMinX < iaPixels[0].length - 1) {
+            iMinIndex = iMinX;
+        }
+        int iMinIndexY = 0;
+        if (iMinY > 0 && iMinY < iaPixels.length - 1) {
+            iMinIndexY = iMinY;
+        }
+
+        int iMaxIndex = iaPixels[0].length;
+        if (iMaxX < iaPixels[0].length && iMaxX > 0) {
+            iMaxIndex = iMaxX;
+        }
+        int iMaxIndexY = iaPixels.length;
+        if (iMaxY < iaPixels.length && iMaxY > 0) {
+            iMaxIndexY = iMaxY;
+        }
+
+        int[][] iaNew = new int[iMaxIndexY - iMinY][iMaxIndex - iMinX];
+        if ((iMaxIndex - iMinIndex) > (iMaxX - iMinX)) {
+            return new ImageInt(iaNew);
+        }
+        for (int i = iMinIndexY; i < iMaxIndexY; i++) {
+            for (int j = iMinIndex; j < iMaxIndex; j++) {
+                iaNew[i - iMinIndexY][j - iMinIndex] = iaPixels[i][j];
             }
         }
         return new ImageInt(iaNew);
@@ -1279,7 +1463,7 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
 
     @Override
     public ImageInt getPrototype() {
-        if(iaPixels != null && this.iaPixels.length>0){
+        if (iaPixels != null && this.iaPixels.length > 0) {
             return new ImageInt(this.iaPixels.length, this.iaPixels[0].length, 0);
         }
         return new ImageInt(1, 1, 0);
@@ -1294,13 +1478,14 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
             public void perform(int i, int j) {
                 multIMG.iaPixels[i][j] = (int) (start.iaPixels[i][j] * d);
             }
-        } );
+        });
         return multIMG;
     }
 
     @Override
     public ImageInt mult2(Double d, String sType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     public interface IterativeFunction {

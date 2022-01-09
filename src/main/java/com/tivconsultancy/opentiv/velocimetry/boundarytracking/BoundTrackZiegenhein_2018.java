@@ -28,6 +28,7 @@ import static com.tivconsultancy.opentiv.postproc.vector.SVG.paintVectors;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Ziegenhein_2018;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Ziegenhein_2018.CNCP;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
+import com.tivconsultancy.opentiv.imageproc.shapes.Circle;
 import com.tivconsultancy.opentiv.imageproc.shapes.Line2;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.grids.RecOrtho2D;
@@ -140,11 +141,11 @@ public class BoundTrackZiegenhein_2018 {
                 for (CPXTr oContoursToTrack : loFrame1) {
 
                     Collection<CPXTr> lo = Sorting.getEntriesWithSameCharacteristic(oContoursToTrack, loFrame2, 1.0, (Sorting.Characteristic2<CPXTr>) (CPXTr pParameter, CPXTr pParameter2) -> {
-                                                                                if (pParameter.getNorm(pParameter2) < 40) {
-                                                                                    return 1.0;
-                                                                                }
-                                                                                return 0.0;
-                                                                            });
+                        if (pParameter.getNorm(pParameter2) < 40) {
+                            return 1.0;
+                        }
+                        return 0.0;
+                    });
 
                     List<CPXTr> loSort = new ArrayList<>();
                     loSort.addAll(lo);
@@ -200,11 +201,11 @@ public class BoundTrackZiegenhein_2018 {
                 paintVectors(sPWDOut + java.io.File.separator + sOutputFolder + java.io.File.separator + iCount + "Vec.svg", oVelocityVectors, oColBar, 2);
                 VelocityVec.writeToFile(sPWDOut + java.io.File.separator + sOutputFolder + java.io.File.separator + iCount + "_vec.csv", oVelocityVectors, "X[Px], Y[Px], Z[Px], VelX [Px], VelY[Px], Size[Px]", new Value<VelocityVec>() {
 
-                                    @Override
-                                    public Double getValue(VelocityVec pParameter) {
-                                        return 1.0 * ((CPXTr) pParameter.VelocityObject1).lo.size();
-                                    }
-                                });
+                    @Override
+                    public Double getValue(VelocityVec pParameter) {
+                        return 1.0 * ((CPXTr) pParameter.VelocityObject1).lo.size();
+                    }
+                });
                 VelocityVec.writeToFile(sPWDOut + java.io.File.separator + sOutputFolder + java.io.File.separator + iCount + "_vec.ser", oVelocityVectors);
 
                 iCount++;
@@ -233,10 +234,10 @@ public class BoundTrackZiegenhein_2018 {
         List<CPXTr> loFrame2 = getCNCP(oEdges2);
         loFrame1 = getvalidCPXListFirst(loFrame1);
         loFrame2 = getvalidCPXListSecond(loFrame2);
-        
-        int searchYPlus = -1*Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYPlus").toString());
-        int searchYMinus = -1*Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYMinus").toString());
-        
+
+        int searchYPlus = -1 * Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYPlus").toString());
+        int searchYMinus = -1 * Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYMinus").toString());
+
         int searchXPlus = Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusXPlus").toString());
         int searchXMinus = Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusXMinus").toString());
 
@@ -244,11 +245,11 @@ public class BoundTrackZiegenhein_2018 {
         for (CPXTr oContoursToTrack : loFrame1) {
 
             Collection<CPXTr> lo = Sorting.getEntriesWithSameCharacteristic(oContoursToTrack, loFrame2, 1.0, (Sorting.Characteristic2<CPXTr>) (CPXTr pParameter, CPXTr pParameter2) -> {
-                                                                        if (pParameter.getNorm(pParameter2) < 40) {
-                                                                            return 1.0;
-                                                                        }
-                                                                        return 0.0;
-                                                                    });
+                if (pParameter.getNorm(pParameter2) < 40) {
+                    return 1.0;
+                }
+                return 0.0;
+            });
 
             List<CPXTr> loSort = new ArrayList<>();
             loSort.addAll(lo);
@@ -265,18 +266,65 @@ public class BoundTrackZiegenhein_2018 {
             oVelocityVectors.put(oContoursToTrack, oVecSubPix);
         }
 
-        setHelpFunction(oEdges1.iLength, oEdges1.jLength);
-        for (CPXTr o : loFrame1) {
-            oHelp.setPoint(o.lo, 255);
-        }
-        
-        ImageInt secContours = new ImageInt(oEdges2.iLength, oEdges2.jLength, 0);
-        for(CPXTr c : loFrame2){
-            secContours.setPointsIMGP(c.lo, 255);
-        }
+//        setHelpFunction(oEdges1.iLength, oEdges1.jLength);
+//        for (CPXTr o : loFrame1) {
+//            oHelp.setPoint(o.lo, 255);
+//        }
+//
+//        ImageInt secContours = new ImageInt(oEdges2.iLength, oEdges2.jLength, 0);
+//        for (CPXTr c : loFrame2) {
+//            secContours.setPointsIMGP(c.lo, 255);
+//        }
+        return new ReturnContainerBoundaryTracking(oVelocityVectors, loFrame1, loFrame2);
 
-        return new ReturnContainerBoundaryTracking(oVelocityVectors, new ImageInt(oHelp.getMatrix()), secContours);
+    }
 
+    public static ReturnContainerBoundaryTracking runBoundTrack(Settings oSettings, List<CPXTr> lCPXTr1, List<CPXTr> lCPXTr2, ImageGrid oGrid, HashMap<CPXTr, Circle> map) throws EmptySetException {
+        int searchYPlus = -1 * Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYPlus").toString());
+        int searchYMinus = -1 * Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYMinus").toString());
+
+        int searchXPlus = Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusXPlus").toString());
+        int searchXMinus = Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusXMinus").toString());
+        Map<CPXTr, VelocityVec> oVelocityVectors = new HashMap<>();
+        for (CPXTr oContoursToTrack : lCPXTr1) {
+
+            Collection<CPXTr> lo = Sorting.getEntriesWithSameCharacteristic(oContoursToTrack, lCPXTr2, 1.0, (Sorting.Characteristic2<CPXTr>) (CPXTr pParameter, CPXTr pParameter2) -> {
+                if (pParameter.getNorm(pParameter2) < 40) {
+                    return 1.0;
+                }
+                return 0.0;
+            });
+
+            List<CPXTr> loSort = new ArrayList<>();
+            loSort.addAll(lo);
+
+            setHelpFunction(oGrid.iLength, oGrid.jLength);
+            VelocityVec oVec = getNearestForCPXTr(oContoursToTrack, loSort, 1, new Set2D(new Set1D(searchXMinus, searchXPlus), new Set1D(searchYPlus, searchYMinus)), oGrid.iLength, oGrid.jLength, (SideCondition2) (Object pParameter1, Object pParameter2) -> ((CPXTr) pParameter1).getDistance((CPXTr) pParameter2) < 40);
+            if (oVec == null) {
+                continue;
+            }
+//            int iIdent = oContoursToTrack.lo.get(0).iValue;
+            Circle c = map.get(oContoursToTrack);
+            if (c != null) {
+                oVec.setPosition(c.opSubPixelCenter);
+                OrderedPair opSubPixDist = getSubPixelDist((CPXTr) oVec.VelocityObject1, (CPXTr) oVec.VelocityObject2);
+                VelocityVec oVecSubPix = (VelocityVec) oVec.add(opSubPixDist);
+                oVecSubPix.VelocityObject1 = oVec.VelocityObject1;
+                oVecSubPix.VelocityObject2 = oVec.VelocityObject2;
+                oVelocityVectors.put(oContoursToTrack, oVecSubPix);
+            }
+        }
+        setHelpFunction(oGrid.iLength, oGrid.jLength);
+//        for (CPXTr o : lCPXTr1) {
+//            oHelp.setPoint(o.lo, 255);
+//        }
+//
+//        ImageInt secContours = new ImageInt(oGrid.iLength, oGrid.jLength, 0);
+//        for (CPXTr c : lCPXTr2) {
+//            secContours.setPointsIMGP(c.lo, 255);
+//        }
+
+        return new ReturnContainerBoundaryTracking(oVelocityVectors, lCPXTr1, lCPXTr2);
     }
 
     public static List<CPXTr> getvalidCPXListFirst(List<CPXTr> loIn) {
@@ -304,11 +352,11 @@ public class BoundTrackZiegenhein_2018 {
         for (ImagePoint o : oSmaller.lo) {
             loNearest.add((ImagePoint) ((EnumObject) Sorting.getMinCharacteristic(oBigger.lo, o, new Sorting.Characteristic2<ImagePoint>() {
 
-                                                                              @Override
-                                                                              public Double getCharacteristicValue(ImagePoint pParameter, ImagePoint pParameter2) {
-                                                                                  return pParameter.getPos().getNorm(pParameter2.getPos());
-                                                                              }
-                                                                          })).o);
+                @Override
+                public Double getCharacteristicValue(ImagePoint pParameter, ImagePoint pParameter2) {
+                    return pParameter.getPos().getNorm(pParameter2.getPos());
+                }
+            })).o);
         }
 
         Double dX = 0.0;
@@ -696,81 +744,81 @@ public class BoundTrackZiegenhein_2018 {
 
         oClean = Ziegenhein_2018.CNCPNetwork.OpenCNCP(oClean, new Ziegenhein_2018.RuleWithDoubleAction<Ziegenhein_2018.CNCP>() {
 
-                                                  @Override
-                                                  public List<Ziegenhein_2018.CNCP> isValid(Ziegenhein_2018.CNCP o, HashSet<Ziegenhein_2018.CNCP> lo) {
+            @Override
+            public List<Ziegenhein_2018.CNCP> isValid(Ziegenhein_2018.CNCP o, HashSet<Ziegenhein_2018.CNCP> lo) {
 
-                                                      List<Ziegenhein_2018.CNCP> loReturn = new ArrayList<>();
-                                                      try {
-                                                          for (EnumObject oEnum : o.getclosest(lo, 10)) {
-                                                              if (oEnum.dEnum > 1.5 && oEnum.o != null && ((CNCP) o).lo.size() > 10) {
-                                                                  loReturn.add((Ziegenhein_2018.CNCP) oEnum.o);
-                                                              }
-                                                          }
-                                                      } catch (EmptySetException ex) {
-                                                          TIVLog.tivLogger.log(Level.SEVERE, null, ex);
-                                                      }
+                List<Ziegenhein_2018.CNCP> loReturn = new ArrayList<>();
+                try {
+                    for (EnumObject oEnum : o.getclosest(lo, 10)) {
+                        if (oEnum.dEnum > 1.5 && oEnum.o != null && ((CNCP) o).lo.size() > 10) {
+                            loReturn.add((Ziegenhein_2018.CNCP) oEnum.o);
+                        }
+                    }
+                } catch (EmptySetException ex) {
+                    TIVLog.tivLogger.log(Level.SEVERE, null, ex);
+                }
 
-                                                      return loReturn;
+                return loReturn;
 
-                                                  }
+            }
 
-                                                  @Override
-                                                  public void operate(Ziegenhein_2018.CNCP o1, List<Ziegenhein_2018.CNCP> lo2, ImageGrid oGrid) {
-                                                      if (lo2.isEmpty()) {
-                                                          return;
-                                                      }
-                                                      for (Ziegenhein_2018.CNCP o2 : lo2) {
-                                                          if (o1.oStart == null || o1.oEnd == null || o2.oStart == null || o2.oEnd == null) {
-                                                              continue;
-                                                          }
-                                                          List<EnumObject> loHelp = new ArrayList<>();
-                                                          loHelp.add(new EnumObject(o1.oStart.getNorm(o2.oEnd), new Object[]{o1.oStart, o2.oEnd}));
-                                                          loHelp.add(new EnumObject(o1.oStart.getNorm(o2.oStart), new Object[]{o1.oStart, o2.oStart}));
-                                                          loHelp.add(new EnumObject(o1.oEnd.getNorm(o2.oEnd), new Object[]{o1.oEnd, o2.oEnd}));
-                                                          loHelp.add(new EnumObject(o1.oEnd.getNorm(o2.oStart), new Object[]{o1.oEnd, o2.oStart}));
-                                                          EnumObject oHelp = null;
-                                                          try {
-                                                              oHelp = Sorting.getMinCharacteristic(loHelp, (Sorting.Characteristic<EnumObject>) (EnumObject pParameter) -> {
-                                                                                               return pParameter.dEnum;
-                                                                                           });
-                                                          } catch (EmptySetException ex) {
-                                                              TIVLog.tivLogger.log(Level.SEVERE, null, ex);
-                                                          }
-                                                          if (oHelp != null && oHelp.o != null) {
-                                                              oHelp = (EnumObject) oHelp.o;
-                                                              ImagePoint oConnect1 = (ImagePoint) ((Object[]) oHelp.o)[0];
-                                                              ImagePoint oConnect2 = (ImagePoint) ((Object[]) oHelp.o)[1];
+            @Override
+            public void operate(Ziegenhein_2018.CNCP o1, List<Ziegenhein_2018.CNCP> lo2, ImageGrid oGrid) {
+                if (lo2.isEmpty()) {
+                    return;
+                }
+                for (Ziegenhein_2018.CNCP o2 : lo2) {
+                    if (o1.oStart == null || o1.oEnd == null || o2.oStart == null || o2.oEnd == null) {
+                        continue;
+                    }
+                    List<EnumObject> loHelp = new ArrayList<>();
+                    loHelp.add(new EnumObject(o1.oStart.getNorm(o2.oEnd), new Object[]{o1.oStart, o2.oEnd}));
+                    loHelp.add(new EnumObject(o1.oStart.getNorm(o2.oStart), new Object[]{o1.oStart, o2.oStart}));
+                    loHelp.add(new EnumObject(o1.oEnd.getNorm(o2.oEnd), new Object[]{o1.oEnd, o2.oEnd}));
+                    loHelp.add(new EnumObject(o1.oEnd.getNorm(o2.oStart), new Object[]{o1.oEnd, o2.oStart}));
+                    EnumObject oHelp = null;
+                    try {
+                        oHelp = Sorting.getMinCharacteristic(loHelp, (Sorting.Characteristic<EnumObject>) (EnumObject pParameter) -> {
+                            return pParameter.dEnum;
+                        });
+                    } catch (EmptySetException ex) {
+                        TIVLog.tivLogger.log(Level.SEVERE, null, ex);
+                    }
+                    if (oHelp != null && oHelp.o != null) {
+                        oHelp = (EnumObject) oHelp.o;
+                        ImagePoint oConnect1 = (ImagePoint) ((Object[]) oHelp.o)[0];
+                        ImagePoint oConnect2 = (ImagePoint) ((Object[]) oHelp.o)[1];
 
-                                                              OrderedPair opDeri1 = o1.getDerivationOutwardsEndPoints(oConnect1, 10);
-                                                              OrderedPair opDeri2 = o2.getDerivationOutwardsEndPoints(oConnect2, 10);
-                                                              if (opDeri1 == null || opDeri2 == null) {
-                                                                  continue;
-                                                              }
-                                                              Double dSmoothness = (Math.abs(opDeri1.x + opDeri2.x) + Math.abs(opDeri1.y + opDeri2.y));
-                                                              double dDist = oConnect1.getNorm(oConnect2);
-                                                              double dDistDeri1 = opDeri1.getNorm(new OrderedPair(0.00, 0.0));
-                                                              Double dDirectionalDistX1 = ((oConnect2.getPos().x - oConnect1.getPos().x) / dDist);
-                                                              Double dDirectionalDistY1 = ((oConnect2.getPos().y - oConnect1.getPos().y) / dDist);
-                                                              OrderedPair opDirecDist1 = new OrderedPair(dDirectionalDistX1 - (opDeri1.x / dDistDeri1), dDirectionalDistY1 - (opDeri1.y / dDistDeri1));
-                                                              Double dDirecDist1 = opDirecDist1.getNorm(new OrderedPair(0.00, 0.0));
+                        OrderedPair opDeri1 = o1.getDerivationOutwardsEndPoints(oConnect1, 10);
+                        OrderedPair opDeri2 = o2.getDerivationOutwardsEndPoints(oConnect2, 10);
+                        if (opDeri1 == null || opDeri2 == null) {
+                            continue;
+                        }
+                        Double dSmoothness = (Math.abs(opDeri1.x + opDeri2.x) + Math.abs(opDeri1.y + opDeri2.y));
+                        double dDist = oConnect1.getNorm(oConnect2);
+                        double dDistDeri1 = opDeri1.getNorm(new OrderedPair(0.00, 0.0));
+                        Double dDirectionalDistX1 = ((oConnect2.getPos().x - oConnect1.getPos().x) / dDist);
+                        Double dDirectionalDistY1 = ((oConnect2.getPos().y - oConnect1.getPos().y) / dDist);
+                        OrderedPair opDirecDist1 = new OrderedPair(dDirectionalDistX1 - (opDeri1.x / dDistDeri1), dDirectionalDistY1 - (opDeri1.y / dDistDeri1));
+                        Double dDirecDist1 = opDirecDist1.getNorm(new OrderedPair(0.00, 0.0));
 
-                                                              double dDistDeri2 = opDeri2.getNorm(new OrderedPair(0.00, 0.0));
-                                                              Double dDirectionalDistX2 = ((oConnect1.getPos().x - oConnect2.getPos().x) / dDist);
-                                                              Double dDirectionalDistY2 = ((oConnect1.getPos().y - oConnect2.getPos().y) / dDist);
-                                                              OrderedPair opDirecDist2 = new OrderedPair(dDirectionalDistX2 - (opDeri2.x / dDistDeri2), dDirectionalDistY2 - (opDeri2.y / dDistDeri2));
-                                                              Double dDirecDist2 = opDirecDist2.getNorm(new OrderedPair(0.00, 0.0));
+                        double dDistDeri2 = opDeri2.getNorm(new OrderedPair(0.00, 0.0));
+                        Double dDirectionalDistX2 = ((oConnect1.getPos().x - oConnect2.getPos().x) / dDist);
+                        Double dDirectionalDistY2 = ((oConnect1.getPos().y - oConnect2.getPos().y) / dDist);
+                        OrderedPair opDirecDist2 = new OrderedPair(dDirectionalDistX2 - (opDeri2.x / dDistDeri2), dDirectionalDistY2 - (opDeri2.y / dDistDeri2));
+                        Double dDirecDist2 = opDirecDist2.getNorm(new OrderedPair(0.00, 0.0));
 
 //                        System.out.println("Ping");
-                                                              if (dSmoothness <= 1.1 && (Math.min(dDirecDist1, dDirecDist2) * dDist) < 5) {
-                                                                  Line2 oLine = new Line2(oConnect1, oConnect2);
-                                                                  oLine.setLine(oGrid, 255);
-                                                              }
+                        if (dSmoothness <= 1.1 && (Math.min(dDirecDist1, dDirecDist2) * dDist) < 5) {
+                            Line2 oLine = new Line2(oConnect1, oConnect2);
+                            oLine.setLine(oGrid, 255);
+                        }
 //                        CNCP.connectCNCP(o1, o2, oConnect1, oConnect2, oGrid, 127);
 
-                                                          }
-                                                      }
-                                                  }
-                                              });
+                    }
+                }
+            }
+        });
         return oClean;
     }
 
@@ -888,31 +936,31 @@ public class BoundTrackZiegenhein_2018 {
 
         Collections.sort(lopDisplacementAndSum, new Comparator<Nearest.OPwithCont>() {
 
-                     @Override
-                     public int compare(Nearest.OPwithCont o1, Nearest.OPwithCont o2) {
-                         if (o1 == null && o2 == null) {
-                             return 0;
-                         }
+            @Override
+            public int compare(Nearest.OPwithCont o1, Nearest.OPwithCont o2) {
+                if (o1 == null && o2 == null) {
+                    return 0;
+                }
 
-                         if (o1 == null && o2 != null) {
-                             return 1;
-                         }
+                if (o1 == null && o2 != null) {
+                    return 1;
+                }
 
-                         if (o1 != null && o2 == null) {
-                             return -1;
-                         }
+                if (o1 != null && o2 == null) {
+                    return -1;
+                }
 
-                         if (o1.dValue < o2.dValue) {
-                             return -1;
-                         }
+                if (o1.dValue < o2.dValue) {
+                    return -1;
+                }
 
-                         if (o1.dValue > o2.dValue) {
-                             return 1;
-                         }
+                if (o1.dValue > o2.dValue) {
+                    return 1;
+                }
 
-                         return 0;
-                     }
-                 }
+                return 0;
+            }
+        }
         );
 
         List<Nearest.OPwithCont> lopSimilarValue = new ArrayList<>();
@@ -924,19 +972,19 @@ public class BoundTrackZiegenhein_2018 {
 
         Collections.sort(lopSimilarValue, new Comparator<Nearest.OPwithCont>() {
 
-                     @Override
-                     public int compare(Nearest.OPwithCont o1, Nearest.OPwithCont o2) {
-                         if (o1.getNorm(new OrderedPair(0.0, 0.0)) < o2.getNorm(new OrderedPair(0.0, 0.0))) {
-                             return -1;
-                         }
+            @Override
+            public int compare(Nearest.OPwithCont o1, Nearest.OPwithCont o2) {
+                if (o1.getNorm(new OrderedPair(0.0, 0.0)) < o2.getNorm(new OrderedPair(0.0, 0.0))) {
+                    return -1;
+                }
 
-                         if (o1.getNorm(new OrderedPair(0.0, 0.0)) > o2.getNorm(new OrderedPair(0.0, 0.0))) {
-                             return 1;
-                         }
+                if (o1.getNorm(new OrderedPair(0.0, 0.0)) > o2.getNorm(new OrderedPair(0.0, 0.0))) {
+                    return 1;
+                }
 
-                         return 0;
-                     }
-                 });
+                return 0;
+            }
+        });
         if (lopSimilarValue.isEmpty()) {
             return null;
         }

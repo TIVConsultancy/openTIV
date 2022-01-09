@@ -1304,6 +1304,24 @@ public class Matrix {
 
         return (iaReturn);
     }
+    
+        public static int[][] normalizeMatrixToFactor(int[][] iaInput, double iFactor) {
+
+        int[][] iaReturn = new int[iaInput.length][iaInput[0].length];
+        int iMax = Matrix.getMax(iaInput);
+
+        for (int i = 0; i < iaInput.length; i++) {
+
+            for (int j = 0; j < iaInput[0].length; j++) {
+
+                iaReturn[i][j] = (int) (((double) iaInput[i][j]) / ((double) iMax) * iFactor);
+
+            }
+
+        }
+
+        return (iaReturn);
+    }
 
     public static Integer[][] normalizeMatrix(Integer[][] ioInput, Integer iNorm) {
 
@@ -1362,6 +1380,19 @@ public class Matrix {
         }
 
         return max;
+    }
+    
+        public static double getMean(int[][] iaInput) {
+        double mean = 0.0;
+
+        for (int[] i : iaInput) {
+            for (int j : i) {
+                    mean += j;
+            }
+
+        }
+
+        return mean/(iaInput.length*iaInput[0].length);
     }
     
     public static double getMax(double[][] iaInput) {

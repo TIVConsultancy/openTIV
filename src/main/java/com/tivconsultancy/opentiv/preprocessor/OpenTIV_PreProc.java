@@ -131,6 +131,7 @@ public class OpenTIV_PreProc {
         }
         if (bCutBottom) {
             int iCutTop = (int) oSettings.getSettingsValue("cutyTop");
+//            int iCutBottom = 512>(int) oSettings.getSettingsValue("cutyBottom")?512:(int) oSettings.getSettingsValue("cutyBottom");
             int iCutBottom = (int) oSettings.getSettingsValue("cutyBottom");
             if ((iCutBottom - iCutTop) < oInput.iaPixels.length - 1) {
                 oInput = oInput.getsubY(0, iCutBottom - iCutTop);
@@ -147,7 +148,7 @@ public class OpenTIV_PreProc {
                 oInput = oInput.getsubX(0, iCutRight - iCutLeft);
             }
         }
-        
+
         return oInput;
     }
 
@@ -161,7 +162,7 @@ public class OpenTIV_PreProc {
         if (oSettings.getSettingsValue("HGContrast") != null && (boolean) oSettings.getSettingsValue("HGContrast")) {
             int iBlackMin = (int) oSettings.getSettingsValue("BlackMin");
             int iWhiteMax = (int) oSettings.getSettingsValue("WhiteMax");
-             HistogramOperations.Contrast(Input, iBlackMin, iWhiteMax);
+            HistogramOperations.Contrast(Input, iBlackMin, iWhiteMax);
         }
 
         if (oSettings.getSettingsValue("HGEqualize") != null && (boolean) oSettings.getSettingsValue("HGEqualize")) {
@@ -180,7 +181,7 @@ public class OpenTIV_PreProc {
             double WhiteStretchFactor = (double) oSettings.getSettingsValue("WhiteStretchFactor");
             HistogramOperations.stretchWhite(Input, WhiteStretchFactor, oHist);
         }
-        
+
         if (oSettings.getSettingsValue("CurveCorrection") != null && (boolean) oSettings.getSettingsValue("CurveCorrection")) {
             String yCSV = oSettings.getSettingsValue("GreyOldValues").toString();
             String xCSV = oSettings.getSettingsValue("GreyNewValues").toString();
@@ -190,7 +191,7 @@ public class OpenTIV_PreProc {
 
         return Input;
     }
-    
+
     public static Spline getSpline(String yCSV, String xCSV) {
 
         List<String> xValues = StringWorker.seperate(xCSV, ",");
@@ -221,7 +222,7 @@ public class OpenTIV_PreProc {
         }
         return Input;
     }
-    
+
     public static ImageInt reducenoise(ImageInt Input, Settings oSettings) {
         List<Object> NRType = oSettings.getALLSettingsValues("NRType");
         for (Object s : NRType) {
@@ -246,23 +247,22 @@ public class OpenTIV_PreProc {
         }
         return Input;
     }
-    
+
     public static ImageInt smoothing(ImageInt Input, Settings oSettings) {
         List<Object> SFType = oSettings.getALLSettingsValues("SFType");
         for (Object s : SFType) {
-                if ((boolean) oSettings.getSettingsValue("SFGauss")) {
-                    Input = NoiseReduction.Gauß(Input);
-                }
-            
-                if ((boolean) oSettings.getSettingsValue("SF5x5Gauss")) {
-                    Input = NoiseReduction.Gauß5x5(Input);
-                }
-            
-                if ((boolean) oSettings.getSettingsValue("SF3x3Box")) {
-                    Input = NoiseReduction.Box3x3(Input);
-                }
-            
-            
+            if ((boolean) oSettings.getSettingsValue("SFGauss")) {
+                Input = NoiseReduction.Gauß(Input);
+            }
+
+            if ((boolean) oSettings.getSettingsValue("SF5x5Gauss")) {
+                Input = NoiseReduction.Gauß5x5(Input);
+            }
+
+            if ((boolean) oSettings.getSettingsValue("SF3x3Box")) {
+                Input = NoiseReduction.Box3x3(Input);
+            }
+
         }
         return Input;
     }

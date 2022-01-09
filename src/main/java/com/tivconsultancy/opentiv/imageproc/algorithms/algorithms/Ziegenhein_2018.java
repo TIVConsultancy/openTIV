@@ -616,7 +616,7 @@ public class Ziegenhein_2018 {
         }
         return oGrid;
     }
-
+    
     public static ImageInt thinoutEdges(ImageInt oGrid, ArbStructure2 as) {
         List<MatrixEntry> lme = new ArrayList<>();
         for (MatrixEntry me : as.loPoints) {

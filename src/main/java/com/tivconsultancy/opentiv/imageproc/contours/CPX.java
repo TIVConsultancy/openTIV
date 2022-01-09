@@ -58,6 +58,9 @@ public class CPX implements Normable<CPX>, Serializable {
     public CPX(List<MatrixEntry> lme,ImageGrid oGrid) {
         for (MatrixEntry me : lme) {
             ImagePoint iP =new ImagePoint(me.j, me.i, 255, oGrid);
+            if (me.dValue!=0.0){
+                iP.iValue=(int)me.dValue;
+            }
             this.lo.add(iP);
             if (checkIfStart(iP)){
                 this.oStart=iP;

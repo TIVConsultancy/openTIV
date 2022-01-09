@@ -55,6 +55,17 @@ public class BasicIMGOper {
         }
         return oGrid;
     }
+    
+        public static ImageInt WhiteCut(ImageInt oGrid, double dThres) {
+        for (int i = 0; i < oGrid.iaPixels.length; i++) {
+            for (int j = 0; j < oGrid.iaPixels[0].length; j++) {
+                if (oGrid.iaPixels[i][j] > dThres) {
+                    oGrid.iaPixels[i][j] = 255;
+                } 
+            }
+        }
+        return oGrid;
+    }
 
     public static void threshold2(ImageInt oGrid, double dThres, ThresholdOperation o) {
         for (int i = 0; i < oGrid.iaPixels.length; i++) {

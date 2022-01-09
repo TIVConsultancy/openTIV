@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author ziegen60
  */
-public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Substractable<MatrixEntry> ,Normable<MatrixEntry> ,Multipliable<MatrixEntry> , Position, Value {
+public class MatrixEntry implements Serializable, Additionable<MatrixEntry>, Substractable<MatrixEntry>, Normable<MatrixEntry>, Multipliable<MatrixEntry>, Position, Value {
 
     private static final long serialVersionUID = 111132151L;
 
@@ -54,7 +54,7 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
         this.j = (int) j;
 
     }
-    
+
     public MatrixEntry(String standardString) {
         String[] splits = standardString.split(",");
         this.i = Integer.valueOf(splits[0]);
@@ -172,6 +172,21 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
 
     }
 
+    public static MatrixEntry getMeanEntry(List<MatrixEntry> lop) {
+        if (lop.isEmpty()) {
+            return null;
+        }
+
+        MatrixEntry opCenter = new MatrixEntry(0, 0);
+
+        for (MatrixEntry op : lop) {
+            opCenter.i += op.i;
+            opCenter.j += op.j;
+        }
+
+        return new MatrixEntry(opCenter.i / lop.size(), opCenter.j / lop.size());
+    }
+
     public static MatrixEntry getMaxIJPoint(List<MatrixEntry> laInputPoints) {
 
         MatrixEntry meMaxIJ = new MatrixEntry(0, 0);
@@ -189,6 +204,26 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
         }
 
         return meMaxIJ;
+
+    }
+    
+        public static MatrixEntry getMinIJPoint(List<MatrixEntry> laInputPoints) {
+
+        MatrixEntry meMinIJ = new MatrixEntry(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
+        for (MatrixEntry a : laInputPoints) {
+
+            if (a.i < meMinIJ.i) {
+                meMinIJ.i = a.i;
+            }
+
+            if (a.j < meMinIJ.j) {
+                meMinIJ.j = a.j;
+            }
+
+        }
+
+        return meMinIJ;
 
     }
 
@@ -671,7 +706,7 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
 
     }
 
-    public OrderedPair toOrderedPair(){
+    public OrderedPair toOrderedPair() {
         return new OrderedPair(this.j, this.i, this.dValue);
     }
 
@@ -820,8 +855,8 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>,Subs
 
         return new MatrixEntry(op.getPos());
     }
-    
-    public String getStandardString(){
+
+    public String getStandardString() {
         return this.i + "," + this.j;
     }
 

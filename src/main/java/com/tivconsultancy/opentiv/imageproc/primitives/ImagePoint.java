@@ -19,6 +19,8 @@ import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.math.interfaces.*;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -58,6 +60,14 @@ public class ImagePoint implements Serializable, Additionable<ImagePoint>, Subst
     public MatrixEntry getME(){
         OrderedPair op = this.getPos();
         return new MatrixEntry((int) op.y, (int) op.x, this.iValue);
+    }
+    
+    public static List<MatrixEntry> getMEList(List<ImagePoint> lIn){
+        List<MatrixEntry> lme = new ArrayList<>();
+        for (ImagePoint ip : lIn) {
+            lme.add(ip.getME());
+        }
+        return lme;
     }
 
     public double getConvolution(int[][] iaConvolution) {

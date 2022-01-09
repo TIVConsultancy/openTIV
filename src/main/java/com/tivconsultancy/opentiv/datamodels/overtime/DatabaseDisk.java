@@ -10,6 +10,7 @@ import com.tivconsultancy.opentiv.datamodels.TempOnDisk;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;

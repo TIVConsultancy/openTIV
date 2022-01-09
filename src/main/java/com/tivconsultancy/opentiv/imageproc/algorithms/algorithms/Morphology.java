@@ -15,7 +15,6 @@
  */
 package com.tivconsultancy.opentiv.imageproc.algorithms.algorithms;
 
-
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.imageproc.contours.CPX;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
@@ -36,7 +35,7 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
  *
  * @author Thomas Ziegenhein
  */
-public class Morphology implements Serializable{
+public class Morphology implements Serializable {
 
     private static final long serialVersionUID = 433814034743056550L;
 
@@ -67,7 +66,7 @@ public class Morphology implements Serializable{
     public static void dilatation(ImageInt oInput) {
         dilatation(oInput, 255, 128);
     }
-    
+
     public static void dilatation(ImageInt oInput, int value, int threshold) {
         oInput.resetMarkers();
         for (int i = 0; i < oInput.iaPixels.length; i++) {
@@ -81,7 +80,22 @@ public class Morphology implements Serializable{
         }
         oInput.resetMarkers();
     }
-    
+
+    public static ImageInt dilatation(ImageInt oInput, ImageInt oConstraint,boolean bDilation) {
+        ImageInt iReturn = oInput.clone();
+        for (int i = 0; i < oInput.iaPixels.length; i++) {
+            for (int j = 0; j < oInput.iaPixels[0].length; j++) {
+                if (oInput.iaPixels[i][j] > 0) {
+                    boolean bDil = iReturn.setNeighborsN4Dilation(i, j, oInput.iaPixels[i][j], oConstraint.iaPixels);
+                    if (bDil) {
+                        bDilation = true;
+                    }
+                }
+            }
+        }
+        return iReturn;
+    }
+
     public static void dilatation2(ImageInt oInput, int value, int threshold) {
         oInput.resetMarkers();
         ImageInt temp = oInput.clone();
@@ -122,7 +136,7 @@ public class Morphology implements Serializable{
         oInput.resetMarkers();
     }
 
-    public static void erosion(ImageInt oInput) {        
+    public static void erosion(ImageInt oInput) {
         oInput.resetMarkers();
         for (int i = 0; i < oInput.iaPixels.length; i++) {
             for (int j = 0; j < oInput.iaPixels[0].length; j++) {
@@ -138,8 +152,34 @@ public class Morphology implements Serializable{
                 }
             }
         }
-        
+
         oInput.resetMarkers();
+    }
+
+    public static boolean erosion(ImageInt oInput, ImageInt oConstraint) {
+//        oInput.resetMarkers();
+        boolean bEroded = false;
+        for (int i = 0; i < oInput.iaPixels.length; i++) {
+            for (int j = 0; j < oInput.iaPixels[0].length; j++) {
+                if (oInput.iaPixels[i][j] < 127) {
+                    boolean bEro = oInput.setNeighborsN8Erosion(i, j, 0, oConstraint.iaPixels);
+                    if (bEro) {
+                        bEroded = true;
+                    }
+                }
+            }
+        }
+
+        return bEroded;
+//        for (int i = 0; i < oInput.iaPixels.length; i++) {
+//            for (int j = 0; j < oInput.iaPixels[0].length; j++) {
+//                if (oInput.baMarker[i][j]) {
+//                    oInput.setNeighborsN8(i, j, 0, oConstraint.iaPixels);
+//                }
+//            }
+//        }
+//
+//        oInput.resetMarkers();
     }
 
     public List<ImagePoint> markFillN4(ImageGrid oInput, ImagePoint oStart) {
@@ -179,8 +219,7 @@ public class Morphology implements Serializable{
         }
         return loReturn;
     }
-    
-    
+
     public List<MatrixEntry> markFillN4(ImageInt oInput, int i, int j) {
         if (!oInput.isInside(i, j) || oInput.iaPixels[i][j] >= 127) {
             return new ArrayList<>();
@@ -217,7 +256,7 @@ public class Morphology implements Serializable{
         }
         return loReturn;
     }
-    
+
     public List<MatrixEntry> markFillN4(ImageInt oInput, int i, int j, SideCondition<MatrixEntry> sc) {
         if (!oInput.isInside(i, j)) {
             return new ArrayList<>();
@@ -239,7 +278,7 @@ public class Morphology implements Serializable{
         }
         return loReturn;
     }
-    
+
     public List<MatrixEntry> markFillN8(ImageInt oInput, int i, int j, SideCondition<MatrixEntry> sc) {
         if (!oInput.isInside(i, j)) {
             return new ArrayList<>();
@@ -261,7 +300,7 @@ public class Morphology implements Serializable{
         }
         return loReturn;
     }
-    
+
     public List<MatrixEntry> markFillN8(ImageInt oInput, int i, int j) {
         if (!oInput.isInside(i, j) || oInput.iaPixels[i][j] >= 127) {
             return new ArrayList<>();
@@ -298,7 +337,6 @@ public class Morphology implements Serializable{
         }
         return loReturn;
     }
-    
 
     public List<List<ImagePoint>> markFillN4(ImageGrid oInput, List<ImagePoint> loStart) {
         List<List<ImagePoint>> loReturn = new ArrayList<>();

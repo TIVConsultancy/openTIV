@@ -322,21 +322,30 @@ public class Circle implements Shape, Serializable {
         this.paint();
         double maxLenght = Math.max(this.dDiameterI, this.dDiameterJ);
         ImageInt img = new ImageInt((int) maxLenght + 5, (int) maxLenght + 5, 0);
-        img.setPoints(lmeCircle, 255);
-        List<MatrixEntry> lmeFill = (new Morphology()).markFillN4(img, 0, 0);
+        List<MatrixEntry> lmeHelp = new ArrayList<>();
+        int iDiffi = meCenter.i - img.iaPixels.length / 2;
+        int iDiffj = meCenter.j - img.iaPixels[0].length / 2;
+        for (MatrixEntry me : lmeCircle) {
+            lmeHelp.add(new MatrixEntry(me.i - iDiffi, me.j - iDiffj));
+        }
+        img.setPoints(lmeHelp, 255);
+        List<MatrixEntry> lmeFill = (new Morphology()).markFillN4(img, img.iaPixels.length / 2, img.iaPixels[0].length / 2);
         img.setPoints(lmeFill, 255);
         List<MatrixEntry> lmeArea = new ArrayList<>();
-        for (MatrixEntry me : this.lmeCircle) {
-            lmeArea.add(me);
+        for (MatrixEntry me : lmeFill) {
+            lmeArea.add(new MatrixEntry(me.i + iDiffi, me.j + iDiffj));
         }
-        img.iterate(new ImageInt.IterativeFunction() {
-            @Override
-            public void perform(int i, int j) {
-                if (img.iaPixels[i][j] == 0) {
-                    lmeArea.add(new MatrixEntry(i, j));
-                }
-            }
-        });
+//        for (MatrixEntry me : this.lmeCircle) {
+//            lmeArea.add(me);
+//        }
+//        img.iterate(new ImageInt.IterativeFunction() {
+//            @Override
+//            public void perform(int i, int j) {
+//                if (img.iaPixels[i][j] == 0) {
+//                    lmeArea.add(new MatrixEntry(i, j));
+//                }
+//            }
+//        });
         return lmeArea;
     }
 

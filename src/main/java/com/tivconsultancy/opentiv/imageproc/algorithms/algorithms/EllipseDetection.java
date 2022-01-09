@@ -727,7 +727,6 @@ public class EllipseDetection {
             }
         }
 
-        
         Jama.Matrix Jama_S = new Jama.Matrix(S);
         Jama.Matrix Jama_Sinv;
         try {
@@ -798,7 +797,7 @@ public class EllipseDetection {
 
         return oC;
     }
-    
+
     public static Circle EllipseFit(List<MatrixEntry> lme) {
         //http://nicky.vanforeest.com/misc/fitEllipse/fitEllipse.html
         /*
@@ -889,8 +888,11 @@ public class EllipseDetection {
 
         Circle oC = new Circle(new MatrixEntry((int) dY0, (int) dX0), l2, l1, dAngle);
         oC.opSubPixelCenter = new OrderedPair(dX0, dY0);
-
-        return oC;
+        if (oC.opSubPixelCenter != null) {
+            return oC;
+        } else {
+            return null;
+        }
     }
 
     public static class Circle_Fit extends Circle {
