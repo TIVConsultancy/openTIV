@@ -55,21 +55,21 @@ public class CPX implements Normable<CPX>, Serializable {
     public PLF oPLF = null;
     public boolean bMarker = false;
 
-    public CPX(List<MatrixEntry> lme,ImageGrid oGrid) {
+    public CPX(List<MatrixEntry> lme, ImageGrid oGrid) {
         for (MatrixEntry me : lme) {
-            ImagePoint iP =new ImagePoint(me.j, me.i, 255, oGrid);
-            if (me.dValue!=0.0){
-                iP.iValue=(int)me.dValue;
+            ImagePoint iP = new ImagePoint(me.j, me.i, 255, oGrid);
+            if (me.dValue != 0.0) {
+                iP.iValue = (int) me.dValue;
             }
             this.lo.add(iP);
-            if (checkIfStart(iP)){
-                this.oStart=iP;
+            if (checkIfStart(iP)) {
+                this.oStart = iP;
             }
-        }      
+        }
     }
-    
-    public CPX(){
-        
+
+    public CPX() {
+
     }
 
     public CPX(ImagePoint oStart) throws EmptySetException {
@@ -96,7 +96,7 @@ public class CPX implements Normable<CPX>, Serializable {
 
     public List<MatrixEntry> getPointsME() {
         List<MatrixEntry> loPoints = new ArrayList<>();
-        loPoints.add(oStart.getME());
+            loPoints.add(oStart.getME());
         for (ImagePoint op : lo) {
             loPoints.add(op.getME());
         }
@@ -374,7 +374,7 @@ public class CPX implements Normable<CPX>, Serializable {
 
         ImagePoint oFocalLocal = getFocalPoint(loLocal);
         for (ImagePoint o : oArea.oa) {
-            if (o.bMarker&&oFocalLocal!=null) {
+            if (o.bMarker && oFocalLocal != null) {
                 if (oFocalLocal.getPos().equals(o.getPos(), new Comparison<OrderedPair>() {
 
                     @Override
@@ -389,8 +389,7 @@ public class CPX implements Normable<CPX>, Serializable {
                 }
             }
         }
-        
-        
+
         return false;
 
     }

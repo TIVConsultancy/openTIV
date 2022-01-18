@@ -33,6 +33,7 @@ import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.shapes.ArbStructure2;
 import com.tivconsultancy.opentiv.imageproc.shapes.Circle;
+import com.tivconsultancy.opentiv.imageproc.shapes.Shape;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.algorithms.Sorting;
 import com.tivconsultancy.opentiv.math.exceptions.EmptySetException;
@@ -182,14 +183,15 @@ public class OpenTIV_Edges {
         return new ImageInt(oEdges.getMatrix());
     }
 
-    public static ReturnCotnainer_EllipseFit performShapeFitting(Settings oSettings, ImageInt oInput) {
+    public static ReturnContainer_Shape performShapeFitting(Settings oSettings, ImageInt oInput) {
         ImageGrid oEdges = new ImageGrid(oInput.iaPixels);
         ImageInt oBlackBoard = new ImageInt(oInput.iaPixels);
-        List<Circle> loFit = new ArrayList<>();
+        List<Shape> loShapes = new ArrayList<>();
         try {
-            loFit = EllipseDetection.Ziegenhein_2019_GUI(oEdges, oSettings);
+            List<Circle> loFit = EllipseDetection.Ziegenhein_2019_GUI(oEdges, oSettings);
             for (Circle o : loFit) {
                 oBlackBoard.setPoints(o.lmeCircle, 127);
+                loShapes.add(o);
             }
         } catch (Exception e) {
             TIVLog.tivLogger.severe("------------------------------");
@@ -198,7 +200,8 @@ public class OpenTIV_Edges {
             TIVLog.tivLogger.severe(e.getLocalizedMessage().toString());
             TIVLog.tivLogger.severe(e.getMessage().toString());
         }
-        return new ReturnCotnainer_EllipseFit(loFit, oBlackBoard);
+
+        return new ReturnContainer_Shape(loShapes, oBlackBoard);
     }
 
     public static List<CPX> splitByCurve(List<CPX> loInput, ImageGrid oEdges, int iOrder, Double dThresholdCurv) throws EmptySetException {
@@ -245,17 +248,19 @@ public class OpenTIV_Edges {
             EnumObject e = Sorting.getMaxCharacteristic(llme, new Sorting.Characteristic() {
                 @Override
                 public Double getCharacteristicValue(Object pParameter) {
-                    return (double)((List<MatrixEntry>) pParameter).size();
+                    return (double) ((List<MatrixEntry>) pParameter).size();
                 }
             });
             largest = (List<MatrixEntry>) e.o;
         } catch (EmptySetException ex) {
             Logger.getLogger(OpenTIV_Edges.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if(largest == null) return o2;
-        
+        if (largest == null) {
+            return o2;
+        }
+
         o2.markPoints(largest, true);
-        
+
         if (setMarked) {
             Morphology.setMarkedPoints(o2, value);
         } else {
@@ -367,18 +372,30 @@ public class OpenTIV_Edges {
         return log;
     }
 
-    public static class ReturnCotnainer_EllipseFit implements Serializable {
+    public static class ReturnContainer_Shape implements Serializable {
 
         private static final long serialVersionUID = -394283629933680489L;
 
-        public List<Circle> loCircles = new ArrayList<>();
+        public List<Shape> loShapes = new ArrayList<>();
         public ImageInt oImage = null;
 
-        public ReturnCotnainer_EllipseFit(List<Circle> loCircles, ImageInt oImage) {
-            this.loCircles = loCircles;
+        public ReturnContainer_Shape(List<Shape> loShape, ImageInt oImage) {
+            this.loShapes = loShape;
             this.oImage = oImage;
         }
 
     }
 
+//    public static class ReturnContainer_ArbStruc {
+//
+////        private static final long serialVersionUID = -394283629933680489L;
+//        public List<ArbStructure2> loArbstruc = new ArrayList<>();
+//        public ImageInt oImage = null;
+//
+//        public ReturnContainer_ArbStruc(List<ArbStructure2> lsArbStruc, ImageInt oImage) {
+//            this.loArbstruc = lsArbStruc;
+//            this.oImage = oImage;
+//        }
+//
+//    }
 }

@@ -108,4 +108,19 @@ public class ArbStructure implements Shape, Serializable{
     public int getPixelCount() {
         return loPoints.size();
     }
+
+    @Override
+    public List<MatrixEntry> getlmeList() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double getGreyDerivative() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public OrderedPair getSubPixelCenter() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -15,8 +15,10 @@
  */
 package com.tivconsultancy.opentiv.helpfunctions.matrix;
 
-
+import com.tivconsultancy.opentiv.imageproc.shapes.Line;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
+import com.tivconsultancy.opentiv.math.primitives.Tensor2D;
+import com.tivconsultancy.opentiv.math.primitives.Vector;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -78,7 +80,7 @@ public class Entries {
 
         return returnarray;
     }
-    
+
     public static List<MatrixEntry> getAllPointAboveThres(int[][] iaGrey, int iThresh) {
         List<MatrixEntry> lmeReturn = new ArrayList<MatrixEntry>();
         for (int i = 0; i < iaGrey.length; i++) {
@@ -94,60 +96,59 @@ public class Entries {
         }
         return lmeReturn;
     }
-    
-    public static List<MatrixEntry> getPointsInVicinity(List<MatrixEntry> lme, MatrixEntry meRef){
+
+    public static List<MatrixEntry> getPointsInVicinity(List<MatrixEntry> lme, MatrixEntry meRef) {
         Double dVicinity = 2.0;
         List<MatrixEntry> lmeVicinity = new ArrayList<MatrixEntry>();
-        
-        for(MatrixEntry me : lme){
-            if(!meRef.equals(me)){
+
+        for (MatrixEntry me : lme) {
+            if (!meRef.equals(me)) {
                 double dDist = me.SecondCartesian(meRef);
-                if(dDist<dVicinity){
+                if (dDist < dVicinity) {
                     lmeVicinity.add(me);
                 }
             }
         }
-        
+
         return lmeVicinity;
-    } 
-    
-    public static List<MatrixEntry> getPointsInVicinity(int[][] iaInput, MatrixEntry meRef, int iRadius, OperationME op){
-        
+    }
+
+    public static List<MatrixEntry> getPointsInVicinity(int[][] iaInput, MatrixEntry meRef, int iRadius, OperationME op) {
+
         List<MatrixEntry> lmeVicinity = new ArrayList<MatrixEntry>();
-        
-        for(int i = (meRef.i-iRadius > 0 ? meRef.i-iRadius : 0); i<= (meRef.i+iRadius < iaInput.length ? meRef.i+iRadius : iaInput.length-1); i++ ){
-            for(int j = (meRef.j-iRadius > 0 ? meRef.j-iRadius : 0); j<= (meRef.j+iRadius < iaInput[0].length ? meRef.j+iRadius : iaInput[0].length-1); j++ ){
+
+        for (int i = (meRef.i - iRadius > 0 ? meRef.i - iRadius : 0); i <= (meRef.i + iRadius < iaInput.length ? meRef.i + iRadius : iaInput.length - 1); i++) {
+            for (int j = (meRef.j - iRadius > 0 ? meRef.j - iRadius : 0); j <= (meRef.j + iRadius < iaInput[0].length ? meRef.j + iRadius : iaInput[0].length - 1); j++) {
                 MatrixEntry me;
-                if(op != null){
-                    me = op.perform(meRef, new MatrixEntry(i, j, iaInput[i][j]));  
-                }else{
-                    me = new MatrixEntry(i, j, iaInput[i][j]); 
-                }                
+                if (op != null) {
+                    me = op.perform(meRef, new MatrixEntry(i, j, iaInput[i][j]));
+                } else {
+                    me = new MatrixEntry(i, j, iaInput[i][j]);
+                }
                 lmeVicinity.add(me);
             }
         }
-        
+
         return lmeVicinity;
     }
-    
-    public static void getPointsInVicinity(int[][] iaInput, MatrixEntry meRef, int iRadius, List<MatrixEntry> lmeVicinity, OperationME op){                
-        
+
+    public static void getPointsInVicinity(int[][] iaInput, MatrixEntry meRef, int iRadius, List<MatrixEntry> lmeVicinity, OperationME op) {
+
         int iCount = 0;
-        for(int i = (meRef.i-iRadius > 0 ? meRef.i-iRadius : 0); i<= (meRef.i+iRadius < iaInput.length ? meRef.i+iRadius : iaInput.length-1); i++ ){
-            for(int j = (meRef.j-iRadius > 0 ? meRef.j-iRadius : 0); j<= (meRef.j+iRadius < iaInput[0].length ? meRef.j+iRadius : iaInput[0].length-1); j++ ){
+        for (int i = (meRef.i - iRadius > 0 ? meRef.i - iRadius : 0); i <= (meRef.i + iRadius < iaInput.length ? meRef.i + iRadius : iaInput.length - 1); i++) {
+            for (int j = (meRef.j - iRadius > 0 ? meRef.j - iRadius : 0); j <= (meRef.j + iRadius < iaInput[0].length ? meRef.j + iRadius : iaInput[0].length - 1); j++) {
                 MatrixEntry me;
-                if(op != null){
-                    me = op.perform(meRef, new MatrixEntry(i, j, iaInput[i][j]));  
-                }else{
-                    me = new MatrixEntry(i, j, iaInput[i][j]); 
-                }                
+                if (op != null) {
+                    me = op.perform(meRef, new MatrixEntry(i, j, iaInput[i][j]));
+                } else {
+                    me = new MatrixEntry(i, j, iaInput[i][j]);
+                }
                 lmeVicinity.set(iCount, me);
                 iCount++;
             }
         }
-        
+
     }
-            
 
     static public void setPoints(List<OrderedPair> lopInput, int[][] iaInput, int iValue) {
 
@@ -171,18 +172,18 @@ public class Entries {
             }
         }
     }
-    
+
     static public void setEntriesOpague(List<MatrixEntry> lmeInput, int[][] iaInput, int iShift) {
 
         if (lmeInput != null) {
             for (MatrixEntry a : lmeInput) {
                 if (a != null && Matrix.inBounds(iaInput, a)) {
-                    iaInput[(int) a.i][(int) a.j] = iaInput[(int) a.i][(int) a.j] + iShift ;
+                    iaInput[(int) a.i][(int) a.j] = iaInput[(int) a.i][(int) a.j] + iShift;
                 }
             }
         }
     }
-    
+
     static public void setEntries(List<MatrixEntry> lmeInput, int[][] iaInput) {
 
         if (lmeInput != null) {
@@ -454,27 +455,27 @@ public class Entries {
         return llmeReturn;
 
     }
-    
-    public static MatrixEntry getMin(List<MatrixEntry> lme){
-        MatrixEntry meMin = new MatrixEntry(Integer.MAX_VALUE,Integer.MAX_VALUE);
-        for(MatrixEntry me : lme){
-            if(me.i<meMin.i){
+
+    public static MatrixEntry getMin(List<MatrixEntry> lme) {
+        MatrixEntry meMin = new MatrixEntry(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        for (MatrixEntry me : lme) {
+            if (me.i < meMin.i) {
                 meMin.i = me.i;
             }
-            if(me.j<meMin.j){
+            if (me.j < meMin.j) {
                 meMin.j = me.j;
             }
         }
         return meMin;
     }
-    
-    public static MatrixEntry getMax(List<MatrixEntry> lme){
-        MatrixEntry meMax = new MatrixEntry(Integer.MIN_VALUE,Integer.MIN_VALUE);
-        for(MatrixEntry me : lme){
-            if(me.i>meMax.i){
+
+    public static MatrixEntry getMax(List<MatrixEntry> lme) {
+        MatrixEntry meMax = new MatrixEntry(Integer.MIN_VALUE, Integer.MIN_VALUE);
+        for (MatrixEntry me : lme) {
+            if (me.i > meMax.i) {
                 meMax.i = me.i;
             }
-            if(me.j>meMax.j){
+            if (me.j > meMax.j) {
                 meMax.j = me.j;
             }
         }
@@ -527,131 +528,150 @@ public class Entries {
 
     }
 
-//    public static List<MatrixEntry> getMajorMinorAxis(List<MatrixEntry> lmeInputArea) {
-//
-//        List<MatrixEntry> lmeReturn = new ArrayList<MatrixEntry>();
-//        //        List<Double> ldNorm = new ArrayList<Double>();
-////        List<OrderedPair> ldPositionInListOuterInner = new ArrayList<OrderedPair>();
-//        double dMaxNorm = (-1) * Double.MAX_VALUE;
-//        double dNorm = (-1) * Double.MAX_VALUE;
-//        MatrixEntry meMajorP1 = null;
-//        MatrixEntry meMajorP2 = null;
-//
-////        int iCounterOuter = 0;
-//        for (MatrixEntry meOuter : lmeInputArea) {
-////            int iCounterInner = 0;
-//            for (MatrixEntry meInner : lmeInputArea) {
-//                dNorm = MatrixEntry.SecondCartesian(meInner, meOuter);
-//                if(dMaxNorm < dNorm){
-//                    meMajorP1 = meOuter;
-//                    meMajorP2 = meInner;
-//                    dMaxNorm = dNorm;
-//                }
-////                ldNorm.add(MatrixEntry.SecondCartesian(meInner, meOuter));
-////                ldPositionInListOuterInner.add(new OrderedPair(iCounterOuter, iCounterInner));
-////                iCounterInner++;
-//            }
-////            iCounterOuter++;
-//        }
-//
-////        Double dMaxNorm = Organize.getMax(ldNorm);
-////        int iIndexOfMax = ldNorm.indexOf(dMaxNorm);
-////        MatrixEntry meMajorP1 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).x);
-////        MatrixEntry meMajorP2 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).y);
-////
-////        List<Double> ldNorm = new ArrayList<Double>();
-////        List<OrderedPair> ldPositionInListOuterInner = new ArrayList<OrderedPair>();
-////
-////        int iCounterOuter = 0;
-////        for (MatrixEntry meOuter : lmeInputArea) {
-////            int iCounterInner = 0;
-////            for (MatrixEntry meInner : lmeInputArea) {
-////                ldNorm.add(MatrixEntry.SecondCartesian(meInner, meOuter));
-////                ldPositionInListOuterInner.add(new OrderedPair(iCounterOuter, iCounterInner));
-////                iCounterInner++;
-////            }
-////            iCounterOuter++;
-////        }
-////
-////        Double dMaxNorm = Organize.getMax(ldNorm);
-////        int iIndexOfMax = ldNorm.indexOf(dMaxNorm);
-////        MatrixEntry meMajorP1 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).x);
-////        MatrixEntry meMajorP2 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).y);
-//
-//        Vector oVecMajor = new Vector(meMajorP1, meMajorP2);
-//
-//        Vector oVecMinor = new Vector(0.0, 0.0);
-//        MatrixEntry meMinorP1 = null;
-//        MatrixEntry meMinorP2 = null;
-//
-//        for (MatrixEntry meOuter : lmeInputArea) {
-//
-//            for (MatrixEntry me : lmeInputArea) {
-//
-//                Vector oTemp = new Vector(meOuter, me);
-//
-//                if (oVecMinor.modulus() < oTemp.modulus()) {
-//
-//                    Line oLine = new Line(meOuter, me);
-//
-//                    if ((Math.abs(Vector.cosAngle(oTemp, oVecMajor)) < 2.0 / oVecMajor.modulus())) {
-//
-//                        // 2/oVecMajor.modulus() is the minimm Angle through discretization
-//                        oVecMinor = oTemp;
-//
-//                        meMinorP1 = meOuter;
-//                        meMinorP2 = me;
-//
-//                    }
-//
-//                }
-//
-//            }
-//
-//        }
-//        
-//        if(meMinorP1 == null || meMinorP2 == null){
-//            Tensor2D RotTensor = Tensor2D.getRotTensor(Math.PI/2);
-//            int iTranslateI = -1;
-//            if((meMajorP1.i-meMajorP2.i) > 0){
-//                iTranslateI = (int) (meMajorP1.i-(meMajorP1.i-meMajorP2.i)/2.0);
-//            }else{
-//                iTranslateI = (int) (meMajorP1.i+(meMajorP2.i-meMajorP1.i)/2.0);
-//            }
-//            int iTranslateJ = -1;
-//            MatrixEntry meMajorAxisCenter;
-//            if((meMajorP1.j-meMajorP2.j) > 0){
-//                iTranslateJ = (int) (meMajorP1.j-Math.abs((meMajorP1.j-meMajorP2.j))/2.0);
-//                meMajorAxisCenter = new MatrixEntry(iTranslateI, meMajorP1.j-iTranslateJ);                
-//            }else{
-//                iTranslateJ = (int) (meMajorP1.j+Math.abs((meMajorP2.j-meMajorP1.j))/2.0);
-//                meMajorAxisCenter = new MatrixEntry(iTranslateI, iTranslateJ);   
-//            }
-//            
-//            MatrixEntry meMajorP1ToMAC = new MatrixEntry(meMajorP1.i-meMajorAxisCenter.i, meMajorP1.j-meMajorAxisCenter.j);
-//            MatrixEntry meMajorP2ToMAC = new MatrixEntry(meMajorP2.i-meMajorAxisCenter.i, meMajorP2.j-meMajorAxisCenter.j);
-//            meMinorP1 = new MatrixEntry(RotTensor.product(meMajorP1ToMAC));           
-//            meMinorP1.i = meMinorP1.i + meMajorAxisCenter.i;
-//            meMinorP1.j = meMinorP1.j + meMajorAxisCenter.j;
-//            meMinorP2 = new MatrixEntry(RotTensor.product(meMajorP2ToMAC));
-//            meMinorP2.i = meMinorP2.i + meMajorAxisCenter.i;
-//            meMinorP2.j = meMinorP2.j + meMajorAxisCenter.j;
-//        }
-//
-//        lmeReturn.add(meMajorP1);
-//        lmeReturn.add(meMajorP2);
-//        lmeReturn.add(meMinorP1);
-//        lmeReturn.add(meMinorP2);
-//
-//        return lmeReturn;
-//
-//    }
-    
-    public static List<MatrixEntry> getMajorAxis(List<MatrixEntry> lmeInputArea, MatrixEntry meCenter) {        
-        
+    public static List<MatrixEntry> getMajorMinorAxis(List<MatrixEntry> lmeInputArea) {
+
         List<MatrixEntry> lmeReturn = new ArrayList<MatrixEntry>();
-        
-        if(lmeInputArea.size()<4){
+        //        List<Double> ldNorm = new ArrayList<Double>();
+//        List<OrderedPair> ldPositionInListOuterInner = new ArrayList<OrderedPair>();
+        double dMaxNorm = (-1) * Double.MAX_VALUE;
+        double dNorm = (-1) * Double.MAX_VALUE;
+        MatrixEntry meMajorP1 = null;
+        MatrixEntry meMajorP2 = null;
+
+//        int iCounterOuter = 0;
+        for (MatrixEntry meOuter : lmeInputArea) {
+//            int iCounterInner = 0;
+            for (MatrixEntry meInner : lmeInputArea) {
+                dNorm = MatrixEntry.SecondCartesian(meInner, meOuter);
+                if (dMaxNorm < dNorm) {
+                    meMajorP1 = meOuter;
+                    meMajorP2 = meInner;
+                    dMaxNorm = dNorm;
+                }
+//                ldNorm.add(MatrixEntry.SecondCartesian(meInner, meOuter));
+//                ldPositionInListOuterInner.add(new OrderedPair(iCounterOuter, iCounterInner));
+//                iCounterInner++;
+            }
+//            iCounterOuter++;
+        }
+
+//        Double dMaxNorm = Organize.getMax(ldNorm);
+//        int iIndexOfMax = ldNorm.indexOf(dMaxNorm);
+//        MatrixEntry meMajorP1 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).x);
+//        MatrixEntry meMajorP2 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).y);
+//
+//        List<Double> ldNorm = new ArrayList<Double>();
+//        List<OrderedPair> ldPositionInListOuterInner = new ArrayList<OrderedPair>();
+//
+//        int iCounterOuter = 0;
+//        for (MatrixEntry meOuter : lmeInputArea) {
+//            int iCounterInner = 0;
+//            for (MatrixEntry meInner : lmeInputArea) {
+//                ldNorm.add(MatrixEntry.SecondCartesian(meInner, meOuter));
+//                ldPositionInListOuterInner.add(new OrderedPair(iCounterOuter, iCounterInner));
+//                iCounterInner++;
+//            }
+//            iCounterOuter++;
+//        }
+//
+//        Double dMaxNorm = Organize.getMax(ldNorm);
+//        int iIndexOfMax = ldNorm.indexOf(dMaxNorm);
+//        MatrixEntry meMajorP1 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).x);
+//        MatrixEntry meMajorP2 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).y);
+        Vector oVecMajor = new Vector(new OrderedPair(meMajorP1.j, meMajorP1.i), new OrderedPair(meMajorP2.j, meMajorP2.i));
+
+        Vector oVecMinor = new Vector(0.0, 0.0);
+        MatrixEntry meMinorP1 = null;
+        MatrixEntry meMinorP2 = null;
+
+        for (MatrixEntry meOuter : lmeInputArea) {
+            OrderedPair opOuter = new OrderedPair(meOuter.j, meOuter.i);
+            for (MatrixEntry me : lmeInputArea) {
+                OrderedPair op = new OrderedPair(me.j, me.i);
+                Vector oTemp = new Vector(opOuter, op);
+
+                if (oVecMinor.getLength() < oTemp.getLength()) {
+
+
+                    if ((Math.abs(oTemp.cosAngle(oVecMajor)) < 2.0 / oVecMajor.getLength())) {
+
+                        // 2/oVecMajor.modulus() is the minimm Angle through discretization
+                        oVecMinor = oTemp;
+
+                        meMinorP1 = meOuter;
+                        meMinorP2 = me;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        if (meMinorP1 == null || meMinorP2 == null) {
+            Tensor2D RotTensor = Tensor2D.getRotTensor(Math.PI / 2);
+            int iTranslateI = -1;
+            if ((meMajorP1.i - meMajorP2.i) > 0) {
+                iTranslateI = (int) (meMajorP1.i - (meMajorP1.i - meMajorP2.i) / 2.0);
+            } else {
+                iTranslateI = (int) (meMajorP1.i + (meMajorP2.i - meMajorP1.i) / 2.0);
+            }
+            int iTranslateJ = -1;
+            MatrixEntry meMajorAxisCenter;
+            if ((meMajorP1.j - meMajorP2.j) > 0) {
+                iTranslateJ = (int) (meMajorP1.j - Math.abs((meMajorP1.j - meMajorP2.j)) / 2.0);
+                meMajorAxisCenter = new MatrixEntry(iTranslateI, meMajorP1.j - iTranslateJ);
+            } else {
+                iTranslateJ = (int) (meMajorP1.j + Math.abs((meMajorP2.j - meMajorP1.j)) / 2.0);
+                meMajorAxisCenter = new MatrixEntry(iTranslateI, iTranslateJ);
+            }
+
+            OrderedPair meMajorP1ToMAC = new OrderedPair(meMajorP1.i - meMajorAxisCenter.i, meMajorP1.j - meMajorAxisCenter.j);
+            OrderedPair meMajorP2ToMAC = new OrderedPair(meMajorP2.i - meMajorAxisCenter.i, meMajorP2.j - meMajorAxisCenter.j);
+            meMinorP1 = new MatrixEntry(RotTensor.product(meMajorP1ToMAC));
+            meMinorP1.i = meMinorP1.i + meMajorAxisCenter.i;
+            meMinorP1.j = meMinorP1.j + meMajorAxisCenter.j;
+            meMinorP2 = new MatrixEntry(RotTensor.product(meMajorP2ToMAC));
+            meMinorP2.i = meMinorP2.i + meMajorAxisCenter.i;
+            meMinorP2.j = meMinorP2.j + meMajorAxisCenter.j;
+        }
+
+        lmeReturn.add(meMajorP1);
+        lmeReturn.add(meMajorP2);
+        lmeReturn.add(meMinorP1);
+        lmeReturn.add(meMinorP2);
+
+        return lmeReturn;
+
+    }
+
+    public static List<MatrixEntry> getMajorAxis(List<MatrixEntry> lmeBoarder) {
+        double dMaxNorm = (-1) * Double.MAX_VALUE;
+        double dNorm = (-1) * Double.MAX_VALUE;
+        MatrixEntry meMajorP1 = null;
+        MatrixEntry meMajorP2 = null;
+        for (MatrixEntry meOuter : lmeBoarder) {
+            for (MatrixEntry meInner : lmeBoarder) {
+                dNorm = MatrixEntry.SecondCartesian(meInner, meOuter);
+                if (dMaxNorm < dNorm) {
+                    meMajorP1 = meOuter;
+                    meMajorP2 = meInner;
+                    dMaxNorm = dNorm;
+                }
+            }
+        }
+        List<MatrixEntry> lmeReturn = new ArrayList<MatrixEntry>();
+        lmeReturn.add(meMajorP1);
+        lmeReturn.add(meMajorP2);
+        return lmeReturn;
+    }
+
+    public static List<MatrixEntry> getMajorAxis(List<MatrixEntry> lmeInputArea, MatrixEntry meCenter) {
+
+        List<MatrixEntry> lmeReturn = new ArrayList<MatrixEntry>();
+
+        if (lmeInputArea.size() < 4) {
             lmeReturn.add(meCenter);
             lmeReturn.add(meCenter);
             lmeReturn.add(meCenter);
@@ -665,23 +685,23 @@ public class Entries {
         double dNorm = (-1) * Double.MAX_VALUE;
         MatrixEntry meMajorP1 = null;
         MatrixEntry meMajorP2 = null;
-        double dRadius = Math.sqrt(lmeInputArea.size()/Math.PI);
-        
+        double dRadius = Math.sqrt(lmeInputArea.size() / Math.PI);
+
         List<MatrixEntry> lmeBoarder = new ArrayList<MatrixEntry>();
-        
+
         for (MatrixEntry me : lmeInputArea) {
-            if(MatrixEntry.SecondCartesian(me, meCenter)> dRadius*0.9){
+            if (MatrixEntry.SecondCartesian(me, meCenter) > dRadius * 0.9) {
                 lmeBoarder.add(me);
             }
         }
 
 //        int iCounterOuter = 0;
         for (MatrixEntry meOuter : lmeBoarder) {
-            
+
 //            int iCounterInner = 0;
             for (MatrixEntry meInner : lmeBoarder) {
                 dNorm = MatrixEntry.SecondCartesian(meInner, meOuter);
-                if(dMaxNorm < dNorm){
+                if (dMaxNorm < dNorm) {
                     meMajorP1 = meOuter;
                     meMajorP2 = meInner;
                     dMaxNorm = dNorm;
@@ -690,7 +710,7 @@ public class Entries {
 //                ldPositionInListOuterInner.add(new OrderedPair(iCounterOuter, iCounterInner));
 //                iCounterInner++;
             }
-            
+
 //            iCounterOuter++;
         }
 
@@ -698,11 +718,8 @@ public class Entries {
 //        int iIndexOfMax = ldNorm.indexOf(dMaxNorm);
 //        MatrixEntry meMajorP1 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).x);
 //        MatrixEntry meMajorP2 = lmeInputArea.get((int) ldPositionInListOuterInner.get(iIndexOfMax).y);
-
-
         lmeReturn.add(meMajorP1);
         lmeReturn.add(meMajorP2);
-        
 
         return lmeReturn;
 
@@ -852,7 +869,6 @@ public class Entries {
 //        return lmeReturn;
 //
 //    }
-    
 //    public static List<MatrixEntry> getMajorMinorAxis(List<MatrixEntry> lmeInputArea, MatrixEntry meCenter) {        
 //        
 //        List<MatrixEntry> lmeReturn = new ArrayList<MatrixEntry>();
@@ -995,7 +1011,6 @@ public class Entries {
 //        return lmeReturn;
 //
 //    }
-    
 //    public static List<MatrixEntry> getHorizontalVerticalAxis(List<MatrixEntry> lmeInputArea){
 //        List<MatrixEntry> lme = new ArrayList<MatrixEntry>();
 //        
@@ -1012,25 +1027,23 @@ public class Entries {
 //        return lme;
 //        
 //    }
-    
-    public static Double getHorizontalAxis(List<MatrixEntry> lmeInputArea){
-        
+    public static Double getHorizontalAxis(List<MatrixEntry> lmeInputArea) {
+
         MatrixEntry opMinX = MatrixEntry.getMinJPos(lmeInputArea);
         MatrixEntry opMaxX = MatrixEntry.getMaxJPos(lmeInputArea);
-        
+
         return MatrixEntry.SecondCartesian(opMaxX, opMinX);
-        
-    }
-    
-    public static Double getVerticalAxis(List<MatrixEntry> lmeInputArea){
-        
-        MatrixEntry opMinY = MatrixEntry.getMinIPos(lmeInputArea);
-        MatrixEntry opMaxY = MatrixEntry.getMaxIPos(lmeInputArea);
-        
-        return MatrixEntry.SecondCartesian(opMaxY, opMinY);
-        
+
     }
 
+    public static Double getVerticalAxis(List<MatrixEntry> lmeInputArea) {
+
+        MatrixEntry opMinY = MatrixEntry.getMinIPos(lmeInputArea);
+        MatrixEntry opMaxY = MatrixEntry.getMaxIPos(lmeInputArea);
+
+        return MatrixEntry.SecondCartesian(opMaxY, opMinY);
+
+    }
 
 //    public static List<MatrixEntry> getMajorMinorAxis_old(List<MatrixEntry> lmeInputArea) {
 //
@@ -1123,7 +1136,6 @@ public class Entries {
 //        return lmeReturn;
 //
 //    }
-
     public static void paintLine(int[][] iaInput, List<MatrixEntry> lmeInputMatrixEntryPairs, int iValue) {
         /*
          * Not working correctly
@@ -1501,21 +1513,20 @@ public class Entries {
         return bContains;
 
     }
-    
+
     public static boolean ifContainsEightBlock(List<MatrixEntry> lmeInputA, MatrixEntry meToCheck) {
 
         List<MatrixEntry> lmeEightBlock = new ArrayList<MatrixEntry>();
-        
-        for(int i=-1; i<=1; i++){
-            for(int j = -1; j<=1; j++){
-                lmeEightBlock.add(new MatrixEntry(meToCheck.i+i, meToCheck.j+j));
+
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                lmeEightBlock.add(new MatrixEntry(meToCheck.i + i, meToCheck.j + j));
             }
         }
-        
+
         return ifContains(lmeInputA, lmeEightBlock);
 
     }
-    
 
     public static boolean ifContains(List<MatrixEntry> lmeInputA, List<MatrixEntry> lmeInputB) {
 
@@ -1622,7 +1633,6 @@ public class Entries {
 //        return opNearest;
 //
 //    }
-
     public static OrderedPair getNearestY(List<OrderedPair> lopInputSet, OrderedPair opReference, List<OrderedPair> lopForbiddenEntries) {
 
         double dDistance = Double.MAX_VALUE;
@@ -1687,7 +1697,7 @@ public class Entries {
         return Math.sqrt(((i1 - i2) * (i1 - i2)) + ((j1 - j2) * (j1 - j2)));
 
     }
-    
+
     public static double Distance(MatrixEntry me1, MatrixEntry me2) {
 
         return Math.sqrt(((me1.i - me2.i) * (me1.i - me2.i)) + ((me1.j - me2.j) * (me1.j - me2.j)));
@@ -1730,7 +1740,7 @@ public class Entries {
         return dMinIDistance;
 
     }
-    
+
     public static double MinDistance(List<MatrixEntry> lmeMatrixEntry, MatrixEntry meRef) {
 
         double dMinIDistance = Double.MAX_VALUE;
@@ -1847,7 +1857,7 @@ public class Entries {
         }
         return iC;
     }
-    
+
     public static void setPoints(List<MatrixEntry> lme, int[][] input, int iValue, int iRadius) {
         if (iRadius == 0) {
             for (MatrixEntry me : lme) {
@@ -1866,7 +1876,7 @@ public class Entries {
             }
         }
     }
-    
+
     public static List<MatrixEntry> getsubArea(int iCenter, int jCenter, int iRadius, int[][] input) {
         List<MatrixEntry> lmeReturn = new ArrayList<>();
         for (int i = Math.max(iCenter - iRadius, 0); i < Math.min(iCenter + iRadius, input.length); i++) {
@@ -1876,11 +1886,12 @@ public class Entries {
         }
         return lmeReturn;
     }
-    
-    public static interface OperationME {        
-        public MatrixEntry perform(MatrixEntry me, MatrixEntry me1);        
+
+    public static interface OperationME {
+
+        public MatrixEntry perform(MatrixEntry me, MatrixEntry me1);
     }
-        
+
 
     /*      static public int[][] getArea(int[][] array, OrderedPair leftUp, OrderedPair rightDown){
     

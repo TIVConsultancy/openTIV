@@ -485,7 +485,6 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
 //                bDilated = true;
 //            }
 //        }
-
         if (i <= 0) {
         } else {
             if (iConstraint[i - 1][j] > 127 && iaPixels[i - 1][j] == 0) {
@@ -501,7 +500,6 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
 //                bDilated = true;
 //            }
 //        }
-
         if (j <= 0) {
         } else {
             if (iConstraint[i][j - 1] > 127 && iaPixels[i][j - 1] == 0) {
@@ -517,7 +515,6 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
 //                bDilated = true;
 //            }
 //        }
-
         if (i >= iaPixels.length - 1) {
         } else {
             if (iConstraint[i + 1][j] > 127 && iaPixels[i + 1][j] == 0) {
@@ -785,7 +782,7 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
             }
         } else {
             for (MatrixEntry meO : lme) {
-                if (meO.i >= 0 && meO.j >= 0 && meO.i < iaPixels.length-iRadius && meO.j < iaPixels[0].length-iRadius) {
+                if (meO.i >= 0 && meO.j >= 0 && meO.i < iaPixels.length - iRadius && meO.j < iaPixels[0].length - iRadius) {
                     List<MatrixEntry> expand = this.getsubArea(meO.i, meO.j, iRadius);
                     for (MatrixEntry me : expand) {
                         iaPixels[me.i][me.j] = iValue;
@@ -1027,6 +1024,18 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
 
     public double getMean() {
         return (double) this.getSum() / (double) (iaPixels.length * iaPixels[0].length);
+    }
+
+    public int getMax() {
+        int iMax = 0;
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
+                if (iaPixels[i][j] > iMax) {
+                    iMax = iaPixels[i][j];
+                }
+            }
+        }
+        return iMax;
     }
 
     public ImageInt getsubX(Set1D xInterval) {
@@ -1382,6 +1391,30 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
             }
         }
         return lme;
+    }
+
+    public List<MatrixEntry> getNonZeroPoints() {
+        List<MatrixEntry> lme = new ArrayList<>();
+        for (int i = 0; i < this.iaPixels.length; i++) {
+            for (int j = 0; j < this.iaPixels[0].length; j++) {
+                if (this.iaPixels[i][j] > 0) {
+                    lme.add(new MatrixEntry(i, j));
+                }
+            }
+        }
+        return lme;
+    }
+
+    public MatrixEntry getSeed(int value) {
+
+        for (int i = 0; i < this.iaPixels.length; i++) {
+            for (int j = 0; j < this.iaPixels[0].length; j++) {
+                if (this.iaPixels[i][j] == value) {
+                    return new MatrixEntry(i, j);
+                }
+            }
+        }
+        return null;
     }
 
     public void setField(int[][] iaField, int iStart, int jStart) {

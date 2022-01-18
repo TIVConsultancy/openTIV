@@ -15,8 +15,11 @@
  */
 package com.tivconsultancy.opentiv.imageproc.shapes;
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.Entries;
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
+import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.N8;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageBoolean;
+import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.math.interfaces.Normable;
 import com.tivconsultancy.opentiv.math.primitives.ObjectPair;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
@@ -36,6 +39,9 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
     private static final long serialVersionUID = -6387066610382197860L;
 
     public List<MatrixEntry> loPoints = new ArrayList<>();
+    public List<MatrixEntry> loMajor = new ArrayList<>();
+    public List<MatrixEntry> loMinor = new ArrayList<>();
+    public Double dAvergeGreyDerivative = null;
 
     public ArbStructure2(List<?> loInput) {
         if (loInput == null || loInput.isEmpty()) {
@@ -47,8 +53,8 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
             }
         }
     }
-    
-    public ArbStructure2 clone(){
+
+    public ArbStructure2 clone() {
         return new ArbStructure2(loPoints);
     }
 
@@ -122,12 +128,12 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
 
     public boolean containsPoint(MatrixEntry me) {
         if (this.getBoundBoxSet().isInside(me, new Set2D.Characteristic() {
-                                       @Override
-                                       public OrderedPair getCharacteristicValue(Object pParameter) {
-                                           MatrixEntry me = (MatrixEntry) pParameter;
-                                           return new OrderedPair(me.j, me.i);
-                                       }
-                                   })) {
+            @Override
+            public OrderedPair getCharacteristicValue(Object pParameter) {
+                MatrixEntry me = (MatrixEntry) pParameter;
+                return new OrderedPair(me.j, me.i);
+            }
+        })) {
             for (MatrixEntry meIn : loPoints) {
                 if (meIn.equalsMatrixEntry(meIn)) {
                     return true;
@@ -135,6 +141,26 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
             }
         }
         return false;
+    }
+
+    public List<MatrixEntry> getBorderPoints(ImageInt iMask) {
+        List<MatrixEntry> lmeBorder = new ArrayList<>();
+        for (MatrixEntry me : loPoints) {
+            N8 oN8 = new N8(iMask, me.i, me.j);
+            if (oN8.isBorder()) {
+                lmeBorder.add(new MatrixEntry(me.i, me.j));
+            }
+        }
+        return lmeBorder;
+    }
+
+    public void drawOnImg(ImageInt iImg) {
+        for (int j = 0; j < loPoints.size() - 1; j++) {
+            Line oL = new Line(loPoints.get(j), loPoints.get(j + 1));
+            oL.setLine(iImg, 255);
+        }
+        Line oL = new Line(loPoints.get(0), loPoints.get(loPoints.size() - 1));
+        oL.setLine(iImg, 255);
     }
 
     /*
@@ -152,7 +178,13 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
         }
         return minDist;
     }
-    
+
+    public void getMajorMinor(List<MatrixEntry> lme) {
+        List<MatrixEntry> MajorMinor = Entries.getMajorMinorAxis(lme);
+        this.loMajor = MajorMinor.subList(0, 2);
+        this.loMinor = MajorMinor.subList(2, 4);
+    }
+
     @Override
     public double getSize() {
         return Math.sqrt(loPoints.size() / Math.PI);
@@ -160,12 +192,20 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
 
     @Override
     public double getMinorAxis() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (this.loMinor.isEmpty()) {
+            return 0.0;
+        }
+        return this.loMinor.get(0).getNorm(this.loMinor.get(1));
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public double getMajorAxis() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (this.loMajor.isEmpty()) {
+            return 0.0;
+        }
+        return this.loMajor.get(0).getNorm(this.loMajor.get(1));
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -192,4 +232,30 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
     public Double getNorm2(ArbStructure2 o2, String sNormType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public List<MatrixEntry> getlmeList() {
+        return loPoints;
+    }
+
+    @Override
+    public double getGreyDerivative() {
+        return dAvergeGreyDerivative;
+    }
+
+    @Override
+    public OrderedPair getSubPixelCenter() {
+       if (this.loPoints.size() >0){
+           double dXCenter = 0.0;
+           double dYCenter = 0.0;
+           for (MatrixEntry me : loPoints) {
+               dXCenter+=me.j;
+               dYCenter+=me.i;
+           }
+           return new OrderedPair(dXCenter/(double)this.loPoints.size(), dYCenter/(double)this.loPoints.size());
+       } else {
+           return new OrderedPair();
+       }
+    }
+
 }

@@ -601,6 +601,15 @@ public class N8 implements Serializable {
 
         public boolean isSimilar(N8 oCompare);
     }
+    
+    public  boolean isBorder(){
+        for (Integer integer : this.lo) {
+            if (integer==0){
+                return true;
+            }
+        }
+        return false;
+    }
 
 //    @Override
 //    public int hashCode() {

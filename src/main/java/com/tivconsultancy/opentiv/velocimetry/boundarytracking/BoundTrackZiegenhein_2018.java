@@ -9,6 +9,7 @@ import com.tivconsultancy.opentiv.helpfunctions.colorspaces.ColorSpaceCIEELab;
 import com.tivconsultancy.opentiv.helpfunctions.colorspaces.Colorbar;
 import com.tivconsultancy.opentiv.helpfunctions.io.Reader;
 import com.tivconsultancy.opentiv.helpfunctions.io.Writer;
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.EdgeDetections;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Morphology;
@@ -30,6 +31,7 @@ import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.Ziegenhein_201
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.shapes.Circle;
 import com.tivconsultancy.opentiv.imageproc.shapes.Line2;
+import com.tivconsultancy.opentiv.imageproc.shapes.Shape;
 import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.grids.RecOrtho2D;
 import com.tivconsultancy.opentiv.physics.interfaces.Trackable;
@@ -279,10 +281,10 @@ public class BoundTrackZiegenhein_2018 {
 
     }
 
-    public static ReturnContainerBoundaryTracking runBoundTrack(Settings oSettings, List<CPXTr> lCPXTr1, List<CPXTr> lCPXTr2, ImageGrid oGrid, HashMap<CPXTr, Circle> map) throws EmptySetException {
+    public static ReturnContainerBoundaryTracking runBoundTrack(Settings oSettings, List<CPXTr> lCPXTr1, List<CPXTr> lCPXTr2, ImageGrid oGrid, HashMap<CPXTr, Shape> map) throws EmptySetException {
         int searchYPlus = -1 * Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYPlus").toString());
         int searchYMinus = -1 * Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusYMinus").toString());
-
+        int iCounter=0;
         int searchXPlus = Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusXPlus").toString());
         int searchXMinus = Integer.valueOf(oSettings.getSettingsValue("BUBSRadiusXMinus").toString());
         Map<CPXTr, VelocityVec> oVelocityVectors = new HashMap<>();
@@ -301,17 +303,21 @@ public class BoundTrackZiegenhein_2018 {
             setHelpFunction(oGrid.iLength, oGrid.jLength);
             VelocityVec oVec = getNearestForCPXTr(oContoursToTrack, loSort, 1, new Set2D(new Set1D(searchXMinus, searchXPlus), new Set1D(searchYPlus, searchYMinus)), oGrid.iLength, oGrid.jLength, (SideCondition2) (Object pParameter1, Object pParameter2) -> ((CPXTr) pParameter1).getDistance((CPXTr) pParameter2) < 40);
             if (oVec == null) {
+                MatrixEntry me = MatrixEntry.getMeanEntry(ImagePoint.getMEList(oContoursToTrack.lo));
+                VelocityVec oVecSubPix = new VelocityVec(0.0, 0.0, new OrderedPair(me.j, me.i));
+                oVelocityVectors.put(oContoursToTrack, oVecSubPix);
                 continue;
             }
 //            int iIdent = oContoursToTrack.lo.get(0).iValue;
-            Circle c = map.get(oContoursToTrack);
+            Shape c = map.get(oContoursToTrack);
             if (c != null) {
-                oVec.setPosition(c.opSubPixelCenter);
+                oVec.setPosition(c.getSubPixelCenter());
                 OrderedPair opSubPixDist = getSubPixelDist((CPXTr) oVec.VelocityObject1, (CPXTr) oVec.VelocityObject2);
                 VelocityVec oVecSubPix = (VelocityVec) oVec.add(opSubPixDist);
                 oVecSubPix.VelocityObject1 = oVec.VelocityObject1;
                 oVecSubPix.VelocityObject2 = oVec.VelocityObject2;
                 oVelocityVectors.put(oContoursToTrack, oVecSubPix);
+                iCounter++;
             }
         }
         setHelpFunction(oGrid.iLength, oGrid.jLength);
@@ -323,7 +329,7 @@ public class BoundTrackZiegenhein_2018 {
 //        for (CPXTr c : lCPXTr2) {
 //            secContours.setPointsIMGP(c.lo, 255);
 //        }
-
+        System.out.println("Found Tracks "+iCounter);
         return new ReturnContainerBoundaryTracking(oVelocityVectors, lCPXTr1, lCPXTr2);
     }
 

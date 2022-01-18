@@ -15,17 +15,32 @@
  */
 package com.tivconsultancy.opentiv.imageproc.shapes;
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
+import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
+import java.util.List;
+
 /**
  *
  * @author Thomas Ziegenhein
  */
 public interface Shape {
-    
+
     public double getSize();
+
     public double getMinorAxis();
+
     public double getMajorAxis();
+
     public double getFormRatio();
+
     public double getOrientationAngle();
+
     public int getPixelCount();
+
+    public List<MatrixEntry> getlmeList();
     
+    public double getGreyDerivative();
+    
+    public OrderedPair getSubPixelCenter();
+
 }

@@ -15,6 +15,10 @@
  */
 package com.tivconsultancy.opentiv.imageproc.algorithms.algorithms;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.imageproc.contours.CPX;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImageGrid;
@@ -22,12 +26,8 @@ import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.imageproc.primitives.ImagePoint;
 import com.tivconsultancy.opentiv.imageproc.shapes.Line2;
 import com.tivconsultancy.opentiv.math.interfaces.SideCondition;
-import com.tivconsultancy.opentiv.math.interfaces.SideCondition2;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 

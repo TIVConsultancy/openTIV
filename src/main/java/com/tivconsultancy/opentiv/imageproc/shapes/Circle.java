@@ -312,6 +312,21 @@ public class Circle implements Shape, Serializable {
     public double getOrientationAngle() {
         return dAngle;
     }
+    
+    @Override
+    public List<MatrixEntry> getlmeList() {
+        return lmeCircle;
+    }
+    
+    @Override
+    public double getGreyDerivative() {
+        return dAvergeGreyDerivative;
+    }
+    
+    @Override
+    public OrderedPair getSubPixelCenter() {
+        return opSubPixelCenter;
+    }
 
     public String getOutputString() {
         // x,y,major axis, minor axis, orientation angle
