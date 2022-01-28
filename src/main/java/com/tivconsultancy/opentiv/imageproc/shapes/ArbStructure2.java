@@ -23,6 +23,7 @@ import com.tivconsultancy.opentiv.imageproc.primitives.ImageInt;
 import com.tivconsultancy.opentiv.math.interfaces.Normable;
 import com.tivconsultancy.opentiv.math.primitives.ObjectPair;
 import com.tivconsultancy.opentiv.math.primitives.OrderedPair;
+import com.tivconsultancy.opentiv.math.primitives.Vector;
 import com.tivconsultancy.opentiv.math.sets.Set1D;
 import com.tivconsultancy.opentiv.math.sets.Set2D;
 import com.tivconsultancy.opentiv.math.specials.EnumObject;
@@ -215,7 +216,29 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
 
     @Override
     public double getOrientationAngle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (this.loMinor.get(0).i > this.loMinor.get(1).i) {
+            Vector oVec = new Vector(new OrderedPair(this.loMinor.get(1).j, this.loMinor.get(1).i), new OrderedPair(this.loMinor.get(0).j, this.loMinor.get(0).i));
+            if (oVec.opUnitTangent.y == -1.0) {
+                return 0.0;
+            }
+            if (this.loMinor.get(0).j > this.loMinor.get(1).j) {
+                return -Math.acos(oVec.opUnitTangent.y);
+            } else {
+                return Math.acos(oVec.opUnitTangent.y);
+            }
+        } else {
+            Vector oVec = new Vector(new OrderedPair(this.loMinor.get(0).j, this.loMinor.get(0).i), new OrderedPair(this.loMinor.get(1).j, this.loMinor.get(1).i));
+            if (oVec.opUnitTangent.y == -1.0) {
+                return 0.0;
+            }
+            if (this.loMinor.get(0).j < this.loMinor.get(1).j) {
+                return -Math.acos(oVec.opUnitTangent.y);
+            } else {
+                return Math.acos(oVec.opUnitTangent.y);
+            }
+        }
+
     }
 
     @Override
@@ -245,17 +268,17 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
 
     @Override
     public OrderedPair getSubPixelCenter() {
-       if (this.loPoints.size() >0){
-           double dXCenter = 0.0;
-           double dYCenter = 0.0;
-           for (MatrixEntry me : loPoints) {
-               dXCenter+=me.j;
-               dYCenter+=me.i;
-           }
-           return new OrderedPair(dXCenter/(double)this.loPoints.size(), dYCenter/(double)this.loPoints.size());
-       } else {
-           return new OrderedPair();
-       }
+        if (this.loPoints.size() > 0) {
+            double dXCenter = 0.0;
+            double dYCenter = 0.0;
+            for (MatrixEntry me : loPoints) {
+                dXCenter += me.j;
+                dYCenter += me.i;
+            }
+            return new OrderedPair(dXCenter / (double) this.loPoints.size(), dYCenter / (double) this.loPoints.size());
+        } else {
+            return new OrderedPair();
+        }
     }
 
 }
