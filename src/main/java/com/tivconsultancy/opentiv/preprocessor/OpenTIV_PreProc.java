@@ -131,7 +131,6 @@ public class OpenTIV_PreProc {
         }
         if (bCutBottom) {
             int iCutTop = (int) oSettings.getSettingsValue("cutyTop");
-//            int iCutBottom = 512>(int) oSettings.getSettingsValue("cutyBottom")?512:(int) oSettings.getSettingsValue("cutyBottom");
             int iCutBottom = (int) oSettings.getSettingsValue("cutyBottom");
             if ((iCutBottom - iCutTop) < oInput.iaPixels.length - 1) {
                 oInput = oInput.getsubY(0, iCutBottom - iCutTop);
@@ -187,6 +186,14 @@ public class OpenTIV_PreProc {
             String xCSV = oSettings.getSettingsValue("GreyNewValues").toString();
             Spline interpolSpline = getSpline(yCSV, xCSV);
             HistogramOperations.curveCorrection(Input, interpolSpline);
+        }
+        
+        if (oSettings.getSettingsValue("LinNormalization") != null && (boolean) oSettings.getSettingsValue("LinNormalization")) {
+            HistogramOperations.linNormalization(Input);
+        }
+        
+        if (oSettings.getSettingsValue("NonLinNormalization") != null && (boolean) oSettings.getSettingsValue("NonLinNormalization")) {
+            HistogramOperations.NonlinNormalization(Input);
         }
 
         return Input;

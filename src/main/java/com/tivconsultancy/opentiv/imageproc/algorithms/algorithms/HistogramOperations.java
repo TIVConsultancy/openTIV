@@ -74,12 +74,12 @@ public class HistogramOperations {
         for (int i = 0; i < oGrid.iaPixels.length; i++) {
             for (int j = 0; j < oGrid.iaPixels[0].length; j++) {
                 int iNewValue = oGrid.iaPixels[i][j] + iValue;
-                if(iValue>0){
+                if (iValue > 0) {
                     oGrid.iaPixels[i][j] = iNewValue < 255 ? iNewValue : 255;
-                }else{
+                } else {
                     oGrid.iaPixels[i][j] = iNewValue < 0 ? 0 : iNewValue;
                 }
-                
+
             }
         }
     }
@@ -192,16 +192,42 @@ public class HistogramOperations {
             }
         }
     }
-    
-    public static void curveCorrection(ImageInt oGrid, Spline spline){
-        if(spline == null){
+
+    public static void curveCorrection(ImageInt oGrid, Spline spline) {
+        if (spline == null) {
             spline = new Spline(new double[]{0, 127, 255}, new double[]{0, 127, 255});
         }
-        
-        for(int i = 0; i < oGrid.iaPixels.length; i++){
-            for(int j = 0; j < oGrid.iaPixels[0].length; j++){
-                oGrid.iaPixels[i][j] = (int) Math.max(Math.min(spline.getValue(1.0*oGrid.iaPixels[i][j]), 255), 0);
-            }            
+
+        for (int i = 0; i < oGrid.iaPixels.length; i++) {
+            for (int j = 0; j < oGrid.iaPixels[0].length; j++) {
+                oGrid.iaPixels[i][j] = (int) Math.max(Math.min(spline.getValue(1.0 * oGrid.iaPixels[i][j]), 255), 0);
+            }
+        }
+    }
+
+    public static void linNormalization(ImageInt oGrid) {
+        GrayHistogram oHist = new GrayHistogram(oGrid);
+        int iMin = oHist.getg_min();
+        int iMax = oHist.getc_max();
+        for (int i = 0; i < oGrid.iaPixels.length; i++) {
+            for (int j = 0; j < oGrid.iaPixels[0].length; j++) {
+                oGrid.iaPixels[i][j] = (int) ((oGrid.iaPixels[i][j] - iMin) * (255.0 / (double) (iMax - iMin)));
+            }
+        }
+    }
+    
+    public static void NonlinNormalization(ImageInt oGrid) {
+        GrayHistogram oHist = new GrayHistogram(oGrid);
+        int iMin = oHist.getg_min();
+        int iMax = oHist.getc_max();
+        double alpha=iMax-iMin;
+        double beta=alpha/2;
+        for (int i = 0; i < oGrid.iaPixels.length; i++) {
+            for (int j = 0; j < oGrid.iaPixels[0].length; j++) {
+                double power=-((oGrid.iaPixels[i][j]-beta)/alpha);
+                
+                oGrid.iaPixels[i][j] = (int) (255.0*(1/(1+Math.pow(Math.E,power))));
+            }
         }
     }
 

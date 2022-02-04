@@ -56,10 +56,10 @@ public class OpenTIV_Masking {
 
         Stopwatch.addTimmer("AutoShape");
         try {
-            if (oSettings.getSettingsValue("Mask") == ("Ziegenhein2018")) {
+            if (oSettings.getSettingsValue("Mask").toString().contains("Ziegenhein2018")) {
                 oNew = Input.clone();
                 oNew = getMask(oNew, oSettings);
-            } else if (oSettings.getSettingsValue("Mask") == ("Hessenkemper2018")) {
+            } else if (oSettings.getSettingsValue("Mask").toString().contains("Hessenkemper2018")) {
                 oNew = Input.clone();
                 oNew = getMask2(oNew, oSettings);
             }

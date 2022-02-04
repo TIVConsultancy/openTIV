@@ -540,7 +540,6 @@ public class Entries {
 
 //        int iCounterOuter = 0;
         for (MatrixEntry meOuter : lmeInputArea) {
-//            int iCounterInner = 0;
             for (MatrixEntry meInner : lmeInputArea) {
                 dNorm = MatrixEntry.SecondCartesian(meInner, meOuter);
                 if (dMaxNorm < dNorm) {
@@ -548,11 +547,7 @@ public class Entries {
                     meMajorP2 = meInner;
                     dMaxNorm = dNorm;
                 }
-//                ldNorm.add(MatrixEntry.SecondCartesian(meInner, meOuter));
-//                ldPositionInListOuterInner.add(new OrderedPair(iCounterOuter, iCounterInner));
-//                iCounterInner++;
             }
-//            iCounterOuter++;
         }
 
 //        Double dMaxNorm = Organize.getMax(ldNorm);
