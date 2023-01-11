@@ -40,6 +40,7 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
     private static final long serialVersionUID = -6387066610382197860L;
 
     public List<MatrixEntry> loPoints = new ArrayList<>();
+    public List<MatrixEntry> loBorderPoints = new ArrayList<>();
     public List<MatrixEntry> loMajor = new ArrayList<>();
     public List<MatrixEntry> loMinor = new ArrayList<>();
     public Double dAvergeGreyDerivative = null;
@@ -186,9 +187,59 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
         this.loMinor = MajorMinor.subList(2, 4);
     }
 
+    public double RotateToVolume() {
+
+        int iCountRight = 0;
+        int iCountLeft = 0;
+        double dIntegrandRight = 0.0;
+        double dIntegrandLeft = 0.0;
+
+        Double dAngle = 0.0;
+
+        if ((this.loMajor.get(0).j - this.loMajor.get(1).j) != 0) {
+            double dm = ((double) (this.loMajor.get(0).i - this.loMajor.get(1).i)) / ((double) (this.loMajor.get(0).j - this.loMajor.get(1).j));
+            dAngle = Math.atan(Math.abs(dm));
+        }
+        OrderedPair opPosition = getPosition();
+        MatrixEntry mePosition = new MatrixEntry(opPosition);
+        for (MatrixEntry me : this.loPoints) {
+
+            int iPosX = me.j - mePosition.j;
+            int iPosY = mePosition.i - me.i;
+
+            double dPosXRot = Math.cos(dAngle) * iPosX - Math.sin(dAngle) * iPosY;
+
+            if (dPosXRot > 0) {
+                dIntegrandRight = dIntegrandRight + dPosXRot;
+                iCountRight = iCountRight + 1;
+            }
+
+            if (dPosXRot < 0) {
+                dIntegrandLeft = dIntegrandLeft + dPosXRot;
+                iCountLeft = iCountLeft + 1;
+            }
+
+            if (dPosXRot == 0) {
+                dIntegrandRight = dIntegrandRight + 0.25;
+                dIntegrandLeft = dIntegrandLeft - 0.25;
+                iCountRight = iCountRight + 1;
+                iCountLeft = iCountLeft + 1;
+            }
+
+        }
+//
+        double RotationcentroidRight = dIntegrandRight / ((double) iCountRight);
+        double RotationcentroidLeft = (-1.0) * dIntegrandLeft / ((double) iCountLeft);
+
+        double dRotationVolume = this.loPoints.size() * 1.0 / 2.0 * Math.PI * (RotationcentroidRight + RotationcentroidLeft);
+
+        return dRotationVolume;
+    }
+
     @Override
     public double getSize() {
-        return Math.sqrt(loPoints.size() / Math.PI);
+//        return Math.sqrt(loPoints.size() / Math.PI);
+        return RotateToVolume();
     }
 
     @Override
@@ -258,7 +309,7 @@ public class ArbStructure2 implements Shape, Serializable, Normable<ArbStructure
 
     @Override
     public List<MatrixEntry> getlmeList() {
-        return loPoints;
+        return loBorderPoints;
     }
 
     @Override

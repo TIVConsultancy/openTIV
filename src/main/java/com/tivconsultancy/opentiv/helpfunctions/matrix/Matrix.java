@@ -2017,9 +2017,9 @@ public class Matrix {
 
         int[][] iaReturn = new int[iaInput.length][iaInput[0].length];
 
-        for (int i = 1; i < iaInput.length; i++) {
+        for (int i = 0; i < iaInput.length; i++) {
 
-            for (int j = 1; j < iaInput[0].length; j++) {
+            for (int j = 0; j < iaInput[0].length; j++) {
 
                 if (iaInput[i][j] < iTreshold) {
                     iaReturn[i][j] = iValueDown;

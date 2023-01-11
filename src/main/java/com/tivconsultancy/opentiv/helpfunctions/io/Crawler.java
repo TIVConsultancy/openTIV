@@ -169,7 +169,7 @@ public class Crawler {
                 }
             }
         }
-        System.out.println(Arrays.toString(entries));
+//        System.out.println(Arrays.toString(entries));
         return lsPath;
     }
 

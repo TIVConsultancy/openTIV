@@ -186,6 +186,21 @@ public class MatrixEntry implements Serializable, Additionable<MatrixEntry>, Sub
 
         return new MatrixEntry(opCenter.i / lop.size(), opCenter.j / lop.size());
     }
+    
+    public static OrderedPair getMean(List<MatrixEntry> lop) {
+        if (lop.isEmpty()) {
+            return null;
+        }
+
+        MatrixEntry opCenter = new MatrixEntry(0, 0);
+
+        for (MatrixEntry op : lop) {
+            opCenter.i += op.i;
+            opCenter.j += op.j;
+        }
+
+        return new OrderedPair((double)opCenter.j / (double)lop.size(), (double)opCenter.i / (double)lop.size());
+    }
 
     public static MatrixEntry getMaxIJPoint(List<MatrixEntry> laInputPoints) {
 

@@ -75,7 +75,7 @@ public class Prot_SystemSettings extends Protocol implements Serializable {
 
     private void initSettings() {
 //        this.loSettings.add(new SettingObject("Activated", "SimpleEdges", true, SettingObject.SettingsType.Boolean));
-        this.loSettings.add(new SettingObject("Store Temp Data", "tivGUI_dataStore", true, SettingObject.SettingsType.Boolean));
+        this.loSettings.add(new SettingObject("Store Temp Data", "tivGUI_dataStore", false, SettingObject.SettingsType.Boolean));
         this.loSettings.add(new SettingObject("Draw Final Result", "tivGUI_dataDraw", true, SettingObject.SettingsType.Boolean));
         this.loSettings.add(new SettingObject("Storeage option", "tivGUI_Storeage", HEAP.toString(), SettingObject.SettingsType.String));
     }

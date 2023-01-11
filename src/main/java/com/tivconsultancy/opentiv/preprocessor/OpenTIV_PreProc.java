@@ -15,9 +15,12 @@
  */
 package com.tivconsultancy.opentiv.preprocessor;
 
+import com.tivconsultancy.opentiv.helpfunctions.matrix.Matrix;
+import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
 import com.tivconsultancy.opentiv.helpfunctions.settings.SettingObject;
 import com.tivconsultancy.opentiv.helpfunctions.settings.Settings;
 import com.tivconsultancy.opentiv.helpfunctions.strings.StringWorker;
+import static com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.EdgeDetections.getThinEdge;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.HistogramOperations;
 import com.tivconsultancy.opentiv.imageproc.algorithms.algorithms.NoiseReduction;
 import com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer;
@@ -28,6 +31,7 @@ import com.tivconsultancy.opentiv.logging.TIVLog;
 import com.tivconsultancy.opentiv.math.functions.Spline;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,7 +70,7 @@ public class OpenTIV_PreProc {
         boolean bNoiseReduction = true; // (boolean) oSettings.getSettingsValue("NR");
         boolean bSmoothFilter = true; //(boolean) oSettings.getSettingsValue("SF");
         boolean bHG = true; //(boolean) oSettings.getSettingsValue("HG");
-
+        boolean bSharpen = (boolean) oSettings.getSettingsValue("Sharpen");
         try {
             if (bNoiseReduction) {
                 Input = reducenoise(Input, oSettings);
@@ -102,7 +106,17 @@ public class OpenTIV_PreProc {
             TIVLog.tivLogger.severe(e.getLocalizedMessage());
             TIVLog.tivLogger.severe(e.getMessage());
         }
-
+        try {
+            if (bSharpen) {
+                Input = particleSharpening(Input, oSettings);
+            }
+        } catch (Exception e) {
+            TIVLog.tivLogger.severe("------------------------");
+            TIVLog.tivLogger.severe("Particle not sharpening succesfull");
+            TIVLog.tivLogger.severe("------------------------");
+            TIVLog.tivLogger.severe(e.getLocalizedMessage());
+            TIVLog.tivLogger.severe(e.getMessage());
+        }
         return Input;
 
     }
@@ -187,11 +201,11 @@ public class OpenTIV_PreProc {
             Spline interpolSpline = getSpline(yCSV, xCSV);
             HistogramOperations.curveCorrection(Input, interpolSpline);
         }
-        
+
         if (oSettings.getSettingsValue("LinNormalization") != null && (boolean) oSettings.getSettingsValue("LinNormalization")) {
             HistogramOperations.linNormalization(Input);
         }
-        
+
         if (oSettings.getSettingsValue("NonLinNormalization") != null && (boolean) oSettings.getSettingsValue("NonLinNormalization")) {
             HistogramOperations.NonlinNormalization(Input);
         }
@@ -274,4 +288,28 @@ public class OpenTIV_PreProc {
         return Input;
     }
 
+    public static ImageInt particleSharpening(ImageInt Input, Settings oSettings) {
+        int iThresh = (int) oSettings.getSettingsValue("SharpenThresh");
+        int iMin = (int) oSettings.getSettingsValue("HistMin");
+        ImageInt iaGrad = new ImageInt(getThinEdge(Input.iaPixels.clone(), Boolean.FALSE, null, null, 0));
+        iaGrad.iaPixels = Matrix.tresholdBinary(iaGrad.iaPixels, iThresh, 0, 255);
+        List<MatrixEntry> lme = iaGrad.getPoints(255);
+        List<MatrixEntry> lmeAll = new ArrayList<>();
+        lmeAll.addAll(lme);
+        for (MatrixEntry me : lme) {
+//            Input.iaPixels[me.i][me.j] = 255 * (Input.iaPixels[me.i][me.j] - iMin) / (255 - iMin) > 0 ? 255 * (Input.iaPixels[me.i][me.j] - iMin) / (255 - iMin) : 0;
+            List<MatrixEntry> ln4 = iaGrad.getNeighborsN4(me.i, me.j);
+            for (MatrixEntry mme : ln4) {
+                if (mme != null) {
+//                    Input.iaPixels[mme.i][mme.j] = 255 * (Input.iaPixels[mme.i][mme.j] - iMin) / (255 - iMin) > 0 ? 255 * (Input.iaPixels[mme.i][mme.j] - iMin) / (255 - iMin) : 0;
+                    lmeAll.add(mme);
+                }
+            }
+        }
+        
+        for (MatrixEntry me : lmeAll) {
+            Input.iaPixels[me.i][me.j] = 255 * (Input.iaPixels[me.i][me.j] - iMin) / (255 - iMin) > 0 ? 255 * (Input.iaPixels[me.i][me.j] - iMin) / (255 - iMin) : 0;
+        }
+        return Input;
+    }
 }

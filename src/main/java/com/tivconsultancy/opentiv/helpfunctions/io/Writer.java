@@ -68,6 +68,30 @@ public class Writer {
             }
         }
     }
+    
+    public Writer(String sFile,boolean Message) {
+        this.sFile = sFile;
+        this.sSeperator = ",";
+        this.fFile = new File(this.sFile);
+        if (fFile.exists()) {
+            if (fFile.setLastModified(System.currentTimeMillis())) {
+                if (Message)
+                System.out.println("touched " + this.sFile);
+            } else {
+                if (Message)
+                System.out.println("touch failed on " + this.sFile);
+            }
+
+        } else {
+            try {
+                fFile.createNewFile();
+                if (Message)
+                System.out.println("create new file " + this.sFile);
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+        }
+    }
 
     public Writer(File fFile) {
         this.fFile = fFile;
@@ -792,6 +816,19 @@ public class Writer {
             for (int j = 1; j < iapixels[0].length; j++) {
                 sOut = sOut + "," + iapixels[i][j];
             }
+            lsOut.add(sOut);
+        }
+
+        Writer oWrite = new Writer(oOutput);
+        oWrite.write(lsOut);
+    }
+    
+        public static void WriteVector(Double[] iapixels, File oOutput) throws IOException {
+
+        List<String> lsOut = new ArrayList<String>();
+
+        for (int i = 0; i < iapixels.length; i++) {
+            String sOut = "" + iapixels[i];
             lsOut.add(sOut);
         }
 
