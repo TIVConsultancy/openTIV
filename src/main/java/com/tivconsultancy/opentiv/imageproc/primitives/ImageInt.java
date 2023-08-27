@@ -17,6 +17,7 @@ package com.tivconsultancy.opentiv.imageproc.primitives;
 
 import com.tivconsultancy.opentiv.helpfunctions.matrix.Matrix;
 import com.tivconsultancy.opentiv.helpfunctions.matrix.MatrixEntry;
+import com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Reader.getGrayScale;
 import static com.tivconsultancy.opentiv.imageproc.img_io.IMG_Writer.castToByteprimitive;
 import com.tivconsultancy.opentiv.math.interfaces.Additionable;
@@ -764,6 +765,12 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
 
     }
 
+    public void setPoints(List<MatrixEntry> lme) {
+        for (MatrixEntry me : lme) {
+            iaPixels[me.i][me.j] = (int) me.dValue;
+        }
+    }
+
     public void setPoints(List<MatrixEntry> lme, int iValue) {
         setPoints(lme, iValue, 0);
 //        for (MatrixEntry me : lme) {
@@ -1128,6 +1135,28 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
         }
     }
 
+    public void divide(int dValue) {
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
+                iaPixels[i][j] = iaPixels[i][j] / dValue;
+            }
+        }
+    }
+
+    public void divide(ImageInt iaImage, int iValueSet) {
+        double[][] dTemp = new double[iaPixels.length][iaPixels[0].length];
+        for (int i = 0; i < iaPixels.length; i++) {
+            for (int j = 0; j < iaPixels[0].length; j++) {
+                dTemp[i][j] = (double) iaPixels[i][j] / (double) iaImage.iaPixels[i][j];
+                if (Math.abs(dTemp[i][j]) >= 1) {
+                    iaPixels[i][j] = iValueSet;
+                } else {
+                    iaPixels[i][j] = (int) (dTemp[i][j] * (double) iValueSet);
+                }
+            }
+        }
+    }
+
     public List<MatrixEntry> getsubArea(int iCenter, int jCenter, int iRadius) {
         List<MatrixEntry> lmeReturn = new ArrayList<>();
         for (int i = Math.max(iCenter - iRadius, 0); i < Math.min(iCenter + iRadius, iaPixels.length); i++) {
@@ -1184,6 +1213,18 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
             }
         }
         return new ImageInt(iaClone);
+    }
+
+    public static ImageInt getaveragePic(List<File> lFiles) throws IOException {
+        ImageInt avImg = new ImageInt(IMG_Reader.readImageGrayScale(lFiles.get(0)));
+        lFiles.remove(0);
+        for (File file : lFiles) {
+            ImageInt img = new ImageInt(IMG_Reader.readImageGrayScale(file));
+            avImg = avImg.add(img, Integer.MAX_VALUE);
+        }
+        avImg.divide(lFiles.size() + 1);
+
+        return avImg;
     }
 
     public static ImageInt toImageInt(ImageIcon imgIcon) {
@@ -1485,6 +1526,17 @@ public class ImageInt extends ImageBoolean implements Serializable, Additionable
         }
         this.iterate((int i, int j) -> {
             o2.iaPixels[i][j] = Math.min(max, o2.iaPixels[i][j] + o1.iaPixels[i][j]);
+        });
+        return o2;
+    }
+
+    public ImageInt sub(ImageInt o2, int min) {
+        ImageInt o1 = this;
+        if (this.iaPixels.length != o2.iaPixels.length || this.iaPixels[0].length != o2.iaPixels[0].length) {
+            throw new UnsupportedOperationException("Images must have same size for substraction.");
+        }
+        this.iterate((int i, int j) -> {
+            o2.iaPixels[i][j] = Math.max(min, o1.iaPixels[i][j] - o2.iaPixels[i][j]);
         });
         return o2;
     }
